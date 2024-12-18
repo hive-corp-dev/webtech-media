@@ -1,0 +1,39 @@
+---
+import 'the-new-css-reset';
+import '../styles/global.scss';
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/700.css';
+
+// Supports weights 100-900
+import '@fontsource-variable/noto-sans-jp';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro Basics</title>
+	</head>
+	<body>
+		<div class="wrap">
+			<Header />
+			<slot />
+			<Footer />
+		</div>
+	</body>
+</html>
+
+<style lang="scss">
+	.wrap {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+</style>

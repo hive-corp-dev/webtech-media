@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content';
+import TagCloud from "@components/common/TagCloud.astro"
+import { getTagsWithArticles } from '@utils/article-tags';
+import Ranking from './sidebar-widgets/Ranking.astro';
+import { FaCrown } from "react-icons/fa";
+import { FaTags } from "react-icons/fa";
+import { IoIosPricetags } from "react-icons/io";
+import Toc from './sidebar-widgets/Toc.astro';
+import { MdOutlineToc } from "react-icons/md";
+
+
+const articleEntries = await getCollection('article', ({data}) => {
+	return data.isDraft === false;
+});
+const tagsWithArticles = getTagsWithArticles(articleEntries);
+---
+
+<aside class="sidebar">
+  <div class="sidebar__block">
+    <p class="sidebar__block-title"><IoIosPricetags />タグ一覧</p>
+    <div class="tags">
+      <TagCloud tags={tagsWithArticles} />
+    </div>
+  </div>
+  <div class="sidebar__block">
+    <p class="sidebar__block-title"><FaCrown />人気記事一覧</p>
+    <Ranking />
+  </div>
+  <div class="sidebar__sticky">
+    <div class="sidebar__block">
+      <p class="sidebar__block-title -toc"><MdOutlineToc />目次</p>
+      <Toc />
+    </div>
+  </div>
+</aside>
+
+<style lang="scss">
+  .sidebar {
+    width: 30rem;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+
+    &__sticky {
+      position: sticky;
+      top: 12rem;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4rem;
+    }
+
+    &__block {
+      background-color: var.$c-white;
+      border: .1rem solid var.$c-gray-l;
+      padding: 1.6rem 2.4rem 2.4rem;
+    }
+
+    &__block-title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      padding-bottom: 1.2rem;
+      border-bottom: .1rem solid var.$c-gray-l;
+      display: flex;
+      align-items: center;
+
+      svg {
+        margin-right: .2rem;
+      }
+
+      &.-toc {
+        svg {
+          font-size: 1.8rem;
+          transform: translateY(.1rem);
+        }
+      }
+    }
+  }
+
+  .tags {
+    margin-top: 2.4rem;
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+const {title, thumbnail, publishedAt, revisedAt, tags} = Astro.props;
+import { Image } from 'astro:assets';
+import { formatDate } from '@utils/date';
+import { getTagDataBySlug } from '@utils/article-tags';
+import { PiClock, PiClockClockwise } from "react-icons/pi";
+---
+
+<div class="article-head">
+  <div class="dates">
+    <div class="date">
+      <PiClock /><time datetime={formatDate(publishedAt)}>{formatDate(publishedAt)}</time>
+    </div>
+    {
+      revisedAt && (
+        <div class="date">
+          <PiClockClockwise /><time datetime={formatDate(revisedAt)}>{formatDate(revisedAt)}</time>
+        </div>
+      )
+    }
+  </div>
+  <h1 class="title">{title}</h1>
+  <div class="tags">
+    {
+      tags.map(tag => {
+        const tagData = getTagDataBySlug(tag);
+
+        return (
+          <a class="tag">{tagData.label}</a>
+        )
+      })
+    }
+  </div>
+  <Image class="thumbnail" src={thumbnail} width={1600} height={900} alt={title} />
+</div>
+
+
+<style lang="scss">
+
+  .article-head {}
+
+  .dates {
+    font-size: 1.4rem;
+    display: flex;
+    gap: 1.6rem;
+  }
+
+  .date {
+    display: flex;
+    align-items: center;
+
+    svg {
+      font-size: 1.5rem;
+      display: flex;
+      margin-right: .2rem;
+      transform: translateY(.05rem);
+    }
+  }
+
+  .title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-top: 2.4rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .8rem;
+    margin-top: 2.4rem;
+  }
+
+  .tag {
+    font-size: 1.3rem;
+    font-weight: bold;
+    background-color: #f9f9fc;
+    border: 0.1rem solid var.$c-gray-l;
+    display: flex;
+    align-items: center;
+    padding: .2rem .8rem;
+    border-radius: .3rem;
+
+    &::before {
+      content: '#';
+      font-size: 1.1rem;
+      margin-right: .2rem;
+    }
+  }
+
+  .thumbnail {
+    width: 100%;
+    margin-top: 3.2rem;
+  }
+</style>

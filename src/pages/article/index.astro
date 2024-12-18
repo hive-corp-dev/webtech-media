@@ -1,0 +1,51 @@
+---
+import { getSortedPosts } from '@utils/posts';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import ArticleList from '@components/article/ArticleList.astro';
+import Container from '@components/common/Container.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
+
+const articles = await getCollection('article', ({data}) => {
+	return data.isDraft === false;
+});
+
+const sortedArticles = getSortedPosts(articles);
+
+---
+<Layout>
+	<div class="page">
+		<Container>
+			<Breadcrumb data={[
+				{ label: 'ホーム', href: '/' },
+				{ label: '記事一覧' },
+			]} />
+			<div class="wrap">
+				<main class="main">
+					<ArticleList articles={sortedArticles} />
+				</main>
+				<ArticleArchiveSidebar />
+			</div>
+		</Container>
+	</div>
+</Layout>
+
+<style lang="scss">
+
+	.page {
+		padding: 12rem 0;
+	}
+	
+	.wrap {
+		display: flex;
+		justify-content: space-between;
+		gap: 4rem;
+		margin-top: 2.4rem;
+	}
+	
+	.main {
+		flex-grow: 1;
+		max-width: 80rem;
+	}
+	</style>

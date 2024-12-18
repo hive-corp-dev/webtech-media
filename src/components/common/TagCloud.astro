@@ -1,0 +1,103 @@
+---
+import { sortTagsByKana, getTagArchiveUrl } from "@utils/article-tags";
+
+const {tags, type} = Astro.props;
+const sortedTags = sortTagsByKana(tags);
+---
+
+<ul class:list={["tag", type]}>
+  {
+    sortedTags.map((tag) => (
+      <li class="tag__item">
+        <a href={getTagArchiveUrl(tag.slug)} class="tag__link">
+          <span>{tag.label}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style lang="scss">
+  .tag {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .8rem;
+    }
+  
+    .tag__item {
+    }
+  
+    .tag__link {
+      font-size: 1.2rem;
+      font-weight: bold;
+      background-color: #f9f9fc;
+      border: 0.1rem solid var.$c-gray-l;
+      display: flex;
+      align-items: center;
+      padding: .2rem .8rem;
+      border-radius: .3rem;
+      transition: all .3s;
+
+      &::before {
+        content: '#';
+        font-size: 1rem;
+        margin-right: .2rem;
+      }
+
+      @include mixin.hover {
+        &:hover {
+          background-color: var.$c-main;
+          color: var.$c-white;
+        }
+      }
+    }
+  
+  
+  .tag.sidebar {
+    margin-top: 2.4rem;
+  
+    .tag {
+  
+      &__link {
+        span {
+          padding: .2rem 1.2rem .3rem;
+          font-size: 1.4rem;
+        }
+        
+      }
+    }
+  }
+  
+  .tag.article-header {
+    margin-top: 0;
+  
+    .tag {
+      &__link {
+        span {
+          padding: .2rem 1.2rem .3rem;
+          font-size: 1.4rem;
+        }
+      }
+    }
+  }
+  
+  .tag.article-footer {
+    margin-top: 2.4rem;
+    justify-content: center;
+  
+    @include mixin.sp {
+      margin-top: 1.6rem;
+    }
+  
+    .tag {
+      &__link {
+        span {
+          padding: .2rem 1.2rem .3rem;
+          font-size: 1.4rem;
+        }
+      }
+    }
+  }
+  
+  </style>
+  

@@ -1,0 +1,135 @@
+---
+import Container from "./common/Container.astro"
+import { Image } from "astro:assets"
+import logo from '@assets/images/logo-white.svg';
+import logoText from '@assets/images/logo-text-white.svg';
+const isTopPage = Astro.url.pathname === '/';
+
+---
+
+<footer class="footer">
+  <div class="content">
+    <Container>
+      <div class="row">
+        <div class="logo-col">
+          {
+            isTopPage ? (
+              <div class="logo-wrap">
+                <Image class="logo" src={logo} alt='' />
+                <Image class="logo-text" src={logoText} alt='WebTech Media' />
+              </div>
+            ) : (
+              <a href="/" class="logo-wrap -link">
+                <Image class="logo" src={logo} alt='' />
+                <Image class="logo-text" src={logoText} alt='WebTech Media' />
+              </a>
+            )
+          }
+          <p class="text">モダンなWeb開発手法に特化したメディアサイト</p>
+        </div>
+
+        <nav class="nav">
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" href="/">HOME</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/article">記事一覧</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/contact">お問い合わせ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/privacy-policy">プライバシーポリシー</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </Container>
+  </div>
+  <p class="copy">&copy; WebTech Media All Rights Reserved.</p>
+</footer>
+
+<style lang="scss">
+.footer {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  // background-color: #f9fafb;
+  background-color: var.$c-main-v;
+  background-color: #334186;
+  margin-top: auto;
+  width: 100%;
+}
+
+.content {
+  padding: 8rem 0 10rem;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav {
+  color: var.$c-white;
+}
+
+.nav-list {
+  display: flex;
+  gap: 2.4rem;
+}
+
+.nav-link {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.logo-col {
+  display: flex;
+  flex-direction: column;
+  color: var.$c-white;
+
+  .text {
+    font-size: 1.3rem;
+    margin-top: 1.6rem;
+    font-weight: 500;
+  }
+}
+
+.logo-wrap {
+    display: flex;
+    align-items: center;
+
+    .logo {
+      width: 3rem;
+      margin-right: .6rem;
+    }
+
+    .logo-text {
+      width: 18rem;
+    }
+
+    &.-link {
+      transition: all .3s;
+
+      @include mixin.hover {
+        &:hover {
+          opacity: .8;
+        }
+      }
+    }
+  }
+
+.copy {
+  font-family: var.$font-en;
+  font-size: 1.3rem;
+  padding: .8rem 0;
+  letter-spacing: .02em;
+  background-color: var.$c-main-v;
+  background-color: #26326f;
+  color: var.$c-white;
+  width: 100%;
+  text-align: center;
+}
+</style>

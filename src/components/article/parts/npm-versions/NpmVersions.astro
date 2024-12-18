@@ -1,0 +1,70 @@
+---
+const {title = '執筆時点のバージョン情報', versions} = Astro.props;
+---
+
+<div class="box">
+  <div class="title">{title}</div>
+  <div class="card">
+    {versions.map((version) => (
+      <div class='item'>
+        <div class='line'>
+          <span class='package-name'>&quot;{version.name}&quot;:</span>
+          <span class='version'>&quot;{version.version}&quot;</span>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style lang="scss">
+  .box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-grow: 1;
+  width: 100%;
+  gap: 0.8rem;
+  background-color: #f5f5f5;
+  background-color: #292929;
+  color: var.$c-white;
+  padding: 2.4rem;
+  border-radius: 0 0.8rem 0.8rem 0.8rem;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.8rem 0.8rem 0 0;
+  color: var.$c-white;
+  background-color: #222;
+  line-height: 1.5;
+}
+
+.line {
+  display: flex;
+  gap: 1rem;
+  font-family: var.$font-editor;
+  line-height: 1.5;
+}
+
+.package-name {
+  font-size: 1.3rem;
+}
+
+.version {
+  font-weight: 400;
+  font-size: 1.3rem;
+  color: #555;
+  color: var.$c-white;
+}
+
+</style>

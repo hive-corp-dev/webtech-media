@@ -1,0 +1,118 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import ArticleContent from '@components/article/ArticleContent.astro';
+import Container from '@components/common/Container.astro';
+import ArticleHead from '@components/article/ArticleHead.astro';
+import CodeHead from '@components/article/parts/code-head/CodeHead.astro';
+import TestBtn from '@components/article/parts/test-btn/TestBtn.jsx';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import ArticleSidebar from '@components/article/ArticleSidebar.astro';
+
+export async function getStaticPaths() {
+  const articleEntries = await getCollection('article');
+  return articleEntries.map(entry => ({
+    params: { slug: entry.slug }, props: { entry },
+  }));
+}
+// 2. テンプレートでは、プロパティからエントリーを直接取得できる
+const { entry } = Astro.props;
+
+const currentUrl = Astro.url;
+---
+
+<Layout>
+  <div class="page">
+    <Container>
+      <Breadcrumb data={[
+        { label: 'ホーム', href: '/' },
+        { label: '記事一覧', href: '/article' },
+        { label: entry.data.title },
+      ]} />
+      <div class="wrap">
+        <main class="main">
+          <Container type="px-m">
+            <ArticleHead title={entry.data.title} thumbnail={entry.data.thumbnail} publishedAt={entry.data.publishedAt} revisedAt={entry.data.revisedAt} tags={entry.data.tags} />
+            <ArticleContent entry={entry} components={{CodeHead, TestBtn}} />
+          </Container>
+        </main>
+        <ArticleSidebar />
+      </div>
+    </Container>
+  </div>
+</Layout>
+
+<script>
+  import * as tocbot from 'tocbot'
+
+  // 目次
+  tocbot.init({
+    tocSelector: '.toc', // 目次を追加するクラス名
+    contentSelector: '#article-content', // 目次を取得するコンテンツ
+    listClass: 'toc-list', // olのクラス名
+    linkClass: 'toc-link', // aタグのクラス名
+    headingSelector: 'h2, h3', // 目次として取得する見出しタグ
+    headingsOffset: document.querySelector('.js-header').offsetHeight,
+    scrollSmoothOffset: document.querySelector('.js-header').offsetHeight * -1, // スクロール時のオフセット
+  })
+
+  setTimeout(() => {
+    tocbot.init({
+    tocSelector: '.toc-sidebar', // 目次を追加するクラス名
+    contentSelector: '#article-content', // 目次を取得するコンテンツ
+    listClass: 'toc-list', // olのクラス名
+    linkClass: 'toc-link', // aタグのクラス名
+    headingSelector: 'h2, h3', // 目次として取得する見出しタグ
+    activeLinkClass: 'is-active-pos', // アクティブリンクのクラス名
+    headingsOffset: document.querySelector('.js-header').offsetHeight,
+    scrollSmoothOffset: document.querySelector('.js-header').offsetHeight * -1, // スクロール時のオフセット
+    hasInnerContainers: true,
+  })
+  }, 500);
+
+
+  // コードのコピー
+  const copyBtns = document.querySelectorAll('.js-pre-copy');
+  copyBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await copyCode(btn);
+    });
+
+    async function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      const textToCopy = pre.innerText || pre.textContent;
+      await navigator.clipboard.writeText(textToCopy);
+
+      btn.classList.add('copy_done');
+
+      setTimeout(() => {
+        btn.classList.remove('copy_done');
+      }, 1500);
+    }
+  });
+
+
+</script>
+
+<style lang="scss">
+
+.page {
+  padding: 12rem 0;
+}
+
+.wrap {
+  display: flex;
+  justify-content: space-between;
+  gap: 4rem;
+  margin-top: 2.4rem;
+}
+
+.main {
+  flex-grow: 1;
+  background-color: var.$c-white;
+  padding: 6.4rem 0;
+  max-width: 80rem;
+  border: 0.1rem solid var.$c-gray-l;
+}
+
+</style>

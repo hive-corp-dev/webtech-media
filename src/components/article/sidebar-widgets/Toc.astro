@@ -1,0 +1,87 @@
+---
+---
+
+<nav class="toc-nav -sidebar">
+  <div class="toc-sidebar"></div>
+</nav>
+
+<style is:global lang="scss">
+
+  .toc-nav.-sidebar {
+    background-color: transparent;
+    margin-top: 1.6rem!important;
+    padding: 0;
+    border: none;
+
+    @include mixin.tab-s {
+      margin-top: 0!important;
+      height: 100%;
+      overflow: auto;
+    }
+  }
+
+  .toc-sidebar {
+    font-family: var.$font-base;
+
+    .toc-list {
+      margin-top: 0;
+
+      .toc-list-item:first-child {
+        .toc-link.node-name--H2 {
+          margin-top: 0;
+        }
+      }
+    }
+
+    .toc-list-item {
+      margin-top: 0!important;
+    }
+
+    .toc-link {
+      position: relative;
+
+      &::before {
+        content: '';
+        background-size: 100% 100%;
+        background-position: left top;
+        background-repeat: no-repeat;
+        width: .2rem;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        transition: all .3s;
+        background-color: var.$c-main;
+      }
+
+      &.node-name--H2 {
+        display: block;
+        margin-top: .6rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        // padding-left: 1rem;
+        // padding-right: 1rem;
+        padding-left: 0.8rem;
+        padding: .4rem 1rem;
+        line-height: 1.5;
+      }
+
+      &.node-name--H3 {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: 500;
+        padding: .4rem 1rem;
+        line-height: 1.5;
+      }
+
+      &.is-active-pos {
+        background-color: #f9f9fc;
+
+        &::before {
+          opacity: 1;
+        }
+      }
+    } 
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+import { 
+  IoLogoJavascript, 
+  IoLogoHtml5, 
+  IoLogoReact, 
+  IoLogoCss3, 
+  IoLogoSass, 
+  IoLogoMarkdown, 
+  IoTerminalOutline 
+} from "react-icons/io5";
+import { SiPhp } from "react-icons/si";
+import styles from "./code-head.module.scss";
+
+const { name, lang } = Astro.props;
+
+const outputLanguageString = (value) => {
+  switch (value) {
+    case "html":
+      return { name: "HTML", icon: IoLogoHtml5 };
+    case "php":
+      return { name: "PHP", icon: SiPhp };
+    case "css":
+      return { name: "CSS", icon: IoLogoCss3 };
+    case "scss":
+      return { name: "Sass", icon: IoLogoSass };
+    case "js":
+      return { name: "JavaScript", icon: IoLogoJavascript };
+    case "jsx":
+      return { name: "JSX", icon: IoLogoReact };
+    case "md":
+      return { name: "Markdown", icon: IoLogoMarkdown };
+    case "mdx":
+      return { name: "MDX", icon: IoLogoMarkdown };
+    case "console":
+      return { name: "console", icon: IoTerminalOutline };
+    default:
+      return { name: "Unknown", icon: null };
+  }
+};
+
+const langData = outputLanguageString(lang);
+---
+<div class={`${styles.code_head}`}>
+  <div class={styles.dots}>
+    <span></span>
+  </div>
+
+  <div class={styles.text_wrap}>
+    {name && <span class={styles.name}>{name}</span>}
+    <div class={styles.lang_wrap}>
+      <div class={styles.icon} data-lang={lang}>
+        {langData.icon && <langData.icon />}
+      </div>
+      <span class={styles.lang}>{langData.name}</span>
+    </div>
+  </div>
+</div>

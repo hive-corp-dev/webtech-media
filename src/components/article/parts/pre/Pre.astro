@@ -1,0 +1,45 @@
+---
+import { MdDone } from "react-icons/md";
+import { MdContentCopy } from "react-icons/md";
+import styles from './pre.module.scss';
+---
+
+<div class={styles.wrapper}>
+
+  <!-- コピー用のボタン -->
+  <button class={`${styles.copy} pre-copy js-pre-copy`}>
+    <div class={`${styles.icon_done} icon-copy`}>
+      <MdContentCopy />
+    </div>
+    <div class={`${styles.icon_copy} icon-done`}>
+      <MdDone />
+    </div>
+  </button>
+
+  <!-- コピー対象の<pre> -->
+  <pre class={`${styles.pre} js-pre`}>
+    <slot />
+  </pre>
+</div>
+
+<style lang="scss">
+
+.pre-copy {
+
+  .icon-done {
+    opacity: 0;
+  }
+}
+
+.pre-copy.copy_done {
+  background-color: #00cd10;
+
+  .icon-copy {
+    opacity: 0;
+  }
+
+  .icon-done {
+    opacity: 1;
+  }
+}
+</style>

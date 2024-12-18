@@ -1,0 +1,96 @@
+---
+import { Image } from "astro:assets";
+import { getTagDataBySlug, sortTagsByKana, getTagListBySlugs } from "@utils/article-tags";
+import { PiClock } from "react-icons/pi";
+import { formatDate } from "@utils/date";
+
+const {article} = Astro.props;
+const tagListData = getTagListBySlugs(article.data.tags);
+const sortedTags = sortTagsByKana(tagListData);
+
+---
+
+<li class="item">
+  <a class="link" href={`/article/${article.slug}`}>
+    <Image src={article.data.thumbnail} width={1600} height={900} alt={article.data.title} />
+    <div class="content">
+      <time class="time" datetime={formatDate(article.data.publishedAt)}><PiClock />{formatDate(article.data.publishedAt)}</time>
+      <p class="title">{article.data.title}</p>
+      <div class="tags">
+        {
+          sortedTags.map((tag) => {
+            
+            return (
+              <span class="tag">{tag.label}</span>
+            )
+          })
+        }
+      </div>
+    </div>
+  </a>
+</li>
+
+<style lang="scss">
+.item {
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  border: .1rem solid var.$c-gray-l;
+  flex-grow: 1;
+}
+
+.content {
+  background-color: var.$c-white;
+  padding: 1.6rem;
+  flex-grow: 1;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+
+  svg {
+    font-size: 1.3rem;
+    display: flex;
+    margin-right: .2rem;
+    transform: translateY(.05rem);
+  }
+}
+
+.title {
+  font-weight: bold;
+  font-size: 1.6rem;
+  line-height: 1.75;
+  margin-top: .8rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem;
+  margin-top: 1.2rem;
+}
+
+.tag {
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: #f9f9fc;
+  border: 0.1rem solid var.$c-gray-l;
+  display: flex;
+  align-items: center;
+  padding: .2rem .6rem;
+  border-radius: .3rem;
+  transition: all .3s;
+
+  &::before {
+    content: '#';
+    font-size: 1rem;
+    margin-right: .2rem;
+  }
+}
+</style>

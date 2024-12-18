@@ -1,0 +1,23 @@
+---
+import ArticleCard from "./ArticleCard.astro";
+const {articles } = Astro.props;
+---
+
+<ul class="list">
+  {
+    articles.map((article) => {
+
+      return (
+        <ArticleCard article={article} />
+      )
+    })
+  }
+</ul>
+
+<style lang="scss">
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4rem;
+  }
+</style>

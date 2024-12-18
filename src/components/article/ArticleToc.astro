@@ -1,0 +1,101 @@
+---
+import { MdOutlineToc } from "react-icons/md";
+---
+
+<nav class="toc-nav">
+  <div class="toc-title">
+    <span><MdOutlineToc /></span>目次
+  </div>
+  <div class="toc"></div>
+</nav>
+
+<style is:global lang="scss">
+  .toc-nav {
+    position: relative;
+    padding: 2.4rem;
+    border: .1rem solid var.$c-gray-l;
+    line-height: 1.75;
+    margin-top: 4rem!important;
+    background-color: #f9f9fc;
+
+    @include mixin.sp {
+      background-color: rgba(255, 255, 255, 1);
+    }
+  }
+
+
+  .toc-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding-bottom: 1.6rem;
+    border-bottom: .1rem solid var.$c-gray-l;
+
+    span {
+      margin-right: .4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      background-color: var.$c-main;
+      color: var.$c-white;
+      border-radius: 50%;
+
+      svg {
+        font-size: 1.3rem;
+      }
+    }
+  }
+
+  .toc-list.is-collapsible {
+    margin-top: .6rem;
+
+    .toc-list-item {
+      &:not(:first-child) {
+        margin-top: .4rem;
+      }
+    }
+  }
+
+  .toc-link {
+    position: relative;
+
+      &::before {
+        content: '';
+        width: .2rem;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        transition: all .3s;
+      }
+    transition: color .3s;
+
+    &.node-name--H2 {
+      display: block;
+      margin-top: 1.2rem;
+      font-size: 1.4rem;
+      padding-left: 1rem;
+    }
+
+    &.node-name--H3 {
+      display: block;
+      font-size: 1.3rem;
+      padding-left: 2rem;
+    }
+
+    @include mixin.hover {
+      &:hover {
+        color: var.$c-link;
+
+        &::before {
+          opacity: 1;
+        }
+      }
+    }
+
+  } 
+</style>

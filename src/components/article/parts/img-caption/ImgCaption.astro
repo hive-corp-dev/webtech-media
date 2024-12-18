@@ -1,0 +1,34 @@
+---
+import { Image } from "astro:assets";
+const {src, alt, type} = Astro.props;
+---
+
+<figure class="figure">
+  <Image src={src} alt={alt} class:list={['image', type]} />
+  <figcaption class="caption"><slot /></figcaption>
+</figure>
+
+<style lang="scss">
+
+  .figure {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .image {
+    width: 100%;
+    height: auto;
+
+    &.border {
+      border: .1rem solid var.$c-gray-l;
+    }
+  }
+
+  .caption {
+    font-size: 1.3rem;
+    text-align: center;
+    padding: 0 2.4rem;
+    margin-top: .8rem;
+    color: #687387;
+  }
+</style>

@@ -1,0 +1,169 @@
+---
+import { getSortedPosts } from '@utils/posts';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import ArticleList from '@components/article/ArticleList.astro';
+import Container from '@components/common/Container.astro';
+import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
+import logo from '@assets/images/logo-5.svg';
+import logoText from '@assets/images/logo-text.svg';
+import { Image } from 'astro:assets';
+---
+<Layout>
+	<div class="page">
+		<div class="hero">
+			 <h1>
+				<span class="en">PRIVACY POLICY</span>
+        <span class="jp">プライバシーポリシー</span>
+			</h1>
+		</div>
+		<div class="body">
+			<Container>
+				<div class="wrap">
+					<main class="main">
+						<div class="content">
+              <p>当サイトは、個人情報の重要性を認識し、個人情報を保護することが社会的責務であると考え、個人情報に関する法令を遵守し、当サイトで取扱う個人情報の取得、利用、管理を適正に行います。</p>
+
+              <h2>1. 個人情報の利用目的</h2>
+              <p>当サイトでは、お問い合わせの際、名前やメールアドレス等の個人情報を入力いただく場合がございます。<br />取得した個人情報は、お問い合わせに対する回答や必要な情報を電子メールなどでご連絡する場合に利用させていただくものであり、これらの目的以外では利用いたしません。</p>
+
+              <h2>2. アクセス解析ツールについて</h2>
+              <p>当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を利用しています。このGoogleアナリティクスはトラフィックデータの収集のためにクッキー（Cookie）を使用しております。トラフィックデータは匿名で収集されており、個人を特定するものではありません。</p>
+              <p>また、当サイトでは「Microsoft Clarity」を使用しています。このツールでは、訪問者の閲覧履歴や操作情報（クリック、スクロール等）を収集し、ウェブサイトの利用状況を分析する目的で使用しています。これらのデータも匿名で収集され、個人を特定するものではありません。収集された情報はMicrosoftのプライバシーポリシーに基づき管理されています。</p>
+              <p>Microsoftのプライバシーポリシーについては<a href="https://www.microsoft.com/ja-jp//privacy" target="_blank" rel="noopener noreferrer">こちら</a>をご参照ください。
+              </p>
+
+              <h2>3. 情報の利用について</h2>
+              <p>一部コンテンツで登録いただいた情報を、当サイトでのよりよいサービス提供のために利用することがございます。</p>
+              <p>当サイトでは、法律の提供を受ける場合、または法的な請求意外にはユーザー様ご本人の許可なく第三者への個人情報提供、開示はいたしません。</p>
+
+              <h2>4. 著作権について</h2>
+              <p>当サイトに掲載されている全てのコンテンツ（文章、画像、動画、デザイン等）に関する著作権は、運営者（以下、「当方」）に帰属します。著作権法で認められる範囲を超える無断での転載、複製、加工、再配布等の行為を固く禁じます。これらの行為が確認された場合、必要に応じて適切な措置を講じることがあります。</p>
+              <p>ただし、当サイトで公開しているコードについては、自由にご利用いただけます。商用・非商用を問わずご活用いただけますが、使用にあたって発生したいかなる問題や損害についても、当方は一切の責任を負いかねますのでご了承ください。</p>
+
+              <h2>5. 引用について</h2>
+              <p>本サイトの内容を引用する場合は、以下の条件を満たしてください：</p>
+              <ul>
+                <li>引用部分を明確にし、全体の一部であることを明示すること。</li>
+                <li>引用元として、本サイトのタイトルおよびURLを明記すること。</li>
+              </ul>
+            </div>
+					</main>
+				</div>
+			</Container>
+		</div>
+	</div>
+</Layout>
+
+<style lang="scss">
+
+	.hero {
+		position: relative;
+		padding: 16rem 0;
+		overflow: hidden;
+		background-color: #f1f6ff;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+
+		h1 {
+			display: flex;
+			align-items: center;
+      flex-direction: column;
+
+      span {
+
+        &.en {
+          font-family: var.$font-en;
+          font-size: 1.6rem;
+          letter-spacing: .08em;
+          color: var.$c-main-v;
+          font-weight: 500;
+        }
+
+        &.jp {
+          font-size: 3.6rem;
+          font-weight: bold;
+          margin-top: .4rem;
+        }
+      }
+		}
+	}
+
+	.page {
+		padding: 8rem 0 12rem 0;
+    background-color: #fff;
+
+	}
+
+	.body {
+		padding-top: 12rem;
+	}
+	
+	.wrap {
+		display: flex;
+		justify-content: space-between;
+		gap: 4rem;
+	}
+	
+	.main {
+		flex-grow: 1;
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+	}
+
+  .content {
+    line-height: 2;
+
+    h2 {
+      font-size: 2.4rem;
+      font-weight: bold;
+      border-bottom: .2rem solid var.$c-main-v;
+      letter-spacing: .08em;
+    }
+
+    a {
+      color: var.$c-link;
+      text-decoration: underline;
+    }
+
+    ul {
+      li {
+        padding-left: 1em;
+        position: relative;
+
+        &::before {
+          content: '';
+          width: .6rem;
+          height: .6rem;
+          border-radius: 50%;
+          background-color: var.$c-main-v;
+          position: absolute;
+          left: 0;
+          top: calc(1em - .3rem);
+        }
+
+        &:not(:first-child) {
+          margin-top: .8rem;
+        }
+      }
+    }
+
+    // margins
+    & > * {
+      margin-top: 1.5em;
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    h2 {
+      margin-top: 8rem;
+    }
+  }
+	</style>
+

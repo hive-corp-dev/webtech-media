@@ -1,0 +1,99 @@
+---
+import Container from '@components/common/Container.astro'
+import logo from '@assets/images/logo-5.svg';
+import logoText from '@assets/images/logo-text.svg';
+import { Image } from 'astro:assets';
+const isTopPage = Astro.url.pathname === '/';
+---
+
+<header class="header js-header">
+  <Container>
+    <div class="inner">
+      {
+        isTopPage ? (
+          <div class="logo-wrap">
+            <Image class="logo" src={logo} alt='' />
+            <Image class="logo-text" src={logoText} alt='WebTech Media' />
+          </div>
+        ) : (
+          <a href="/" class="logo-wrap -link">
+            <Image class="logo" src={logo} alt='' />
+            <Image class="logo-text" src={logoText} alt='WebTech Media' />
+          </a>
+        )
+      }
+      <nav class="nav">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/">HOME</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/article">記事一覧</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact">お問い合わせ</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </Container>
+</header>
+
+<style lang="scss">
+
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8rem;
+    display: flex;
+    align-items: center;
+    z-index: var.$z-header;
+    background-color: var.$c-white;
+    border-bottom: .1rem solid var.$c-gray-l;
+  }
+
+  .inner {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+
+    .logo {
+      width: 2.5rem;
+      margin-right: .5rem;
+    }
+
+    .logo-text {
+      width: 15rem;
+    }
+
+    &.-link {
+      transition: all .3s;
+
+      @include mixin.hover {
+        &:hover {
+          opacity: .8;
+        }
+      }
+    }
+  }
+
+  .nav {
+
+  }
+
+  .nav-list {
+    display: flex;
+    gap: 2.4rem;
+  }
+
+  .nav-link {
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+</style>

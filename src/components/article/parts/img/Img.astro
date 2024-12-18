@@ -1,0 +1,17 @@
+---
+import { Image } from "astro:assets";
+const {src, alt, type} = Astro.props;
+---
+
+<Image src={src} alt={alt} class:list={['image', type]} />
+
+<style lang="scss">
+  .image {
+    width: 100%;
+    height: auto;
+
+    &.border {
+      border: .1rem solid var.$c-gray-l;
+    }
+  }
+</style>
