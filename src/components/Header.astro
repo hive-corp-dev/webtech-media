@@ -173,6 +173,13 @@ const isTopPage = Astro.url.pathname === '/';
   .nav-link {
     font-size: 1.4rem;
     font-weight: bold;
+    transition: all .3s;
+
+    @include mixin.hover {
+      &:hover {
+        color: var.$c-main-v;
+      }
+    }
   }
 
   .hamburger-btn {

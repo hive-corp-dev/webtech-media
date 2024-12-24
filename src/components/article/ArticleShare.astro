@@ -1,0 +1,143 @@
+---
+const {postUrl, title} = Astro.props;
+import { Image } from "astro:assets";
+import xIcon from "/public/images/sns/icon-x-white.svg";
+import fbIcon from "/public/images/sns/icon-fb.svg";
+import lineIcon from "/public/images/sns/icon-line.svg";
+import hbIcon from "/public/images/sns/icon-hb.svg";
+import pcIcon from "/public/images/sns/icon-pocket.svg";
+
+const urlForHatena = postUrl.replace(/^https?:\/\//, "");
+console.log(postUrl, 'postUrl');
+---
+
+<div class="share">
+  <p class="en-title">Share on Social Media</p>
+  <p class="title">SNSでシェア</p>
+  <ul class="list">
+    <li class="item">
+      <a href={`https://twitter.com/share?url=${postUrl}&text=${title}`} target="_blank" rel="noopener noreferrer" class="link">
+        <Image src={xIcon} alt="Xでシェア" />
+      </a>
+    </li>
+    <li class="item">
+      <a href={`http://www.facebook.com/share.php?u=${postUrl}`} target="_blank" rel="noopener noreferrer" class="link">
+        <Image src={fbIcon} alt="Facebookでシェア" />
+      </a>
+    </li>
+    <li class="item">
+      <a href={`https://social-plugins.line.me/lineit/share?url=${postUrl}`} target="_blank" rel="noopener noreferrer" class="link -line">
+        <Image src={lineIcon} alt="LINEでシェア" />
+      </a>
+    </li>
+    <li class="item">
+      <a href={`https://b.hatena.ne.jp/entry/s/${urlForHatena}`} target="_blank" rel="noopener noreferrer" class="link -hb">
+        <Image src={hbIcon} alt="はてなブックマークに登録" />
+      </a>
+    </li>
+    <li class="item">
+      <a href={`https://getpocket.com/edit?url=${postUrl}`} target="_blank" rel="noopener noreferrer" class="link">
+        <Image src={pcIcon} alt="pocketに登録" />
+      </a>
+    </li>
+  </ul>
+</div>
+
+<style lang="scss">
+.share {
+  margin-top: 4rem;
+  padding: 4rem;
+  background-color: rgba(var.$c-main-v, .05);
+
+  @include mixin.sp {
+    padding: 2.4rem;
+  }
+}
+
+.en-title {
+  font-family: var.$font-en;
+  font-size: 1.2rem;
+  text-align: center;
+  color: var.$c-main-v;
+  font-weight: 500;
+
+  @include mixin.sp {
+    font-size: 1.1rem;
+  }
+}
+
+.title {
+  // font-family: var.$font-en;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.8rem;
+  margin-top: .4rem;
+
+  @include mixin.sp {
+    font-size: 1.5rem;
+    margin-top: .2rem;
+  }
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  justify-content: center;
+  margin-top: 2rem;
+  gap: .8rem;
+
+  @include mixin.sp {
+    gap: .4rem;
+    margin-top: 1.6rem;
+  }
+}
+
+.item {
+  flex-grow: 1;
+
+  @include mixin.sp {
+    // width: 3rem;
+    // flex-grow: 0;
+  }
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var.$c-main-v;
+  height: 3.6rem;
+  padding: .8rem 0;
+  flex-grow: 1;
+  border-radius: .3rem;
+  transition: all .3s;
+
+  @include mixin.sp {
+    height: 3rem;
+    // width: 3rem;
+  }
+
+  @include mixin.hover {
+    &:hover {
+      background-color: var.$c-main;
+    }
+  }
+
+  img {
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &.-line {
+    padding: .7rem 0;
+  }
+
+  &.-hb {
+    padding: 1.1rem 0;
+
+    @include mixin.sp {
+      padding: 1rem 0;
+    }
+  }
+}
+</style>
