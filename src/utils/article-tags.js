@@ -27,3 +27,8 @@ export const getTagListBySlugs = (slugs) => {
   const tagList = articleTags.filter((tag) => slugs.includes(tag.slug));
   return tagList;
 };
+
+// getStaticPathsに渡すためのパスを生成
+export const tagPaths = articleTags.map((tag) => ({
+  params: { tag: tag.slug },
+}));

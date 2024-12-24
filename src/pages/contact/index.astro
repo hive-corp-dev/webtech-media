@@ -1,0 +1,113 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Container from '@components/common/Container.astro';
+import Form from '@components/contact/Form.astro';
+---
+<Layout>
+	<div class="page">
+		<div class="hero">
+			 <h1>
+				<span class="en">CONTACT</span>
+        <span class="jp">お問い合わせ</span>
+			</h1>
+		</div>
+		<div class="body">
+			<Container>
+				<div class="wrap">
+					<main class="main">
+						<div class="content">
+              <Form />
+            </div>
+					</main>
+				</div>
+			</Container>
+		</div>
+	</div>
+</Layout>
+
+<style lang="scss">
+
+	.hero {
+		position: relative;
+		padding: 16rem 4rem;
+		overflow: hidden;
+		background-color: #f1f6ff;
+
+    @include mixin.sp {
+      padding: 6.4rem 1.6rem;
+    }
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+
+		h1 {
+			display: flex;
+			align-items: center;
+      flex-direction: column;
+
+      span {
+
+        &.en {
+          font-family: var.$font-en;
+          font-size: 1.6rem;
+          letter-spacing: .08em;
+          color: var.$c-main-v;
+          font-weight: 500;
+
+          @include mixin.sp {
+            font-size: 1.4rem;
+          }
+        }
+
+        &.jp {
+          font-size: 3.6rem;
+          font-weight: bold;
+          margin-top: .4rem;
+
+          @include mixin.sp {
+            font-size: 2.4rem;
+            margin-top: 0;
+          }
+        }
+      }
+		}
+	}
+
+	.page {
+		padding: 8rem 0 12rem 0;
+    background-color: #fff;
+
+    @include mixin.sp {
+      padding: 5.6rem 0 8rem;
+    }
+
+	}
+
+	.body {
+		padding-top: 12rem;
+
+    @include mixin.sp {
+      padding-top: 6.4rem;
+    }
+	}
+	
+	.wrap {
+		display: flex;
+		justify-content: space-between;
+		gap: 4rem;
+	}
+	
+	.main {
+		flex-grow: 1;
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+	}
+
+  .content {
+    
+  }
+	</style>
+

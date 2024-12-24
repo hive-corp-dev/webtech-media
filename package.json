@@ -16,6 +16,7 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "astro": "^5.0.5",
+    "astro-seo": "^0.8.4",
     "date-fns-tz": "^3.2.0",
     "prettier": "^3.4.2",
     "react": "^19.0.0",

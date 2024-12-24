@@ -1,33 +1,61 @@
 ---
-import { getSortedPosts } from '@utils/posts';
-import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import ArticleList from '@components/article/ArticleList.astro';
+import Layout from '@layouts/Layout.astro';
 import Container from '@components/common/Container.astro';
+import ArticleList from '@components/article/ArticleList.astro';
 import Breadcrumb from '@components/common/Breadcrumb.astro';
+import {tagPaths, getTagListBySlugs, getTagDataBySlug} from '@utils/article-tags';
+import { getSortedPosts } from '@utils/article';
 import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
-import { ARTICLE_METADATA } from '@data/metadata';
 
-const articles = await getCollection('article', ({data}) => {
-	return data.isDraft === false;
-});
+export async function getStaticPaths() {
+  const articleEntries = await getCollection('article', ({data}) => {
+    return data.isDraft === false;
+  });
 
-const sortedArticles = getSortedPosts(articles);
+  const paths = tagPaths
+    .map((tag) => {
+      // タグに関連する記事をフィルタリング
+      const filteredPosts = articleEntries.filter((post) =>
+        post.data.tags?.includes(tag.params.tag)
+      );
 
+      // 関連する記事がない場合は null を返す
+      if (filteredPosts.length === 0) {
+        return null;
+      }
+
+      // 関連する記事がある場合は有効な path を生成
+      return {
+        ...tag,
+        props: { posts: filteredPosts }, // フィルタリング済みの記事を props として渡す
+      };
+    })
+    .filter(Boolean); // null を除去
+    return paths;
+  }
+
+const {tag} = Astro.params;
+const {posts} = Astro.props;
+
+const sortedArticles = getSortedPosts(posts);
 ---
-<Layout title={ARTICLE_METADATA.title} description={ARTICLE_METADATA.description}>
+
+<Layout>
 	<div class="page">
 		<div class="hero">
 			<h1>
-			 <span class="en">ARTICLES</span>
-			 <span class="jp">記事一覧</span>
+			 <span class="en">TAG ARTICLES</span>
+			 <span class="jp">タグ: {getTagDataBySlug(tag).label}</span>
+       <span class="tag"></span>
 		 </h1>
 	 </div>
 	 <div class="body">
 		 <Container>
 			 <Breadcrumb data={[
 				 { label: 'ホーム', href: '/' },
-				 { label: '記事一覧' },
+				 { label: '記事一覧', href: '/article' },
+				 { label: `${getTagDataBySlug(tag).label}の記事一覧` },
 			 ]} />
 			 <div class="wrap">
 				 <main class="main">
@@ -48,10 +76,6 @@ const sortedArticles = getSortedPosts(articles);
 		overflow: hidden;
 		background-color: #f1f6ff;
 
-		@include mixin.sp {
-      padding: 6.4rem 1.6rem;
-    }
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -70,21 +94,18 @@ const sortedArticles = getSortedPosts(articles);
           letter-spacing: .08em;
           color: var.$c-main-v;
           font-weight: 500;
-
-					@include mixin.sp {
-            font-size: 1.4rem;
-          }
         }
 
         &.jp {
           font-size: 3.6rem;
           font-weight: bold;
           margin-top: .4rem;
+        }
 
-					@include mixin.sp {
-            font-size: 2.4rem;
-            margin-top: 0;
-          }
+        &.tag {
+          font-size: 1.6rem;
+          font-weight: bold;
+          margin-top: 1.6rem;
         }
       }
 		}
@@ -92,10 +113,6 @@ const sortedArticles = getSortedPosts(articles);
 
 	.page {
 		padding: 8rem 0 0;
-
-		@include mixin.sp {
-      padding: 5.6rem 0 0;
-    }
 	}
 
 	.body {
@@ -103,10 +120,6 @@ const sortedArticles = getSortedPosts(articles);
 		padding-bottom: 12rem;
 		border-top: .1rem solid var.$c-gray-l;
 		background-image: linear-gradient(to bottom, var.$c-white 0, var.$c-gray-l 100%);
-
-		@include mixin.sp {
-      padding-bottom: 6.4rem;
-    }
 	}
 	
 	.wrap {
@@ -114,18 +127,10 @@ const sortedArticles = getSortedPosts(articles);
 		justify-content: space-between;
 		gap: 4rem;
 		margin-top: 2.4rem;
-
-		@include mixin.tab {
-			flex-wrap: wrap;
-		}
 	}
 	
 	.main {
 		flex-grow: 1;
 		max-width: 80rem;
-
-		@include mixin.tab {
-			max-width: 100%;
-		}
 	}
 	</style>

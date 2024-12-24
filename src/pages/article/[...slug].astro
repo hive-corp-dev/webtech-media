@@ -8,6 +8,7 @@ import CodeHead from '@components/article/parts/code-head/CodeHead.astro';
 import TestBtn from '@components/article/parts/test-btn/TestBtn.jsx';
 import Breadcrumb from '@components/common/Breadcrumb.astro';
 import ArticleSidebar from '@components/article/ArticleSidebar.astro';
+import { ARTICLE_SINGLE_METADATA } from '@data/metadata';
 
 export async function getStaticPaths() {
   const articleEntries = await getCollection('article');
@@ -21,7 +22,7 @@ const { entry } = Astro.props;
 const currentUrl = Astro.url;
 ---
 
-<Layout>
+<Layout title={`${entry.data.title} | ${ARTICLE_SINGLE_METADATA.title}`} ogImageUrl={entry.data.thumbnail.src} description={entry.data.description}>
   <div class="page">
     <Container>
       <Breadcrumb data={[
@@ -98,6 +99,12 @@ const currentUrl = Astro.url;
 
 .page {
   padding: 12rem 0;
+  background-color: var.$c-bg;
+
+  @include mixin.sp {
+    padding-top: 6.4rem;
+    padding-bottom: 6.4rem;
+  }
 }
 
 .wrap {
@@ -105,6 +112,10 @@ const currentUrl = Astro.url;
   justify-content: space-between;
   gap: 4rem;
   margin-top: 2.4rem;
+
+  @include mixin.tab {
+			flex-wrap: wrap;
+		}
 }
 
 .main {
@@ -113,6 +124,14 @@ const currentUrl = Astro.url;
   padding: 6.4rem 0;
   max-width: 80rem;
   border: 0.1rem solid var.$c-gray-l;
+
+  @include mixin.tab {
+    max-width: 100%;
+  }
+  
+  @include mixin.sp {
+    padding: 2.4rem 0 4rem;
+  }
 }
 
 </style>

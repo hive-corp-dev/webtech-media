@@ -1,87 +1,160 @@
 ---
 ---
 
-<nav class="toc-nav -sidebar">
+<nav class="toc-nav -sidebar js-sidebar-toc-block">
   <div class="toc-sidebar"></div>
 </nav>
 
+
 <style is:global lang="scss">
 
-  .toc-nav.-sidebar {
-    background-color: transparent;
-    margin-top: 1.6rem!important;
-    padding: 0;
-    border: none;
+.toc-nav.-sidebar {
+  background-color: transparent;
+  margin-top: 1.6rem!important;
+  padding: 0;
+  border: none;
+}
 
-    @include mixin.tab-s {
-      margin-top: 0!important;
-      height: 100%;
-      overflow: auto;
+.toc-sidebar {
+  font-family: var.$font-base;
+
+  .toc-list {
+    margin-top: 0;
+
+    .toc-list-item:first-child {
+      .toc-link.node-name--H2 {
+        margin-top: 0;
+      }
     }
   }
 
-  .toc-sidebar {
-    font-family: var.$font-base;
+  .toc-list-item {
+    margin-top: 0!important;
+  }
 
-    .toc-list {
-      margin-top: 0;
+  .toc-link {
+    position: relative;
 
-      .toc-list-item:first-child {
-        .toc-link.node-name--H2 {
-          margin-top: 0;
-        }
-      }
+    &::before {
+      content: '';
+      background-size: 100% 100%;
+      background-position: left top;
+      background-repeat: no-repeat;
+      width: .2rem;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      transition: all .3s;
+      background-color: var.$c-main;
     }
 
-    .toc-list-item {
-      margin-top: 0!important;
+    &.node-name--H2 {
+      display: block;
+      margin-top: .6rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      padding-left: 0.8rem;
+      padding: .4rem 1rem;
+      line-height: 1.5;
     }
 
-    .toc-link {
-      position: relative;
+    &.node-name--H3 {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: 500;
+      padding: .4rem 1rem;
+      line-height: 1.5;
+    }
+
+    &.is-active-pos {
+      background-color: #f9f9fc;
 
       &::before {
-        content: '';
-        background-size: 100% 100%;
-        background-position: left top;
-        background-repeat: no-repeat;
-        width: .2rem;
-        height: 100%;
-        position: absolute;
-        left: 0;
-        top: 0;
-        opacity: 0;
-        transition: all .3s;
-        background-color: var.$c-main;
+        opacity: 1;
       }
+    }
+  } 
+}
 
-      &.node-name--H2 {
-        display: block;
-        margin-top: .6rem;
-        font-size: 1.3rem;
-        font-weight: 600;
-        // padding-left: 1rem;
-        // padding-right: 1rem;
-        padding-left: 0.8rem;
-        padding: .4rem 1rem;
-        line-height: 1.5;
-      }
+.toc-btn {
+  display: none;
 
-      &.node-name--H3 {
-        display: block;
-        font-size: 1.2rem;
-        font-weight: 500;
-        padding: .4rem 1rem;
-        line-height: 1.5;
-      }
+  @include mixin.tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    background-color: var.$c-main-v;
+    position: fixed;
+    right: 1.6rem;
+    bottom: 1.6rem;
+    border-radius: 50%;
+    color: var.$c-white;
+    z-index: 1;
+  }
+}
 
-      &.is-active-pos {
-        background-color: #f9f9fc;
+.toc-icon {
+  &:nth-child(1) {
+    display: block;
+  }
 
-        &::before {
-          opacity: 1;
+  &:nth-child(2) {
+    display: none;
+  }
+}
+</style>
+
+<style is:global lang="scss">
+  html:has([data-toc-is-active="true"]) {
+    .toc-btn {
+      display: flex;
+
+      &__text {
+        &:first-child {
+          display: flex;
+        }
+
+        &:nth-child(2) {
+          display: none;
         }
       }
-    } 
+    }
+
+    .toc-icon {
+
+      &:nth-child(1) {
+        display: none;
+      }
+
+      &:nth-child(2) {
+        display: flex;
+      }
+    }
+
+    .sidebar__sticky {
+      transform: translateX(0);
+    }
   }
 </style>
+
+<script>
+  const btn = document.querySelector('.js-toggle-toc');
+  const sidebarBlock = document.querySelector('.js-sidebar-sticky');
+
+  btn.addEventListener('click', () => {
+    let isActive = sidebarBlock.dataset.tocIsActive === 'true';
+    sidebarBlock.dataset.tocIsActive = !isActive;
+  })
+  
+  sidebarBlock.addEventListener('click', (e) => {
+      if (event.target.classList.contains('toc-link')) {
+        sidebarBlock.dataset.tocIsActive = 'false';
+      }
+    })
+
+</script>

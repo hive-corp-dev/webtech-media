@@ -1,13 +1,6 @@
 ---
-import { getSortedPosts } from '@utils/posts';
 import Layout from '../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import ArticleList from '@components/article/ArticleList.astro';
 import Container from '@components/common/Container.astro';
-import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
-import logo from '@assets/images/logo-5.svg';
-import logoText from '@assets/images/logo-text.svg';
-import { Image } from 'astro:assets';
 ---
 <Layout>
 	<div class="page">
@@ -59,14 +52,17 @@ import { Image } from 'astro:assets';
 
 	.hero {
 		position: relative;
-		padding: 16rem 0;
+		padding: 16rem 4rem;
 		overflow: hidden;
 		background-color: #f1f6ff;
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-direction: column;
+
+    @include mixin.sp {
+      padding: 6.4rem 1.6rem;
+    }
 
 		h1 {
 			display: flex;
@@ -81,25 +77,44 @@ import { Image } from 'astro:assets';
           letter-spacing: .08em;
           color: var.$c-main-v;
           font-weight: 500;
+
+          @include mixin.sp {
+            font-size: 1.4rem;
+          }
         }
 
         &.jp {
           font-size: 3.6rem;
           font-weight: bold;
           margin-top: .4rem;
+
+          @include mixin.sp {
+            font-size: 2.4rem;
+            margin-top: 0;
+          }
         }
       }
 		}
 	}
 
 	.page {
-		padding: 8rem 0 12rem 0;
+		padding: 8rem 0 0 0;
     background-color: #fff;
+
+    @include mixin.sp {
+      padding: 5.6rem 0 0;
+    }
 
 	}
 
 	.body {
 		padding-top: 12rem;
+    padding-bottom: 12rem;
+
+    @include mixin.sp {
+      padding-top: 6.4rem;
+      padding-bottom: 6.4rem;
+    }
 	}
 	
 	.wrap {
@@ -118,11 +133,19 @@ import { Image } from 'astro:assets';
   .content {
     line-height: 2;
 
+    @include mixin.sp {
+      font-size: 1.4rem;
+    }
+
     h2 {
       font-size: 2.4rem;
       font-weight: bold;
       border-bottom: .2rem solid var.$c-main-v;
       letter-spacing: .08em;
+
+      @include mixin.sp {
+        font-size: 2rem;
+      }
       
     }
 
@@ -164,6 +187,10 @@ import { Image } from 'astro:assets';
 
     h2 {
       margin-top: 8rem;
+
+      @include mixin.sp {
+        margin-top: 4.8rem;
+      }
     }
   }
 	</style>

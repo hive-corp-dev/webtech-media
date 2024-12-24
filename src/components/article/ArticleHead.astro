@@ -48,12 +48,17 @@ import { PiClock, PiClockClockwise } from "react-icons/pi";
   .date {
     display: flex;
     align-items: center;
+    font-size: 1.6rem;
 
     svg {
       font-size: 1.5rem;
       display: flex;
       margin-right: .2rem;
       transform: translateY(.05rem);
+    }
+
+    @include mixin.sp {
+      font-size: 1.3rem;
     }
   }
 
@@ -62,6 +67,11 @@ import { PiClock, PiClockClockwise } from "react-icons/pi";
     font-weight: 700;
     line-height: 1.5;
     margin-top: 2.4rem;
+    
+    @include mixin.sp {
+      font-size: 2.4rem;
+      margin-top: 1.6rem;
+    }
   }
 
   .tags {
@@ -80,6 +90,10 @@ import { PiClock, PiClockClockwise } from "react-icons/pi";
     align-items: center;
     padding: .2rem .8rem;
     border-radius: .3rem;
+
+    @include mixin.sp {
+      font-size: 1.2rem;
+    }
 
     &::before {
       content: '#';

@@ -19,19 +19,33 @@ import { BsInfoCircleFill } from "react-icons/bs";
     color: #1c557b;
     line-height: 2;
 
+    @include mixin.sp {
+      padding: 1.6rem 1.6rem 1.6rem 4.4rem;
+    }
+
     .icon {
       position: absolute;
       left: 2.4rem;
       display: flex;
 
+      @include mixin.sp {
+        left: 1.6rem;
+      }
+
       &.warning {
         font-size: 2rem;
         top: 3rem;
+
+        
       }
 
       &.success {
         font-size: 2rem;
         top: 3rem;
+
+        @include mixin.sp {
+          top: 2rem;
+        }
       }
     }
 

@@ -8,7 +8,7 @@ import { FaTags } from "react-icons/fa";
 import { IoIosPricetags } from "react-icons/io";
 import Toc from './sidebar-widgets/Toc.astro';
 import { MdOutlineToc } from "react-icons/md";
-
+import { RxCross2 } from "react-icons/rx";
 
 const articleEntries = await getCollection('article', ({data}) => {
 	return data.isDraft === false;
@@ -27,12 +27,20 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
     <p class="sidebar__block-title"><FaCrown />人気記事一覧</p>
     <Ranking />
   </div>
-  <div class="sidebar__sticky">
-    <div class="sidebar__block">
+  <div class="sidebar__sticky js-sidebar-sticky">
+    <div class="sidebar__block -toc">
       <p class="sidebar__block-title -toc"><MdOutlineToc />目次</p>
       <Toc />
     </div>
   </div>
+  <button class="toc-btn js-toggle-toc">
+    <div class="toc-icon">
+      <MdOutlineToc />
+    </div>
+    <div class="toc-icon">
+      <RxCross2 />
+    </div>
+  </button>
 </aside>
 
 <style lang="scss">
@@ -43,6 +51,10 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
     flex-direction: column;
     gap: 4rem;
 
+    @include mixin.tab {
+      width: 100%;
+    }
+
     &__sticky {
       position: sticky;
       top: 12rem;
@@ -50,12 +62,36 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
       display: flex;
       flex-direction: column;
       gap: 4rem;
+      height: calc(100vh - 16rem);
+
+      @include mixin.tab {
+        margin-top: 0!important;
+        height: 100%;
+        overflow: auto;
+        background-color: var.$c-white;
+        position: fixed;
+        top: 9.2rem;
+        width: calc(100% - 6.4rem);
+        // padding: 2.4rem 2rem;
+        right: 3.2rem;
+        max-height: calc(100svh - 6.2rem - 6rem);
+        height: 100%;
+        transform: translateX(calc(100% + 6rem));
+        // border: .1rem solid var.$c-gray-l;
+        box-shadow: 0 0 1.6rem rgba(var.$c-text, .1);
+        transition: all .6s;
+      }
     }
 
     &__block {
       background-color: var.$c-white;
       border: .1rem solid var.$c-gray-l;
       padding: 1.6rem 2.4rem 2.4rem;
+
+      &.-toc {
+        height: 100%;
+        overflow-y: auto;
+      }
     }
 
     &__block-title {
@@ -71,6 +107,11 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
       }
 
       &.-toc {
+
+        @include mixin.tab {
+          font-size: 1.4rem;
+        }
+
         svg {
           font-size: 1.8rem;
           transform: translateY(.1rem);
