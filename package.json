@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.2",
+    "@astrojs/partytown": "^2.1.2",
     "@astrojs/react": "^4.1.0",
     "@astrojs/sitemap": "^3.2.1",
     "@fontsource-variable/noto-sans-jp": "^5.1.0",

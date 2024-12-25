@@ -9,6 +9,8 @@ import react from "@astrojs/react";
 
 import sitemap from "@astrojs/sitemap";
 
+import partytown from "@astrojs/partytown";
+
 const rehypePrettyCodeOptions = {
   theme: "slack-dark",
   keepBackground: false,
@@ -43,5 +45,5 @@ export default defineConfig({
     ],
   },
 
-  integrations: [mdx(), react(), sitemap()],
+  integrations: [mdx(), react(), sitemap(), partytown()],
 });
