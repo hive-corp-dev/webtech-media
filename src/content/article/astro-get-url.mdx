@@ -31,11 +31,11 @@ Astroでは便利なグローバルオブジェクトやAPIが提供されてお
 
 まずは現在のページのURLを取得する方法から見ていきましょう。
 
+Astroのグローバルオブジェクトを利用するには、`.astro`ファイル内である必要があります。
+
 ### 方法1. Astro.url.href
 
-Astroのグローバル
-
-<CodeHead lang="astro" />
+<CodeHead lang="astro" name="/src/pages/index.astro" />
 
 ```astro
 ---
@@ -50,3 +50,17 @@ const currentPageUrl = Astro.url.href;
 <BrowserBox name="Astro.url.hrefの実行結果">
   <AstroGetUrlDemo />
 </BrowserBox>
+
+### 方法2. Astro.request.url
+
+<CodeHead lang="astro" name="/src/pages/index.astro" />
+
+```astro
+---
+const currentPageUrl = Astro.url.href;
+---
+
+<div>
+  <p>現在のページのURL: {currentPageUrl}</p>
+</div>
+```
