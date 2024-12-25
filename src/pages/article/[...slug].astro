@@ -8,6 +8,14 @@ import CodeHead from '@components/article/parts/code-head/CodeHead.astro';
 import TestBtn from '@components/article/parts/test-btn/TestBtn.jsx';
 import Breadcrumb from '@components/common/Breadcrumb.astro';
 import ArticleSidebar from '@components/article/ArticleSidebar.astro';
+import { ARTICLE_SINGLE_METADATA } from '@data/metadata';
+import ArticleShare from '@components/article/ArticleShare.astro';
+
+const url = Astro.url.origin;
+const currentPostUrl = Astro.url.href;
+
+console.log(Astro.url, "| Astro.url");
+console.log(new URL(Astro.request.url), "| Astro.request.url");
 
 export async function getStaticPaths() {
   const articleEntries = await getCollection('article');
@@ -17,11 +25,9 @@ export async function getStaticPaths() {
 }
 // 2. テンプレートでは、プロパティからエントリーを直接取得できる
 const { entry } = Astro.props;
-
-const currentUrl = Astro.url;
 ---
 
-<Layout>
+<Layout title={`${entry.data.title} | ${ARTICLE_SINGLE_METADATA.title}`} ogImageUrl={`${url}${entry.data.thumbnail.src}`} description={entry.data.description}>
   <div class="page">
     <Container>
       <Breadcrumb data={[
@@ -34,6 +40,7 @@ const currentUrl = Astro.url;
           <Container type="px-m">
             <ArticleHead title={entry.data.title} thumbnail={entry.data.thumbnail} publishedAt={entry.data.publishedAt} revisedAt={entry.data.revisedAt} tags={entry.data.tags} />
             <ArticleContent entry={entry} components={{CodeHead, TestBtn}} />
+            <ArticleShare postUrl={currentPostUrl} title={entry.data.title} />
           </Container>
         </main>
         <ArticleSidebar />
@@ -98,6 +105,12 @@ const currentUrl = Astro.url;
 
 .page {
   padding: 12rem 0;
+  background-color: var.$c-bg;
+
+  @include mixin.sp {
+    padding-top: 6.4rem;
+    padding-bottom: 6.4rem;
+  }
 }
 
 .wrap {
@@ -105,14 +118,26 @@ const currentUrl = Astro.url;
   justify-content: space-between;
   gap: 4rem;
   margin-top: 2.4rem;
+
+  @include mixin.tab {
+			flex-wrap: wrap;
+		}
 }
 
 .main {
   flex-grow: 1;
   background-color: var.$c-white;
   padding: 6.4rem 0;
-  max-width: 80rem;
+  max-width: 84rem;
   border: 0.1rem solid var.$c-gray-l;
+
+  @include mixin.tab {
+    max-width: 100%;
+  }
+  
+  @include mixin.sp {
+    padding: 2.4rem 0 4rem;
+  }
 }
 
 </style>

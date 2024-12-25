@@ -54,11 +54,19 @@ const sortedTags = sortTagsByKana(tagListData);
   align-items: center;
   font-size: 1.2rem;
 
+  @include mixin.sp {
+    font-size: 1rem;
+  }
+
   svg {
     font-size: 1.3rem;
     display: flex;
     margin-right: .2rem;
     transform: translateY(.05rem);
+
+    @include mixin.sp {
+      font-size: 1.2rem;
+    }
   }
 }
 
@@ -67,6 +75,11 @@ const sortedTags = sortTagsByKana(tagListData);
   font-size: 1.6rem;
   line-height: 1.75;
   margin-top: .8rem;
+
+  @include mixin.sp {
+    margin-top: .4rem;
+    font-size: 1.3rem;
+  }
 }
 
 .tags {
@@ -74,6 +87,10 @@ const sortedTags = sortTagsByKana(tagListData);
   flex-wrap: wrap;
   gap: .8rem;
   margin-top: 1.2rem;
+
+  @include mixin.sp {
+    margin-top: .8rem;
+  }
 }
 
 .tag {
@@ -86,6 +103,11 @@ const sortedTags = sortTagsByKana(tagListData);
   padding: .2rem .6rem;
   border-radius: .3rem;
   transition: all .3s;
+
+  @include mixin.sp {
+    font-size: 1rem;
+    padding: .1rem .4rem;
+  }
 
   &::before {
     content: '#';

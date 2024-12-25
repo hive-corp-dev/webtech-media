@@ -8,17 +8,25 @@ const {type} = Astro.props;
 
 <style lang="scss">
   .container {
-    max-width: 120rem;
+    max-width: 126rem;
     width: 100%;
-    padding: 0 3.2rem;
+    padding: 0 4rem;
     margin: 0 auto;
 
-    // @include mixin.sp {
-    //   padding: 0 2.4rem;
-    // }
+    @include mixin.sp {
+      padding: 0 1.6rem;
+    }
+
+    &.mx-l {
+      max-width: 144rem;
+    }
 
     &.px-m {
       padding: 0 4rem;
+
+      @include mixin.sp {
+        padding: 1.6rem;
+      }
     }
   }
 </style>

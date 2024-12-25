@@ -8,6 +8,7 @@ import {
   IoLogoMarkdown, 
   IoTerminalOutline 
 } from "react-icons/io5";
+import { SiAstro } from "react-icons/si";
 import { SiPhp } from "react-icons/si";
 import styles from "./code-head.module.scss";
 
@@ -31,6 +32,8 @@ const outputLanguageString = (value) => {
       return { name: "Markdown", icon: IoLogoMarkdown };
     case "mdx":
       return { name: "MDX", icon: IoLogoMarkdown };
+    case "astro":
+      return { name: "Astro", icon: SiAstro };
     case "console":
       return { name: "console", icon: IoTerminalOutline };
     default:

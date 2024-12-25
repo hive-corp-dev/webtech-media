@@ -37,6 +37,11 @@ const {title = '執筆時点のバージョン情報', versions} = Astro.props;
   padding: 2.4rem;
   border-radius: 0 0.8rem 0.8rem 0.8rem;
   box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+
+  @include mixin.sp {
+    padding: 1.6rem;
+  }
 }
 
 .title {
@@ -47,6 +52,10 @@ const {title = '執筆時点のバージョン情報', versions} = Astro.props;
   color: var.$c-white;
   background-color: #222;
   line-height: 1.5;
+
+  @include mixin.sp {
+    font-size: 1rem;
+  }
 }
 
 .line {
@@ -54,10 +63,15 @@ const {title = '執筆時点のバージョン情報', versions} = Astro.props;
   gap: 1rem;
   font-family: var.$font-editor;
   line-height: 1.5;
+  white-space: nowrap;
 }
 
 .package-name {
   font-size: 1.3rem;
+
+  @include mixin.sp {
+    font-size: 1.2rem;
+  }
 }
 
 .version {
@@ -65,6 +79,10 @@ const {title = '執筆時点のバージョン情報', versions} = Astro.props;
   font-size: 1.3rem;
   color: #555;
   color: var.$c-white;
+
+  @include mixin.sp {
+    font-size: 1.2rem;
+  }
 }
 
 </style>

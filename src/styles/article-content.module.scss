@@ -4,8 +4,20 @@
   line-height: 2.25;
 
   @include mixin.sp {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     line-height: 2;
+  }
+
+  strong {
+    font-weight: bold;
+    background-image: linear-gradient(to right, #ffd65a, #ffd65a);
+    background-size: 100% 0.3rem;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+
+    @include mixin.sp {
+      background-size: 100% 0.2rem;
+    }
   }
 
   h2,
@@ -15,6 +27,10 @@
   h6 {
     font-weight: bold;
     line-height: 1.75;
+
+    @include mixin.sp {
+      line-height: 1.5;
+    }
   }
 
   h2 {
@@ -25,28 +41,49 @@
     // background-image: linear-gradient(to right bottom, #006ce8, #31b3ff);
     padding: 0.8rem 1.6rem;
     color: #fff;
+
+    @include mixin.sp {
+      font-size: 2rem;
+    }
   }
 
   h3 {
     font-size: 2.4rem;
     padding: 0 1.2rem;
     border-left: 0.4rem solid var.$c-main;
+
+    @include mixin.sp {
+      font-size: 1.8rem;
+      border-left-width: 0.3rem;
+    }
   }
 
   h4 {
     font-size: 2.2rem;
     background-color: #f3f3fa;
     padding: 0.8rem 1.2rem;
+
+    @include mixin.sp {
+      font-size: 1.6rem;
+    }
   }
 
   h5 {
     font-size: 2rem;
     border-bottom: 0.2rem solid #e8edf2;
     padding-bottom: 0.8rem;
+
+    @include mixin.sp {
+      font-size: 1.5rem;
+    }
   }
 
   h6 {
     font-size: 1.8rem;
+
+    @include mixin.sp {
+      font-size: 1.4rem;
+    }
   }
 
   ul {
@@ -66,8 +103,41 @@
         top: 1.2rem;
         width: 0.6rem;
         height: 0.6rem;
-        background-color: var.$c-text;
+        background-color: var.$c-main-v;
         border-radius: 50%;
+
+        @include mixin.sp {
+          top: 1rem;
+        }
+      }
+
+      strong {
+        background-image: none;
+      }
+    }
+  }
+
+  ol:not([class]) {
+    background-color: #f9f9fc;
+    padding: 2.4rem;
+    border: 1px solid var.$c-gray-l;
+    counter-reset: li;
+
+    @include mixin.sp {
+      padding: 1.6rem;
+    }
+
+    li {
+      position: relative;
+      padding-left: 1.5em;
+      line-height: 1.75;
+
+      &::before {
+        counter-increment: li;
+        content: counter(li) ".";
+        position: absolute;
+        left: 0;
+        top: 0;
       }
 
       strong {
@@ -90,6 +160,8 @@
     letter-spacing: 0;
     align-self: center;
     color: #1b85ff;
+    color: var.$c-main-v;
+    word-break: break-all;
   }
 
   a:not([class]) {
@@ -102,6 +174,17 @@
         opacity: 0.7;
       }
     }
+  }
+
+  input,
+  select {
+    border: 0.1rem solid var.$c-text;
+    padding: 0.4rem;
+    line-height: 1.5;
+  }
+
+  select {
+    appearance: auto;
   }
 
   // margins
@@ -123,18 +206,34 @@
 
   h3 {
     margin-top: 8rem;
+
+    @include mixin.sp {
+      margin-top: 4.8rem;
+    }
   }
 
   h4 {
     margin-top: 6.4rem;
+
+    @include mixin.sp {
+      margin-top: 4rem;
+    }
   }
 
   h5 {
     margin-top: 6.4rem;
+
+    @include mixin.sp {
+      margin-top: 4rem;
+    }
   }
 
   h6 {
     margin-top: 6.4rem;
+
+    @include mixin.sp {
+      margin-top: 4rem;
+    }
   }
 
   ul,

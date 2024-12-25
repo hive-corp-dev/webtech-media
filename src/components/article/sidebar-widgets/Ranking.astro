@@ -38,6 +38,26 @@ const sortedRankedArticles = rankingPostIds.map(id =>
     flex-direction: column;
     gap: 2.4rem;
 
+    @include mixin.tab {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap :4rem;
+    }
+
+    @include mixin.sp {
+      gap: 2.4rem;
+    }
+
+    &__item {
+      @include mixin.tab {
+        width: calc(50% - 2rem);
+      }
+
+      @include mixin.sp {
+        width: 100%;
+     }
+    }
+
     &__title {
       font-size: 1.3rem;
       font-weight: bold;

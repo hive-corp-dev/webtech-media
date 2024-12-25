@@ -46,7 +46,7 @@ const {data} = Astro.props;
   &__item {
     display: flex;
     align-items: center;
-  display: inline;
+    display: inline;
 
     &::after {
       content: '';
@@ -59,6 +59,12 @@ const {data} = Astro.props;
       background-repeat: no-repeat;
       margin: 0 .4rem;
       transform: translateY(.1rem);
+
+      @include mixin.sp {
+        width: 1rem;
+        height: 1.2rem;
+        margin: 0 .2rem;
+      }
     }
 
     &:last-child {
@@ -89,6 +95,10 @@ const {data} = Astro.props;
       color: #333;
       font-size: 1.4rem;
       transition: all .3s;
+
+      @include mixin.sp {
+        font-size: 1.2rem;
+      }
     }
 
     @include mixin.hover {
@@ -102,6 +112,10 @@ const {data} = Astro.props;
   &__text {
     display: inline;
     font-size: 1.4rem;
+
+    @include mixin.sp {
+      font-size: 1.2rem;
+    }
   }
 }
 </style>
