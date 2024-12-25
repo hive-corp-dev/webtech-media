@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import rehypePrettyCode from "rehype-pretty-code";
+import remarkLinkCard from "remark-link-card";
 
 import mdx from "@astrojs/mdx";
 
@@ -13,6 +14,7 @@ const rehypePrettyCodeOptions = {
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://webtech-media.jp/",
   vite: {
     css: {
       preprocessorOptions: {
@@ -28,6 +30,15 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: false,
     rehypePlugins: [[rehypePrettyCode, rehypePrettyCodeOptions]],
+    remarkPlugins: [
+      [
+        remarkLinkCard,
+        {
+          cache: true,
+          shortenUrl: false,
+        },
+      ],
+    ],
   },
 
   integrations: [mdx(), react()],

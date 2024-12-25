@@ -11,10 +11,13 @@ import InfoBox from './parts/info-box/InfoBox.astro';
 import NpmVersions from './parts/npm-versions/NpmVersions.astro';
 import Spacer from './parts/spacer/Spacer.astro';
 import BrowserBox from './parts/browser-box/BrowserBox.astro';
+import AstroGetUrlDemo from "@article/components/astro-get-url/AstroGetUrlDemo.astro";
+import AstroGetUrlDemoRequest from '@article/components/astro-get-url/AstroGetUrlDemoRequest.astro';
+import AstroGetUrlDemoObj from '@article/components/astro-get-url/AstroGetUrlDemoObj.astro';
 ---
 
 <div class:list={["content", styles.content]} id="article-content">
-  <Content components={{...components, pre: Pre, Img, ImgCaption, OuterLink, ArticleToc, InfoBox, NpmVersions, Spacer, BrowserBox}} />
+  <Content components={{...components, pre: Pre, Img, ImgCaption, OuterLink, ArticleToc, InfoBox, NpmVersions, Spacer, BrowserBox, AstroGetUrlDemo, AstroGetUrlDemoRequest, AstroGetUrlDemoObj}} />
 </div>
 
 <style lang="scss" is:global>
@@ -85,6 +88,95 @@ figure[data-rehype-pretty-code-figure] {
         width: 1.75rem;
         color: rgba(#fff, 0.2);
       }
+    }
+  }
+}
+
+.rlc-container {
+  width: 100%;
+  max-width: 100%;
+  min-height: 11rem;
+  border: .1rem solid var.$c-gray-l;
+  background-color: var.$c-gray-l-2;
+  border-radius: .3rem;
+  display: flex;
+  text-decoration: none;
+  overflow: hidden;
+  transition: background-color .3s;
+
+  @include mixin.hover {
+    &:hover {
+      background-color: var.$c-gray-l;
+    }
+  }
+  
+  .rlc-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 1;
+    padding: 1.6rem;
+    width: 70%;
+
+    .rlc-title {
+      width: 100%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+    }
+
+    .rlc-description {
+      font-size: 1rem;
+      color: #737373;
+      margin-bottom: 0.5em;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+    }
+    .rlc-url-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      .rlc-favicon {
+        margin-top: 0.15rem;
+        margin-bottom: 0;
+      }
+      .rlc-url {
+        font-size: 1rem;
+        color: #525252;
+        @media (prefers-color-scheme: dark) {
+          color: #d4d4d4;
+        }
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        -webkit-line-clamp: 1;
+      }
+      .rlc-favicon {
+        width: 1.6rem;
+      }
+    }
+  }
+  .rlc-image-container {
+    position: relative;
+    aspect-ratio: 1.91 / 1;
+    flex-shrink: 0;
+    width: 30%;
+
+    .rlc-image {
+      object-fit: cover;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
   }
 }

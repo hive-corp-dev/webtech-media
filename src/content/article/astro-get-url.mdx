@@ -7,8 +7,6 @@ publishedAt: 2024-12-24T10:00:00Z
 thumbnail: "./images/astro-get-url/thumb.png"
 ---
 
-import AstroGetUrlDemo from "@article/components/astro-get-url/AstroGetUrlDemo.astro";
-
 AstroでWebサイトを構築する際に、現在のページのパスやURLを取得したい場合がありますね。
 
 Astroでは便利なグローバルオブジェクトやAPIが提供されており、それらを活用することで簡単に現在のページのURLを取得することができます。
@@ -33,7 +31,11 @@ Astroでは便利なグローバルオブジェクトやAPIが提供されてお
 
 Astroのグローバルオブジェクトを利用するには、`.astro`ファイル内である必要があります。
 
-### 方法1. Astro.url.href
+そのため、`.astro`ファイル内で以下のコードを実行してください。
+
+### 方法1. Astro.url.hrefを使用する
+
+1つ目は、`Astro.url.href`を使用する方法です。
 
 <CodeHead lang="astro" name="/src/pages/index.astro" />
 
@@ -46,21 +48,73 @@ const currentPageUrl = Astro.url.href;
   <p>現在のページのURL: {currentPageUrl}</p>
 </div>
 ```
+
+このコードを実行すると、以下のような結果になります。
 
 <BrowserBox name="Astro.url.hrefの実行結果">
   <AstroGetUrlDemo />
 </BrowserBox>
 
-### 方法2. Astro.request.url
+現在のページのURLが正しく表示されていますね。
+
+`Astro.url`は<OuterLink href="https://developer.mozilla.org/ja/docs/Web/API/URL">URLオブジェクト</OuterLink>を返すので、`href`以外にも`origin`や`pathname`などのプロパティを利用することもできます。
+
+詳しくは、Astroの公式ドキュメントを参照してください。
+
+https://docs.astro.build/en/reference/api-reference/#url
+
+### 方法2. Astro.request.urlを使用する
+
+2つ目は、`Astro.request.url`を使用する方法です。
 
 <CodeHead lang="astro" name="/src/pages/index.astro" />
 
 ```astro
 ---
-const currentPageUrl = Astro.url.href;
+const currentPageUrl = Astro.request.url;
 ---
 
 <div>
   <p>現在のページのURL: {currentPageUrl}</p>
 </div>
 ```
+
+こちらの実行結果は以下の通りです。
+
+<BrowserBox name="Astro.request.urlの実行結果">
+  <AstroGetUrlDemoRequest />
+</BrowserBox>
+
+先ほどと同様に、現在のページのURLが正しく表示されています。
+
+`Astro.request`は<OuterLink href="https://developer.mozilla.org/en-US/docs/Web/API/Request">Requestオブジェクト</OuterLink>を返すので、`url`以外にも`method`や`headers`などのプロパティを利用することもできます。
+
+https://docs.astro.build/en/reference/api-reference/#request
+
+## Astroで現在のページのホスト名やパス等を取得する
+
+次に、現在のページのホスト名やパスを取得する方法を見ていきましょう。
+
+表示中のページのドメイン名は、`Astro.url.origin`で、パスは`Astro.url.pathname`を使用することで取得できます。
+
+<CodeHead lang="astro" name="/src/pages/index.astro" />
+
+```astro
+---
+const currentPageOrigin = Astro.url.origin;
+const currentPageHostname = Astro.url.hostname;
+const currentPagePathname = Astro.url.pathname;
+---
+
+<div>
+  <p>現在のページのオリジン: {currentPageOrigin}</p>
+  <p>現在のページのホスト名: {currentPageHostname}</p>
+  <p>現在のページのパス: {currentPagePathname}</p>
+</div>
+```
+
+<BrowserBox name="Astro.request.urlの実行結果">
+  <AstroGetUrlDemoObj />
+</BrowserBox>
+
+## 本番環境でURLが正しく取得されない場合
