@@ -7,6 +7,8 @@ publishedAt: 2024-12-24T10:00:00Z
 thumbnail: "./images/astro-get-url/thumb.png"
 ---
 
+import AstroGetUrlDemo from "@article/components/astro-get-url/AstroGetUrlDemo.astro";
+
 AstroでWebサイトを構築する際に、現在のページのパスやURLを取得したい場合がありますね。
 
 Astroでは便利なグローバルオブジェクトやAPIが提供されており、それらを活用することで簡単に現在のページのURLを取得することができます。
@@ -39,12 +41,12 @@ Astroのグローバル
 ---
 const currentPageUrl = Astro.url.href;
 ---
+
+<div>
+  <p>現在のページのURL: {currentPageUrl}</p>
+</div>
 ```
 
-<CodeHead lang="js" />
-
-```js
----
-const front = 'front';
----
-```
+<BrowserBox name="Astro.url.hrefの実行結果">
+  <AstroGetUrlDemo />
+</BrowserBox>
