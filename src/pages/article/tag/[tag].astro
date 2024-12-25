@@ -7,6 +7,7 @@ import Breadcrumb from '@components/common/Breadcrumb.astro';
 import {tagPaths, getTagListBySlugs, getTagDataBySlug} from '@utils/article-tags';
 import { getSortedPosts } from '@utils/article';
 import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
+import { TAG_SINGLE_METADATA } from '@data/metadata';
 
 export async function getStaticPaths() {
   const articleEntries = await getCollection('article', ({data}) => {
@@ -41,13 +42,12 @@ const {posts} = Astro.props;
 const sortedArticles = getSortedPosts(posts);
 ---
 
-<Layout>
+<Layout title={`タグ:${getTagDataBySlug(tag).label}の記事一覧 | ${TAG_SINGLE_METADATA.title}`} description={`タグ:${getTagDataBySlug(tag).label}に属する記事一覧です。`}>
 	<div class="page">
 		<div class="hero">
 			<h1>
-			 <span class="en">TAG ARTICLES</span>
-			 <span class="jp">タグ: {getTagDataBySlug(tag).label}</span>
-       <span class="tag"></span>
+			 <span class="en">TAGGED ARTICLES</span>
+			 <span class="jp">タグ:{getTagDataBySlug(tag).label}</span>
 		 </h1>
 	 </div>
 	 <div class="body">
@@ -75,11 +75,14 @@ const sortedArticles = getSortedPosts(posts);
 		padding: 16rem 4rem;
 		overflow: hidden;
 		background-color: #f1f6ff;
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-direction: column;
+
+		@include mixin.sp {
+      padding: 6.4rem 1.6rem;
+    }
 
 		h1 {
 			display: flex;
@@ -94,12 +97,21 @@ const sortedArticles = getSortedPosts(posts);
           letter-spacing: .08em;
           color: var.$c-main-v;
           font-weight: 500;
+
+					@include mixin.sp {
+            font-size: 1.4rem;
+          }
         }
 
         &.jp {
           font-size: 3.6rem;
           font-weight: bold;
           margin-top: .4rem;
+
+					@include mixin.sp {
+            font-size: 2.4rem;
+            margin-top: 0;
+          }
         }
 
         &.tag {
@@ -113,6 +125,10 @@ const sortedArticles = getSortedPosts(posts);
 
 	.page {
 		padding: 8rem 0 0;
+
+		@include mixin.sp {
+      padding: 5.6rem 0 0;
+    }
 	}
 
 	.body {
@@ -120,6 +136,10 @@ const sortedArticles = getSortedPosts(posts);
 		padding-bottom: 12rem;
 		border-top: .1rem solid var.$c-gray-l;
 		background-image: linear-gradient(to bottom, var.$c-white 0, var.$c-gray-l 100%);
+
+		@include mixin.sp {
+      padding-bottom: 6.4rem;
+    }
 	}
 	
 	.wrap {
@@ -127,10 +147,18 @@ const sortedArticles = getSortedPosts(posts);
 		justify-content: space-between;
 		gap: 4rem;
 		margin-top: 2.4rem;
+
+		@include mixin.tab {
+			flex-wrap: wrap;
+		}
 	}
 	
 	.main {
 		flex-grow: 1;
 		max-width: 84rem;
+
+		@include mixin.tab {
+			max-width: 100%;
+		}
 	}
 	</style>

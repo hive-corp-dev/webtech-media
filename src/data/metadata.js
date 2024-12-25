@@ -29,3 +29,8 @@ export const CONTACT_METADATA = {
   title: `お問い合わせ | ${SITE_NAME}`,
   description: "WebTech Mediaのお問い合わせページです。",
 };
+
+export const NOT_FOUND_METADATA = {
+  title: `お探しのページは見つかりませんでした。 | ${SITE_NAME}`,
+  description: "お探しのページは見つかりませんでした。",
+};

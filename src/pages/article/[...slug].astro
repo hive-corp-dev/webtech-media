@@ -14,6 +14,9 @@ import ArticleShare from '@components/article/ArticleShare.astro';
 const url = Astro.url.origin;
 const currentPostUrl = Astro.url.href;
 
+console.log(Astro.url, "| Astro.url");
+console.log(new URL(Astro.request.url), "| Astro.request.url");
+
 export async function getStaticPaths() {
   const articleEntries = await getCollection('article');
   return articleEntries.map(entry => ({

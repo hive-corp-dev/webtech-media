@@ -1,0 +1,48 @@
+---
+isDraft: false
+title: "Astroで現在のページのパスやURLを取得する方法"
+description: ""
+tags: ["astro"]
+publishedAt: 2024-12-24T10:00:00Z
+thumbnail: "./images/astro-get-url/thumb.png"
+---
+
+AstroでWebサイトを構築する際に、現在のページのパスやURLを取得したい場合がありますね。
+
+Astroでは便利なグローバルオブジェクトやAPIが提供されており、それらを活用することで簡単に現在のページのURLを取得することができます。
+
+本記事では、AstroのランタイムAPIを活用して、**現在のページのパスやURLを取得する具体的な方法**について解説します。
+
+<ArticleToc />
+
+## 動作環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions versions={[{ name: "astro", version: "5.0.5" }]} />
+
+<InfoBox type="success">
+  バージョンが異なると当記事で紹介している通りに動作しない可能性があるので、ご注意ください。
+</InfoBox>
+
+## Astroで現在のページのURLを取得する
+
+まずは現在のページのURLを取得する方法から見ていきましょう。
+
+### 方法1. Astro.url.href
+
+<CodeHead lang="astro" />
+
+```astro
+---
+const currentPageUrl = Astro.url.href;
+---
+```
+
+<CodeHead lang="js" />
+
+```js
+---
+const front = 'front';
+---
+```

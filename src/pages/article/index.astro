@@ -47,15 +47,14 @@ const sortedArticles = getSortedPosts(articles);
 		padding: 16rem 4rem;
 		overflow: hidden;
 		background-color: #f1f6ff;
-
-		@include mixin.sp {
-      padding: 6.4rem 1.6rem;
-    }
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-direction: column;
+
+		@include mixin.sp {
+      padding: 6.4rem 1.6rem;
+    }
 
 		h1 {
 			display: flex;

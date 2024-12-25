@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import { formatDate } from '@utils/date';
 import { getTagDataBySlug } from '@utils/article-tags';
 import { PiClock, PiClockClockwise } from "react-icons/pi";
+import { getTagArchiveUrl } from '@utils/article-tags';
 ---
 
 <div class="article-head">
@@ -26,7 +27,7 @@ import { PiClock, PiClockClockwise } from "react-icons/pi";
         const tagData = getTagDataBySlug(tag);
 
         return (
-          <a class="tag">{tagData.label}</a>
+          <a class="tag" href={getTagArchiveUrl(tag)}>{tagData.label}</a>
         )
       })
     }
@@ -48,10 +49,10 @@ import { PiClock, PiClockClockwise } from "react-icons/pi";
   .date {
     display: flex;
     align-items: center;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
 
     svg {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       display: flex;
       margin-right: .2rem;
       transform: translateY(.05rem);

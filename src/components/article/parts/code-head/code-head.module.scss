@@ -14,6 +14,7 @@
 
   @include mixin.sp {
     padding: 1.2rem;
+    border-radius: 0.4rem 0.4rem 0 0;
   }
 }
 
@@ -93,6 +94,11 @@
 
   &[data-lang="jsx"] {
     color: #82f3ff;
+  }
+
+  &[data-lang="astro"] {
+    font-size: 1.3rem;
+    transform: translateY(0.1rem);
   }
 
   &[data-lang="md"] {
