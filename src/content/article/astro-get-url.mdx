@@ -39,7 +39,7 @@ Astroのグローバルオブジェクトを利用するには、`.astro`ファ�
 
 <CodeHead lang="astro" name="/src/pages/index.astro" />
 
-```astro
+```astro showLineNumbers
 ---
 const currentPageUrl = Astro.url.href;
 ---
@@ -69,7 +69,7 @@ https://docs.astro.build/en/reference/api-reference/#url
 
 <CodeHead lang="astro" name="/src/pages/index.astro" />
 
-```astro
+```astro showLineNumbers
 ---
 const currentPageUrl = Astro.request.url;
 ---
@@ -95,14 +95,17 @@ https://docs.astro.build/en/reference/api-reference/#request
 
 次に、現在のページのホスト名やパスを取得する方法を見ていきましょう。
 
-表示中のページのドメイン名は、`Astro.url.origin`で、パスは`Astro.url.pathname`を使用することで取得できます。
+これらは`Astro.url`オブジェクトのプロパティを利用することで取得できます。
 
 <CodeHead lang="astro" name="/src/pages/index.astro" />
 
-```astro
+```astro showLineNumbers
 ---
+// オリジン: プロトコル + ホスト名
 const currentPageOrigin = Astro.url.origin;
+// ホスト名: ドメイン名
 const currentPageHostname = Astro.url.hostname;
+// パス: ドメイン名以降のパス
 const currentPagePathname = Astro.url.pathname;
 ---
 
@@ -113,8 +116,39 @@ const currentPagePathname = Astro.url.pathname;
 </div>
 ```
 
+以下は上記のコードの実行結果です。
+
 <BrowserBox name="Astro.request.urlの実行結果">
   <AstroGetUrlDemoObj />
 </BrowserBox>
 
+他にも取得できるプロパティはいくつかありますので、詳しくは<OuterLink href="https://docs.astro.build/en/reference/api-reference/#url">公式ドキュメント</OuterLink>を参照してください。
+
 ## 本番環境でURLが正しく取得されない場合
+
+上記で紹介したコードを使用しても、本番環境で`localhost`のURLが取得される場合があります。
+
+この場合は、**`astro.config.mjs`ファイルに記載すべき設定が抜けている可能性**があります。
+
+### astro.config.mjsに設定を追加する
+
+本番環境で正式なURLを取得するためには、`astro.config.mjs`ファイルに以下の設定を追加してください。
+
+<CodeHead lang="js" name="/astro.config.mjs" />
+
+```js showLineNumbers
+import { defineConfig } from "astro/config";
+
+export default defineConfig({
+  site: "https://your-production-url.com",
+  // 他の設定...
+});
+```
+
+上記の通り、`site`プロパティに本番環境のURLを指定することで、本番環境で正式なURLを取得できるようになります。
+
+## まとめ：Astroで現在のページのパスやURLを取得する方法
+
+Astroでは、`Astro.url`や`Astro.request`を利用することで、簡単に現在のページのURLやパスを取得することができます。
+
+これらのAPIは`.astro`ファイル内でのみ利用可能なので、URLやパスを取得する際はぜひ活用してみてください。
