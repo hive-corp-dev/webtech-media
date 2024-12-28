@@ -37,6 +37,8 @@ const sortedRankedArticles = rankingPostIds.map(id =>
     display: flex;
     flex-direction: column;
     gap: 2.4rem;
+    counter-reset: ranking;
+
 
     @include mixin.tab {
       flex-direction: row;
@@ -49,6 +51,9 @@ const sortedRankedArticles = rankingPostIds.map(id =>
     }
 
     &__item {
+      position: relative;
+      counter-increment: ranking;
+
       @include mixin.tab {
         width: calc(50% - 2rem);
       }
@@ -56,6 +61,48 @@ const sortedRankedArticles = rankingPostIds.map(id =>
       @include mixin.sp {
         width: 100%;
      }
+
+    &::before {
+        content: counter(ranking);
+        width: 2.4rem;
+        height: 2.4rem;
+        background-color: #5e5e5e;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        font-family: var.$font-en;
+        font-weight: bold;
+        font-size: 1.4rem;
+        color:white;
+
+        @include mixin.sp {
+          font-size: 1.2rem;
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      &:nth-child(1) {
+        &::before {
+          background-color: rgb(255, 191, 0);
+        }
+      }
+
+      &:nth-child(2) {
+        &::before {
+          background-color: silver;
+        }
+      }
+
+      &:nth-child(3) {
+        &::before {
+          background-color: #cd7f32;
+        }
+      }
     }
 
     &__title {
