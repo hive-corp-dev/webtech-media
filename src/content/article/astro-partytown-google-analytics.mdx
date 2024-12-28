@@ -1,0 +1,206 @@
+---
+isDraft: false
+title: "【Astro】Google Analytics 4を導入 & Partytownで効率的に読み込む方法"
+description: "AstroにGoogle Analytics 4を導入する方法を解説します。遅延読み込みライブラリ「Partytown」で、パフォーマンスを向上させる方法を紹介します。"
+tags: ["astro", "google-analytics", "partytown"]
+publishedAt: 2024-12-28T20:00:00Z
+thumbnail: "./images/astro-partytown-google-analytics/thumb.png"
+---
+
+import imgGaCode from "@article/images/astro-partytown-google-analytics/ga-tracking-code.png";
+import imgPtDiagram from "@article/images/astro-partytown-google-analytics/partytown-diagram.png";
+
+当記事では、Astroで作成したサイトに<OuterLink href="https://marketingplatform.google.com/about/analytics/">Google Analytics 4</OuterLink>を導入する方法を解説します。
+
+また、パフォーマンス向上のために、遅延読み込みライブラリ「<OuterLink href='https://partytown.builder.io/'>Partytown</OuterLink>」を使用する方法もあわせて紹介します。
+
+## 開発環境のバージョン
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions
+  versions={[
+    { name: "astro", version: "5.0.5" },
+    { name: "@astrojs/partytown", version: "2.1.2" },
+  ]}
+/>
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## AstroでGoogle Analytics 4を導入する方法
+
+ここからは、実際のGoogle Analytics 4の導入方法を説明していきます。
+
+1. Google Analytics 4のトラッキングコードを取得する
+2. Partytownをインストールする
+3. Google Analyticsのastroコンポーネントを作成する
+4. Layout.astroのheadタグにコンポーネントを埋め込む
+
+### 1. Google Analytics 4のトラッキングコードを取得
+
+まずは、Google Analytics 4のトラッキングコードを取得します。
+
+詳細な説明は割愛しますが、<OuterLink href="https://marketingplatform.google.com/about/analytics/">Google Analytics 4</OuterLink>のページからサービスの登録やプロパティの作成を行い、トラッキングコードを取得してください。
+
+トラッキングコードは、以下のような形式で提供されます。
+
+<Img src={imgGaCode} alt="Environment Variablesの設定画面" type="border" />
+
+### 2. Partytownをインストールする
+
+次に、<OuterLink href='https://partytown.builder.io/'>Partytown</OuterLink>という遅延読み込みライブラリをインストールします。
+
+#### Partytownとは？
+
+Partytownは、**Webサイトを表示する際に重くなりがちな外部スクリプトを別の場所で動かして、ページのパフォーマンスを向上させるライブラリ**です。
+
+DOMの描画やイベント処理を担当するメインスレッドではなく、ウェブワーカーという別のスレッドでスクリプトを実行することで、ページの読み込み速度を向上させる仕組みです。
+
+Partytownのドキュメント内の以下の図がわかりやすく説明されています。
+
+<ImgCaption src={imgPtDiagram} type="border" alt="Partytownの仕組み">
+  <OuterLink href="https://partytown.builder.io/#web-workers">Web Workers | Welcome To Partytown</OuterLink>
+</ImgCaption>
+
+さらに詳しく知りたい方は、Partytownの公式ドキュメントを参照してください。
+
+https://partytown.builder.io/
+
+#### Partytownの導入方法
+
+Astroの<OuterLink href='https://docs.astro.build/en/guides/integrations-guide/partytown/'>公式ページ</OuterLink>でもPartytownの導入方法が紹介されていますが、こちらで簡単に紹介しておきます。
+
+<CodeHead lang="console" />
+
+```console showLineNumbers
+npx astro add partytown
+```
+
+上記のコマンドを実行すると、自動的に`astro.config.mjs`にPartytownの設定が追加されます。
+
+<CodeHead lang="js" name="astro.config.mjs" />
+
+```js showLineNumbers
+import { defineConfig } from "astro/config";
+import partytown from "@astrojs/partytown";
+
+export default defineConfig({
+  // ...
+  integrations: [partytown()],
+});
+```
+
+Partytownの導入は以上で完了です。
+
+他の方法でPartytownを導入したい場合は、以下の公式ドキュメントを参照してください。
+
+https://docs.astro.build/en/guides/integrations-guide/partytown/
+
+### 3. Google Analyticsのastroコンポーネントを作成する
+
+続いては、Google Analyticsのastroコンポーネントを作成します。
+
+任意のディレクトリに、`GoogleAnalytics.astro`というファイルを作成し、以下のコードを記述します。
+
+<CodeHead lang="astro" name="/src/components/GoogleAnalytics.astro" />
+
+```astro
+<!-- Google tag (gtag.js) -->
+<script type="text/partytown" async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script type="text/partytown">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+```
+
+`G-XXXXXXXXXX`の部分には、先ほど取得したGoogle Analytics 4のトラッキングIDを入力してください。
+
+トラッキングIDは、`G-`から始まる文字列です。
+
+また、`script`タグには`type="text/partytown"`を指定してください。
+
+こうすることで、**スクリプトがメインスレッドではなくウェブワーカーで実行される**ようになります。
+
+### 4. Layout.astroのheadタグにコンポーネントを埋め込む
+
+最後に、作成したコンポーネントを`Layout.astro`の`head`タグ内に埋め込みます。
+
+<CodeHead lang="astro" name="/src/layouts/Layout.astro" />
+
+```astro showLineNumbers {2, 12}
+---
+import GoogleAnalytics from 'path/GoogleAnalytics.astro';
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <GoogleAnalytics />
+  </head>
+  <body>
+  {/* bodyのコンテンツが入ります */}
+  </body>
+</html>
+```
+
+#### 本番環境でのみGoogle Analyticsを読み込む
+
+このままでは開発環境でもトラッキングコードが読み込まれてしまうので、Astroの環境変数を使用して、**本番環境でのみコンポーネントを読み込む**ようにします。
+
+Astroでは、本番環境かどうかを判定するための環境変数がデフォルトで用意されているので、それを使用します。
+
+<CodeHead lang="astro" />
+
+```astro showLineNumbers
+---
+const isProd = import.meta.env.PROD; // 本番環境の場合はtrue、それ以外はfalse
+---
+```
+
+`import.meta.env.PROD`は、本番環墫かどうかを判定するための環境変数です。
+
+本番環境の場合は`true`、それ以外は`false`を返すので、これを先ほどの`Layout.astro`に組み込みます。
+
+<CodeHead lang="astro" name="/src/layouts/Layout.astro" />
+
+```astro showLineNumbers {3, 13}
+---
+import GoogleAnalytics from 'path/GoogleAnalytics.astro';
+const isProd = import.meta.env.PROD;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    {isProd && <GoogleAnalytics />}
+  </head>
+  <body>
+  {/* bodyのコンテンツが入ります */}
+  </body>
+</html>
+```
+
+これで、本番環境のみGoogle Analytics 4のトラッキングコードが読み込まれるようになりました。
+
+以上でGoogle Analyticsの導入は完了です！
+
+## まとめ：AstroでGoogle Analytics 4を導入 & Partytownで効率的に読み込む方法
+
+今回は、AstroでGoogle Analytics 4を導入する方法を解説しました。
+
+また、Partytownを利用することで、表示パフォーマンスを損なうことなく読み込む方法も紹介しました。
+
+AstroのサイトにGoogle Analytics 4の導入を検討している方は、ぜひ参考にしてみてください。

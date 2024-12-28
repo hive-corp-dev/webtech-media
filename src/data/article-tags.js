@@ -31,4 +31,8 @@ export const articleTags = [
     slug: "jamstack",
     label: "Jamstack",
   },
+  {
+    slug: "partytown",
+    label: "Partytown",
+  },
 ];

@@ -138,6 +138,7 @@
         position: absolute;
         left: 0;
         top: 0;
+        color: var.$c-main-v;
       }
 
       strong {
@@ -161,6 +162,7 @@
     align-self: center;
     color: #1b85ff;
     color: var.$c-main-v;
+    color: var.$c-code-option;
     word-break: break-all;
   }
 

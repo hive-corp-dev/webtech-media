@@ -10,7 +10,17 @@ const articleCollection = defineCollection({
       title: z.string(),
       description: z.string(),
       tags: z.array(
-        z.enum(["next-js", "css", "microsoft-clarity", "google-analytics", "astro", "vercel", "netlify", "jamstack"])
+        z.enum([
+          "next-js",
+          "css",
+          "microsoft-clarity",
+          "google-analytics",
+          "astro",
+          "vercel",
+          "netlify",
+          "jamstack",
+          "partytown",
+        ])
       ),
       publishedAt: z.date(),
       revisedAt: z.date().optional(),
