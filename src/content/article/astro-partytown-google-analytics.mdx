@@ -14,6 +14,8 @@ import imgPtDiagram from "@article/images/astro-partytown-google-analytics/party
 
 また、パフォーマンス向上のために、遅延読み込みライブラリ「<OuterLink href='https://partytown.builder.io/'>Partytown</OuterLink>」を使用する方法もあわせて紹介します。
 
+<ArticleToc />
+
 ## 開発環境のバージョン
 
 当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
@@ -166,7 +168,7 @@ const isProd = import.meta.env.PROD; // 本番環境の場合はtrue、それ以
 ---
 ```
 
-`import.meta.env.PROD`は、本番環墫かどうかを判定するための環境変数です。
+`import.meta.env.PROD`は、本番環境かどうかを判定するための環境変数です。
 
 本番環境の場合は`true`、それ以外は`false`を返すので、これを先ほどの`Layout.astro`に組み込みます。
 

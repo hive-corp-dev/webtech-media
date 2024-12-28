@@ -6,6 +6,7 @@ import Footer from '@components/Footer.astro';
 import HamburgerMenu from '@components/HamburgerMenu.astro';
 import Seo from '@components/Seo.astro';
 import GoogleAnalytics from '@components/meta/GoogleAnalytics.astro';
+import Clarity from '@components/meta/Clarity.astro';
 
 import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/500.css';
@@ -30,6 +31,9 @@ const isProduction = import.meta.env.PROD;
 		<Seo title={title} description={description} ogImageUrl={ogImageUrl} ogType={ogType} noindex={noindex} nofollow={nofollow} />
 		{
 			isProduction && <GoogleAnalytics />
+		}
+		{
+			isProduction && <Clarity />
 		}
 	</head>
 	<body>

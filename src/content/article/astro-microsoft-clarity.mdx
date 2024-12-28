@@ -1,0 +1,207 @@
+---
+isDraft: false
+title: "AstroにMicrosoft Clarityを導入する方法"
+description: "AstroにMicrosoft Clarityを導入する方法を解説します。"
+tags: ["astro", "microsoft-clarity"]
+publishedAt: 2024-12-29T10:00:00Z
+thumbnail: "./images/astro-microsoft-clarity/thumb.png"
+---
+
+import imgClarity from "@article/images/astro-microsoft-clarity/clarity.png";
+import imgRegister from "@article/images/astro-microsoft-clarity/register.png";
+import imgAddProject from "@article/images/astro-microsoft-clarity/add-project.png";
+import imgMethod from "@article/images/astro-microsoft-clarity/method.png";
+import imgCopyCode from "@article/images/astro-microsoft-clarity/copy-code.png";
+import imgVercelSettings from "@article/images/astro-microsoft-clarity/vercel-settings.png";
+import imgClarityId from "@article/images/astro-microsoft-clarity/clarity-id.png";
+import imgSaveVariable from "@article/images/astro-microsoft-clarity/save-variable.png";
+import imgClarityDashboard from "@article/images/astro-microsoft-clarity/clarity-dashboard.png";
+
+<OuterLink href="https://clarity.microsoft.com/">Microsoft Clarity</OuterLink>
+は、ユーザーの動きをヒートマップやレコーディングで可視化したり、行動データをもとにサイト改善のためのインサイトを提供してくれるツールです。
+
+今回の記事では、Astroで作成したサイトにMicrosoft Clarityを導入する方法を解説します。
+
+<ArticleToc />
+
+## 開発環境のバージョン
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions versions={[{ name: "astro", version: "5.0.5" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## AstroにMicrosoft Clarityを導入する方法
+
+ここからは、実際のMicrosoft Clarityの導入方法を説明していきます。
+
+### 1. Microsoft Clarityのアカウントを作成する
+
+まずは、<OuterLink href="https://clarity.microsoft.com/">Clarityの公式サイト</OuterLink>にアクセスし、アカウントを作成します。
+
+<Img src={imgClarity} alt="Clarity公式サイト" type="border" />
+
+サインアップをクリックすると、
+
+- Microsoft
+- Facebook
+- Google
+
+のアカウントから登録できますので、好きな方法で登録してください。
+
+<Spacer />
+
+Clarityの使用条件に同意し、[続ける]をクリックします。
+
+<Img src={imgRegister} alt="Clarity登録画面" type="border" />
+
+<Spacer />
+
+### 2. Microsoft Clarityにプロジェクトを追加する
+
+次に、プロジェクトを追加します。
+
+以下の3つの情報を入力し、[プロジェクトを追加]をクリックしてください。
+
+- 名前
+- WebサイトのURL
+- Webサイトの業種
+
+<Img src={imgAddProject} alt="プロジェクトを追加する" type="border" />
+
+### 3. Microsoft Clarityの追跡コードを取得する
+
+次に、インストール方法を選択します。
+
+Astroの場合は、追跡コードを手動でインストールする方法を選択します。
+
+<InfoBox type="success">
+  当記事では紹介しませんが、もしGoogleタグマネージャー経由で追加する場合は、[すべてのプラットフォームを表示]からGoogle
+  Tag Managerを選択してください。
+</InfoBox>
+
+<Img src={imgMethod} alt="インストール方法を選択する" type="border" />
+
+<Spacer />
+
+すると追跡コードが表示されるので、これをコピーしておきます。
+
+<Img src={imgCopyCode} alt="Clarityの追跡コードをコピー" type="border" />
+
+### 4. AstroにClarityの追跡コードを埋め込む
+
+ここからは、Astroのプロジェクト上で作業します。
+
+まずはじめに、Clarityのタグを埋め込むための`Clarity.astro`ファイルを任意のディレクトリに作成します。
+
+先ほど取得したClarityの追跡コードをコピーし、ペーストします。
+
+<CodeHead lang="astro" name="/src/Clarity.astro" />
+
+```astro
+<script type="text/javascript" is:inline>
+  (function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", "XXXXXXXXXX");
+</script>
+```
+
+`script`の開始タグには、`is:inline`を追記してください。
+
+また、`XXXXXXXXXX`の部分には、自身で取得した追跡コードのIDが入ります。
+
+### 5. Layout.astroのheadタグに追跡コードを埋め込む
+
+最後に、作成したコンポーネントを`Layout.astro`の`head`タグ内に埋め込みます。
+
+<CodeHead lang="astro" name="/src/layouts/Layout.astro" />
+
+```astro showLineNumbers {2, 12}
+---
+import Clarity from 'path/Clarity.astro';
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <Clarity />
+  </head>
+  <body>
+  {/* bodyのコンテンツが入ります */}
+  </body>
+</html>
+```
+
+#### 本番環境でのみClarityの追跡コードを読み込む
+
+このままでは開発環境でもトラッキングコードが読み込まれてしまうので、Astroの環境変数を使用して、**本番環境でのみコンポーネントを読み込む**ようにします。
+
+Astroでは、本番環境かどうかを判定するための環境変数がデフォルトで用意されているので、それを使用します。
+
+<CodeHead lang="astro" />
+
+```astro showLineNumbers
+---
+const isProd = import.meta.env.PROD; // 本番環境の場合はtrue、それ以外はfalse
+---
+```
+
+`import.meta.env.PROD`は、本番環境かどうかを判定するための環境変数です。
+
+本番環境の場合は`true`、それ以外は`false`を返すので、これを先ほどの`Layout.astro`に組み込みます。
+
+<CodeHead lang="astro" name="/src/layouts/Layout.astro" />
+
+```astro showLineNumbers {3, 13}
+---
+import Clarity from 'path/Clarity.astro';
+const isProd = import.meta.env.PROD;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    {isProd && <Clarity />}
+  </head>
+  <body>
+  {/* bodyのコンテンツが入ります */}
+  </body>
+</html>
+```
+
+これで、本番環境のみClarityのトラッキングコードが読み込まれるようになりました。
+
+以上でClarityの導入は完了です！
+
+<Spacer />
+
+### 6. 本番環境にデプロイして反映されるのを待つ
+
+あとは本番環境にデプロイして、Microsoft Clarityのダッシュボードでデータを確認しましょう。
+
+最大2時間ほどでClarityのデータが表示されるようになるかと思います。
+
+ヘッダーの[ダッシュボード]を選択できるようになっていれば、反映完了です。
+
+<Img src={imgClarityDashboard} alt="Clarityのダッシュボード画面" type="border" />
+
+## まとめ：AstroにMicrosoft Clarityを導入する方法
+
+今回は、AstroにMicrosoft Clarityを導入する方法を解説しました。
+
+ヒートマップや実際のユーザーの動きを録画して確認することができるので、サイト改善には非常に有用なツールです。
+
+AstroでMicrosoft Clarityを導入しようと考えている方がいれば、ぜひこの記事を参考にして導入してみてください。
