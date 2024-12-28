@@ -2,8 +2,9 @@
 import Layout from '../../layouts/Layout.astro';
 import Container from '@components/common/Container.astro';
 import Form from '@components/contact/Form.astro';
+import { CONTACT_METADATA } from '@data/metadata';
 ---
-<Layout>
+<Layout title={`${CONTACT_METADATA.title}`} description={CONTACT_METADATA.description}>
 	<div class="page">
 		<div class="hero">
 			 <h1>

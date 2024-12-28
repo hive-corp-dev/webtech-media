@@ -1,8 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Container from '@components/common/Container.astro';
+import {PRIVACY_POLICY_METADATA} from '@data/metadata';
 ---
-<Layout>
+<Layout title={`${PRIVACY_POLICY_METADATA.title}`} description={PRIVACY_POLICY_METADATA.description}>
 	<div class="page">
 		<div class="hero">
 			 <h1>
