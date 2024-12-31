@@ -7,6 +7,7 @@ import HamburgerMenu from '@components/HamburgerMenu.astro';
 import Seo from '@components/Seo.astro';
 import GoogleAnalytics from '@components/meta/GoogleAnalytics.astro';
 import Clarity from '@components/meta/Clarity.astro';
+import { ClientRouter } from 'astro:transitions';
 
 import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/500.css';
@@ -29,6 +30,7 @@ const isProduction = import.meta.env.PROD;
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta name="generator" content={Astro.generator} />
 		<Seo title={title} description={description} ogImageUrl={ogImageUrl} ogType={ogType} noindex={noindex} nofollow={nofollow} />
+		<ClientRouter />
 		{
 			isProduction && <GoogleAnalytics />
 		}

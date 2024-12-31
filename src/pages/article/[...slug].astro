@@ -49,51 +49,54 @@ const { entry } = Astro.props;
 <script>
   import * as tocbot from 'tocbot'
 
-  // 目次
-  tocbot.init({
-    tocSelector: '.toc', // 目次を追加するクラス名
-    contentSelector: '#article-content', // 目次を取得するコンテンツ
-    listClass: 'toc-list', // olのクラス名
-    linkClass: 'toc-link', // aタグのクラス名
-    headingSelector: 'h2, h3', // 目次として取得する見出しタグ
-    headingsOffset: document.querySelector('.js-header').offsetHeight,
-    scrollSmoothOffset: document.querySelector('.js-header').offsetHeight * -1, // スクロール時のオフセット
-  })
-
-  setTimeout(() => {
+  document.addEventListener('astro:page-load', () => {
+    // 目次
     tocbot.init({
-    tocSelector: '.toc-sidebar', // 目次を追加するクラス名
-    contentSelector: '#article-content', // 目次を取得するコンテンツ
-    listClass: 'toc-list', // olのクラス名
-    linkClass: 'toc-link', // aタグのクラス名
-    headingSelector: 'h2, h3', // 目次として取得する見出しタグ
-    activeLinkClass: 'is-active-pos', // アクティブリンクのクラス名
-    headingsOffset: document.querySelector('.js-header').offsetHeight,
-    scrollSmoothOffset: document.querySelector('.js-header').offsetHeight * -1, // スクロール時のオフセット
-    hasInnerContainers: true,
-  })
-  }, 500);
-
-
-  // コードのコピー
-  const copyBtns = document.querySelectorAll('.js-pre-copy');
-  copyBtns.forEach(btn => {
-    btn.addEventListener('click', async () => {
-      await copyCode(btn);
+      tocSelector: '.toc', // 目次を追加するクラス名
+      contentSelector: '#article-content', // 目次を取得するコンテンツ
+      listClass: 'toc-list', // olのクラス名
+      linkClass: 'toc-link', // aタグのクラス名
+      headingSelector: 'h2, h3', // 目次として取得する見出しタグ
+      headingsOffset: document.querySelector('.js-header').offsetHeight,
+      scrollSmoothOffset: document.querySelector('.js-header').offsetHeight * -1, // スクロール時のオフセット
+    })
+  
+    setTimeout(() => {
+      tocbot.init({
+      tocSelector: '.toc-sidebar', // 目次を追加するクラス名
+      contentSelector: '#article-content', // 目次を取得するコンテンツ
+      listClass: 'toc-list', // olのクラス名
+      linkClass: 'toc-link', // aタグのクラス名
+      headingSelector: 'h2, h3', // 目次として取得する見出しタグ
+      activeLinkClass: 'is-active-pos', // アクティブリンクのクラス名
+      headingsOffset: document.querySelector('.js-header').offsetHeight,
+      scrollSmoothOffset: document.querySelector('.js-header').offsetHeight * -1, // スクロール時のオフセット
+      hasInnerContainers: true,
+    })
+    }, 500);
+  
+  
+    // コードのコピー
+    const copyBtns = document.querySelectorAll('.js-pre-copy');
+    copyBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        await copyCode(btn);
+      });
+  
+      async function copyCode(btn) {
+        const pre = btn.nextElementSibling;
+        const textToCopy = pre.innerText || pre.textContent;
+        await navigator.clipboard.writeText(textToCopy);
+  
+        btn.classList.add('copy_done');
+  
+        setTimeout(() => {
+          btn.classList.remove('copy_done');
+        }, 1500);
+      }
     });
+  })
 
-    async function copyCode(btn) {
-      const pre = btn.nextElementSibling;
-      const textToCopy = pre.innerText || pre.textContent;
-      await navigator.clipboard.writeText(textToCopy);
-
-      btn.classList.add('copy_done');
-
-      setTimeout(() => {
-        btn.classList.remove('copy_done');
-      }, 1500);
-    }
-  });
 
 
 </script>

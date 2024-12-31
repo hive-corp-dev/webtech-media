@@ -144,7 +144,8 @@
 </style>
 
 <script>
-  const btn = document.querySelector('.js-toggle-toc');
+  document.addEventListener('astro:page-load', () => {
+    const btn = document.querySelector('.js-toggle-toc');
   const sidebarBlock = document.querySelector('.js-sidebar-sticky');
 
   btn.addEventListener('click', () => {
@@ -157,5 +158,6 @@
         sidebarBlock.dataset.tocIsActive = 'false';
       }
     })
+  })
 
 </script>
