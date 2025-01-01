@@ -152,7 +152,7 @@
 
       btn.addEventListener('click', () => {
         let isActive = sidebarBlock.dataset.tocIsActive === 'true';
-        sidebarBlock.dataset.tocIsActive = !isActive;
+        sidebarBlock.dataset.tocIsActive = (!isActive).toString();
       })
     
       sidebarBlock.addEventListener('click', (e) => {
