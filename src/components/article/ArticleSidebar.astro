@@ -63,6 +63,7 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
       flex-direction: column;
       gap: 4rem;
       height: calc(100vh - 16rem);
+      z-index: var.$z-sidebar-sticky;
 
       @include mixin.tab {
         margin-top: 0!important;
