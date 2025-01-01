@@ -145,19 +145,21 @@
 
 <script>
   document.addEventListener('astro:page-load', () => {
-    const btn = document.querySelector('.js-toggle-toc');
-  const sidebarBlock = document.querySelector('.js-sidebar-sticky');
 
-  btn.addEventListener('click', () => {
-    let isActive = sidebarBlock.dataset.tocIsActive === 'true';
-    sidebarBlock.dataset.tocIsActive = !isActive;
-  })
-  
-  sidebarBlock.addEventListener('click', (e) => {
-      if (event.target.classList.contains('toc-link')) {
-        sidebarBlock.dataset.tocIsActive = 'false';
-      }
-    })
-  })
+    if(document.querySelector('.js-toggle-toc')) {
+      const btn = document.querySelector('.js-toggle-toc');
+      const sidebarBlock = document.querySelector('.js-sidebar-sticky');
 
+      btn.addEventListener('click', () => {
+        let isActive = sidebarBlock.dataset.tocIsActive === 'true';
+        sidebarBlock.dataset.tocIsActive = !isActive;
+      })
+    
+      sidebarBlock.addEventListener('click', (e) => {
+        if (e.target.classList.contains('toc-link')) {
+          sidebarBlock.dataset.tocIsActive = 'false';
+        }
+      })
+    }
+  })
 </script>
