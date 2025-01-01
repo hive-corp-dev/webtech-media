@@ -146,20 +146,31 @@
 <script>
   document.addEventListener('astro:page-load', () => {
 
-    if(document.querySelector('.js-toggle-toc')) {
+    if (document.querySelector('.js-toggle-toc')) {
       const btn = document.querySelector('.js-toggle-toc');
       const sidebarBlock = document.querySelector('.js-sidebar-sticky');
 
+      // 初期値を明示的に設定（必要に応じて省略可能）
+      sidebarBlock.dataset.tocIsActive = sidebarBlock.dataset.tocIsActive || 'false';
+
       btn.addEventListener('click', () => {
+        // dataset の値を適切に論理値へ変換して扱う
         let isActive = sidebarBlock.dataset.tocIsActive === 'true';
+        // 値を反転して更新
         sidebarBlock.dataset.tocIsActive = (!isActive).toString();
-      })
-    
+
+        // デバッグ用（必要なら削除）
+        console.log(`TOC Active State: ${sidebarBlock.dataset.tocIsActive}`);
+      });
+
       sidebarBlock.addEventListener('click', (e) => {
         if (e.target.classList.contains('toc-link')) {
           sidebarBlock.dataset.tocIsActive = 'false';
+
+          // デバッグ用（必要なら削除）
+          console.log('TOC closed due to link click');
         }
-      })
+      });
     }
   })
 </script>
