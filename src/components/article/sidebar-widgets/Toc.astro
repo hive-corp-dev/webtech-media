@@ -150,24 +150,36 @@
       const btn = document.querySelector('.js-toggle-toc');
       const sidebarBlock = document.querySelector('.js-sidebar-sticky');
 
-      // 初期値を明示的に設定（必要に応じて省略可能）
-      sidebarBlock.dataset.tocIsActive = sidebarBlock.dataset.tocIsActive || 'false';
+      // 初期状態がない場合に設定
+      if (!sidebarBlock.dataset.tocIsActive) {
+        sidebarBlock.dataset.tocIsActive = 'false';
+      }
 
       btn.addEventListener('click', () => {
-        // dataset の値を適切に論理値へ変換して扱う
+        // 現在の状態を論理値に変換
         let isActive = sidebarBlock.dataset.tocIsActive === 'true';
-        // 値を反転して更新
+        
+        // 開閉状態を反転
         sidebarBlock.dataset.tocIsActive = (!isActive).toString();
+        
+        // 開閉に合わせた処理（クラス追加などが必要な場合）
+        if (sidebarBlock.dataset.tocIsActive === 'true') {
+          sidebarBlock.classList.add('active'); // 例: 開いた状態にクラスを追加
+        } else {
+          sidebarBlock.classList.remove('active'); // 例: 閉じた状態にクラスを削除
+        }
 
-        // デバッグ用（必要なら削除）
+        // デバッグ用（必要に応じて削除）
         console.log(`TOC Active State: ${sidebarBlock.dataset.tocIsActive}`);
       });
 
       sidebarBlock.addEventListener('click', (e) => {
+        // `toc-link` のクリックで閉じる
         if (e.target.classList.contains('toc-link')) {
           sidebarBlock.dataset.tocIsActive = 'false';
+          sidebarBlock.classList.remove('active'); // 閉じる処理
 
-          // デバッグ用（必要なら削除）
+          // デバッグ用（必要に応じて削除）
           console.log('TOC closed due to link click');
         }
       });
