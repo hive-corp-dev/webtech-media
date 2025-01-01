@@ -8,6 +8,7 @@ import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.ast
 import logo from '@assets/images/logo.svg';
 import { Image } from 'astro:assets';
 import { TOP_METADATA } from '@data/metadata';
+import Title from '@components/test/Title.astro';
 
 const articles = await getCollection('article', ({data}) => {
 	return data.isDraft === false;
@@ -22,6 +23,8 @@ const sortedArticles = getSortedPosts(articles);
 				<Image class="logo" src={logo} alt='WebTech Media' />
 			</h1>
 			 <p>WebTech Mediaは、<br class="sp" />最新のWeb技術やモダンな開発手法に特化した<br class="sp" />情報をお届けするメディアサイトです。<br />Jamstackをはじめとする革新的なWeb制作手法や<br class="sp" />ツールに関する知見を共有し、<br class="sp" />Web制作の現場で役立つ実践的な情報を<br class="sp" />発信します。</p>
+
+			 <Title />
 		</div>
 		<div class="body">
 			<Container>
