@@ -43,6 +43,7 @@ const isTopPage = Astro.url.pathname === '/';
           </ul>
         </nav>
       </div>
+      <div class="owned-site">運用中のサイト: <a href="https://web-dev.tech/" target="_blank">WebDev Tech</a></div>
     </Container>
   </div>
   <p class="copy">&copy; WebTech Media All Rights Reserved.</p>
@@ -62,7 +63,7 @@ const isTopPage = Astro.url.pathname === '/';
   padding: 8rem 0 6rem;
 
   @include mixin.sp {
-    padding: 6.4rem 0;
+    padding: 6.4rem 0 4rem;
   }
 }
 
@@ -120,7 +121,7 @@ const isTopPage = Astro.url.pathname === '/';
 }
 
 .nav-sub-list {
-  margin-top: 6.4rem;
+  margin-top:8rem;
   display: flex;
   justify-content: flex-end;
 
@@ -208,6 +209,31 @@ const isTopPage = Astro.url.pathname === '/';
 
   @include mixin.sp {
     font-size: 1.1rem;
+  }
+}
+
+.owned-site {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var.$c-white;
+  transform: translateY(-1.6rem);
+
+  @include mixin.sp {
+    transform: translateY(0);
+    text-align: center;
+    font-size: 1.1rem;
+    margin-top: 4rem;
+  }
+  
+  a {
+    text-decoration: underline;
+    transition: all .3s;
+
+    @include mixin.hover {
+      &:hover {
+        opacity: .8;
+      }
+    }
   }
 }
 </style>
