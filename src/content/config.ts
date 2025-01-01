@@ -13,12 +13,14 @@ const articleCollection = defineCollection({
         z.enum([
           "next-js",
           "css",
+          "sass",
           "microsoft-clarity",
           "google-analytics",
           "astro",
           "vercel",
           "netlify",
           "jamstack",
+          "partytown",
           "partytown",
         ])
       ),

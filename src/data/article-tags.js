@@ -8,6 +8,10 @@ export const articleTags = [
     label: "CSS",
   },
   {
+    slug: "sass",
+    label: "Sass",
+  },
+  {
     slug: "astro",
     label: "Astro",
   },

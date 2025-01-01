@@ -111,7 +111,7 @@
 </style>
 
 <style is:global lang="scss">
-  html:has([data-toc-is-active="true"]) {
+  body.is-toc-open {
     .toc-btn {
       display: flex;
 
@@ -144,45 +144,22 @@
 </style>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
+document.addEventListener('astro:page-load', () => {
 
-    if (document.querySelector('.js-toggle-toc')) {
-      const btn = document.querySelector('.js-toggle-toc');
-      const sidebarBlock = document.querySelector('.js-sidebar-sticky');
+  if(!document.querySelector('.js-sidebar-toc-block')) return;
+  
+  const btn = document.querySelector('.js-toggle-toc');
+  const body = document.body;
+  const sidebarBlock = document.querySelector('.js-sidebar-sticky');
 
-      // 初期状態がない場合に設定
-      if (!sidebarBlock.dataset.tocIsActive) {
-        sidebarBlock.dataset.tocIsActive = 'false';
-      }
+  btn.addEventListener('click', () => {
+    body.classList.toggle('is-toc-open');
+  });
 
-      btn.addEventListener('click', () => {
-        // 現在の状態を論理値に変換
-        let isActive = sidebarBlock.dataset.tocIsActive === 'true';
-        
-        // 開閉状態を反転
-        sidebarBlock.dataset.tocIsActive = (!isActive).toString();
-        
-        // 開閉に合わせた処理（クラス追加などが必要な場合）
-        if (sidebarBlock.dataset.tocIsActive === 'true') {
-          sidebarBlock.classList.add('active'); // 例: 開いた状態にクラスを追加
-        } else {
-          sidebarBlock.classList.remove('active'); // 例: 閉じた状態にクラスを削除
-        }
-
-        // デバッグ用（必要に応じて削除）
-        console.log(`TOC Active State: ${sidebarBlock.dataset.tocIsActive}`);
-      });
-
-      sidebarBlock.addEventListener('click', (e) => {
-        // `toc-link` のクリックで閉じる
-        if (e.target.classList.contains('toc-link')) {
-          sidebarBlock.dataset.tocIsActive = 'false';
-          sidebarBlock.classList.remove('active'); // 閉じる処理
-
-          // デバッグ用（必要に応じて削除）
-          console.log('TOC closed due to link click');
-        }
-      });
+  sidebarBlock.addEventListener('click', (e) => {
+    if(e.target.classList.contains('toc-link')) {
+      body.classList.remove('is-toc-open');
     }
-  })
+  });
+})
 </script>
