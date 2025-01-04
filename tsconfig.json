@@ -10,7 +10,7 @@
       "@components/*": ["src/components/*"],
       "@utils/*": ["src/utils/*"],
       "@data/*": ["src/data/*"],
-      "@styles/*": ["src/styles/*"],
+      "@/styles/*": ["src/styles/*"],
       "@layouts/*": ["src/layouts/*"],
       "@article/*": ["src/content/article/*"],
       "@assets/*": ["src/assets/*"]

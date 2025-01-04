@@ -109,6 +109,10 @@
     color: #ffd600;
   }
 
+  &[data-lang="ts"] {
+    color: #007acc;
+  }
+
   &[data-lang="html"] {
     font-size: 1.6rem;
     color: #ff8c0b;

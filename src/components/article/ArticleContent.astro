@@ -1,7 +1,7 @@
 ---
 const { entry, components = {} } = Astro.props;
 const { Content } = await entry.render();
-import styles from '@styles/article-content.module.scss';
+import styles from '@/styles/article-content.module.scss';
 import Pre from './parts/pre/Pre.astro';
 import Img from './parts/img/Img.astro';
 import ImgCaption from './parts/img-caption/ImgCaption.astro';

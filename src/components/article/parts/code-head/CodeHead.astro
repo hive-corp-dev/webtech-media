@@ -8,7 +8,8 @@ import {
   IoLogoMarkdown, 
   IoTerminalOutline 
 } from "react-icons/io5";
-import { SiAstro } from "react-icons/si";
+import { VscJson } from "react-icons/vsc";
+import { SiAstro, SiTypescript } from "react-icons/si";
 import { SiPhp } from "react-icons/si";
 import styles from "./code-head.module.scss";
 
@@ -26,6 +27,10 @@ const outputLanguageString = (value) => {
       return { name: "Sass", icon: IoLogoSass };
     case "js":
       return { name: "JavaScript", icon: IoLogoJavascript };
+    case "ts":
+      return { name: "TypeScript", icon: SiTypescript };
+    case "json":
+      return { name: "JSON", icon: VscJson };
     case "jsx":
       return { name: "JSX", icon: IoLogoReact };
     case "md":
