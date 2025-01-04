@@ -1,0 +1,32 @@
+@use "sass:list";
+
+$themes: light, dark;
+
+$theme-colors: (
+  background: (
+    #fff,
+    #3f4a54,
+  ),
+  text: (
+    #000,
+    #fff,
+  ),
+);
+
+@each $theme in $themes {
+  @if $theme == light {
+    :root {
+      @each $name, $colors in $theme-colors {
+        $color: list.nth($colors, list.index($themes, $theme));
+        --c-#{$name}: #{$color};
+      }
+    }
+  } @else {
+    :root[data-theme="#{$theme}"] {
+      @each $name, $colors in $theme-colors {
+        $color: list.nth($colors, list.index($themes, $theme));
+        --c-#{$name}: #{$color};
+      }
+    }
+  }
+}

@@ -1,0 +1,294 @@
+---
+isDraft: false
+title: "Astroで背景画像を最適化する方法【レスポンシブ対応も可】"
+description: "AstroのgetImageを使用して、CSSのbackground-imageで設定した画像を最適化する方法を紹介します。ブレイクポイントで画像を切り替える場合にも対応しています。"
+tags: ["astro"]
+publishedAt: 2025-01-04T14:00:00Z
+thumbnail: "./images/astro-background-image-optimization/thumb.png"
+---
+
+Astroでは、画像最適化を自動で行ってくれる`<Image />`や`<Picture />`コンポーネントが用意されています。
+
+しかし、`background-image`で設定する背景画像の最適化には、これらのコンポーネントは使用できないため、別の方法で最適化する必要があります。
+
+<Spacer />
+
+そこで今回の記事では、**Astroで背景画像を最適化する方法**を紹介します。
+
+- `background-image`の画像を最適化したい
+- ブレイクポイントで画像を切り替える場合にも対応させたい
+
+といった場合は、ぜひこの方法を活用してみてください。
+
+<ArticleToc />
+
+## 開発環境のバージョン
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions versions={[{ name: "astro", version: "5.0.5" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## Astroの画像最適化について
+
+本題に入る前に、まずはAstroの画像最適化について簡単に説明します。
+
+Astroでは、`<Image />`や`<Picture />`コンポーネントが用意されており、これらを使用すると自動で画像最適化が行われます。
+
+<CodeHead lang="astro" />
+
+```astro
+---
+import { Image } from '@astro:assets';
+import myImage from '../assets/images/my-image.jpg';
+---
+
+<Image src={myImage} alt="サンプル画像" />
+```
+
+このように画像を読み込むと、以下のような結果になります。
+
+<CodeHead lang="html" />
+
+```html
+<img src="/_astro/my-image.XXXXXX.webp" width="1600" height="900" decoding="async" loading="lazy" alt="サンプル画像" />
+```
+
+画像の`width`・`height`は自動的に設定され、フォーマットはデフォルトでWebPに変換されます。
+
+当記事では、**CSSで設定する背景画像をWebPやその他の効率的なフォーマットに変換する方法**を解説します。
+
+## Astroで背景画像を最適化する方法
+
+Astroで背景画像を最適化するには、以下の手順が必要です。
+
+1. 画像を`src`ディレクトリ内に配置する
+2. Astroの`getImage`を使用して画像を最適化する
+
+### 1. 画像をsrcディレクトリ内に配置する
+
+Astroでは、`public`と`src`ディレクトリに画像を配置することができます。
+
+それぞれの違いは以下の通りです。
+
+- `public`: 画像の最適化を行わずにそのまま出力される
+- `src`: 画像は変換・最適化され、バンドルされる
+
+このような仕組みになっているので、最適化する画像は必ず`src`ディレクトリに配置しましょう。
+
+### 2. Astroの`getImage`で画像を最適化する
+
+次に、`getImage`を使用して画像を最適化します。
+
+背景画像を設置する`.astro`ファイルを開き、以下のコードを追加してください。
+
+<CodeHead lang="astro" name="src/components/Sample.astro" />
+
+```astro
+---
+import { getImage } from '@astro:assets';
+
+// 背景画像をインポート
+import myImage from '../../assets/images/my-image.jpg';
+---
+```
+
+Astroの`getImage`関数を使用するので、`@astro:assets`からインポートします。
+
+次に、`src`ディレクトリ内に配置した画像をインポートします。
+
+#### getImageで画像を取得&オプションを指定する
+
+`getImage`関数は、オブジェクト形式の引数を受け取り、その中で`src`を含むいくつかのプロパティを指定できます。
+
+`src`は必須なので、必ず指定してください。ここでは、先ほどインポートした画像`myImage`を指定しています。
+
+<CodeHead lang="astro" name="src/components/Sample.astro" />
+
+```astro showLineNumbers {5}
+---
+import { getImage } from '@astro:assets';
+import myImage from '../../assets/images/my-image.jpg';
+
+const optimizedImage = await getImage({src: myImage});
+---
+```
+
+オプションを指定する場合は、以下のようにオブジェクト形式で指定します。
+
+<CodeHead lang="astro" name="src/components/Sample.astro" />
+
+```astro showLineNumbers {7-8}
+---
+import { getImage } from '@astro:assets';
+import myImage from '../../assets/images/my-image.jpg';
+
+const optimizedImage = await getImage({
+  src: myImage,
+  format: 'avif',
+  quality: 75,
+});
+---
+```
+
+他にも指定できるオプションはいくつかあるので、詳しくはAstro公式の<OuterLink href='https://docs.astro.build/ja/reference/modules/astro-assets/#image-properties'>AssetsのAPIドキュメント</OuterLink>を参照してください。
+
+以上で画像の最適化は完了です。
+
+次で、画像を背景画像として設定する2つの方法を説明していきます。
+
+## 最適化した画像を背景画像として設定する方法
+
+ここからは、以下の2通りの手順を説明していきます。
+
+1. `style`属性で画像を設定する方法
+2. CSS変数に画像のパスを設定する方法
+
+**背景画像を一つの箇所で使用する場合は方法1**を、
+
+**背景画像を複数箇所で使用する場合、ブレイクポイントによる複数画像の出し分けが必要な場合は方法2**を参考にしてください。
+
+### 方法1. style属性で画像を設定する
+
+1つ目の方法は、`style`属性で画像を設定する方法です。
+
+背景画像を適用したい要素に`style`属性を追加し、`background-image`に最適化した画像のパスを設定します。
+
+<CodeHead lang="astro" name="src/components/Sample.astro" />
+
+```astro showLineNumbers {7}
+---
+import { getImage } from '@astro:assets';
+import myImage from '../../assets/images/my-image.jpg';
+const optimizedImage = await getImage({src: myImage});
+---
+
+<div class="bg" style={`background-image: url(${optimizedImage.src})`}></div>
+```
+
+これで、背景画像を最適化することができました。
+
+しかし、この方法では**ブレイクポイントによる画像の切り替えができません。**
+
+また、複数箇所に使用する場合、毎回このコードを記述するのは冗長なので、次で紹介する方法をおすすめします。
+
+### 方法2. CSS変数に画像のパスを設定する
+
+2つ目の方法は、CSS変数に画像のパスを設定する方法です。
+
+**背景画像をサイト全体で複数回使用**する場合や、**ブレイクポイントによる画像の切り替え**が必要な場合に有効です。
+
+#### ①Layoutコンポーネントを開く
+
+まずは、プロジェクトのトップレベルのAstroファイルを開きます。一般的には、`Layout.astro`が使われていることが多いです。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+```
+
+#### ②画像をインポートする
+
+`getImage`関数と、PC用の画像、SP用の画像をそれぞれインポートします。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers {2-4}
+---
+import { getImage } from '@astro:assets';
+import myImage from '../assets/images/my-image.jpg';
+import myImageSp from '../assets/images/my-image-sp.jpg';
+
+const optimizedImage = await getImage({src: myImage});
+const optimizedImageSp = await getImage({src: myImageSp});
+---
+
+<!doctype html>
+<html lang="ja">
+  <!-- 省略 -->
+</html>
+```
+
+#### ③CSS変数に画像のパスを設定する
+
+次に、`style`タグを`head`内に追加し、`define:vars`でCSS変数に画像のパスを設定します。
+
+<OuterLink href="https://docs.astro.build/ja/reference/directives-reference/#definevars">define:vars</OuterLink>
+は、Astroのディレクティブの一つで、**コンポーネントのフロントマターからサーバーサイドの変数を渡す**ことができます。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers {14}
+---
+import { getImage } from '@astro:assets';
+import myImage from '../assets/images/my-image.jpg';
+import myImageSp from '../assets/images/my-image-sp.jpg';
+
+const optimizedImage = await getImage({src: myImage});
+const optimizedImageSp = await getImage({src: myImageSp});
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- 省略 -->
+    <style define:vars={{optimizedImage: `url(${optimizedImage.src})`, optimizedImageSp: `url(${optimizedImageSp.src})`}}></style>
+  </head>
+  <body>
+    <!-- 省略 -->
+  </body>
+</html>
+```
+
+これでCSS変数に最適化された画像のパスを設定することができました。
+
+#### ④CSSで好きな場所から画像を設定する
+
+あとは、背景画像が必要なコンポーネントからCSS変数を呼び出すだけです。
+
+<CodeHead lang="astro" name="src/components/Sample.astro" />
+
+```astro showLineNumbers {5,8}
+<div class="bg"></div>
+
+<style>
+  .bg {
+    background-image: var(--optimizedImage);
+
+    @media screen and (max-width: 768px) {
+      background-image: var(--optimizedImageSp);
+    }
+  }
+</style>
+```
+
+以上で、背景画像の最適化&設定方法の解説は終わりです！
+
+## 【まとめ】Astroで背景画像を最適化する方法と、ブレイクポイントでの画像切り替え
+
+今回の記事では、
+
+- 背景画像を最適化する方法
+- 背景画像をstyle属性やCSS変数に設定する方法
+
+を紹介しました。
+
+この方法を使うことで、CSS内で使用する背景画像も最適化することができます。
+
+サイトパフォーマンス向上のためにも画像最適化はかなり重要なので、ぜひ活用してみてください。

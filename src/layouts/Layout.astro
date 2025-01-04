@@ -1,5 +1,6 @@
 ---
 import 'the-new-css-reset';
+import '@styles/colors.scss'
 import '../styles/global.scss';
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
@@ -8,6 +9,12 @@ import Seo from '@components/Seo.astro';
 import GoogleAnalytics from '@components/meta/GoogleAnalytics.astro';
 import Clarity from '@components/meta/Clarity.astro';
 import { ClientRouter } from 'astro:transitions';
+
+
+// 
+import { getImage } from 'astro:assets';
+import myImage from '@assets/images/hero.png';
+const optimizedImage = await getImage({src: myImage, quality: 75});
 
 import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/500.css';
@@ -19,6 +26,8 @@ import '@fontsource-variable/noto-sans-jp';
 const {title, description, ogImageUrl, ogType, noindex, nofollow} = Astro.props;
 
 const isProduction = import.meta.env.PROD;
+
+
 ---
 
 <!doctype html>
@@ -29,6 +38,7 @@ const isProduction = import.meta.env.PROD;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta name="generator" content={Astro.generator} />
+		<style define:vars={{optimizedImage: `url(${optimizedImage.src})`}}></style>
 		<Seo title={title} description={description} ogImageUrl={ogImageUrl} ogType={ogType} noindex={noindex} nofollow={nofollow} />
 		<ClientRouter />
 		{
