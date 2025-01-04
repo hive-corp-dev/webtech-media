@@ -1,5 +1,5 @@
 export const SITE_NAME = "WebTech Media";
-export const OG_IMAGE_URL = "https://webtech-media.jp/ogp.png";
+export const OG_IMAGE_URL = "https://webtech-media.jp/ogp.png?4362984378";
 
 export const TOP_METADATA = {
   title: `${SITE_NAME} | モダンなWeb開発手法に特化したメディアサイト`,
