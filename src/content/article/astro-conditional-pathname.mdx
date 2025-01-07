@@ -1,0 +1,173 @@
+---
+isDraft: false
+title: "AstroでTOPページとその他のページで条件分岐する方法を実用例付きで紹介"
+description: "Astroでトップページとその他のページを判定し、条件分岐を実装する方法を解説します。Astro.url.pathname を活用した具体例も紹介します。"
+tags: ["astro"]
+publishedAt: 2025-01-07T18:00:00Z
+thumbnail: "./images/astro-conditional-pathname/thumb.png"
+---
+
+Webサイト制作において、TOPページとその他のページで表示する内容を変えたい場合がありますね。
+
+例えば、TOPページではロゴを`h1`タグにしたいが、下層ページでは`a`タグでリンクを設定したいという場面がよくあります。
+
+そこで今回の記事では、**AstroでTOPページやその他のページで条件分岐する方法**を紹介します。
+
+<ArticleToc />
+
+## 開発環境のバージョン
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions versions={[{ name: "astro", version: "5.0.5" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## AstroでTOPページかどうかを判定する
+
+Astroで現在表示中のページがTOPページかどうかを判定するには、以下のコードを`.astro`ファイル内のフロントマターに記述します。
+
+<CodeHead lang="astro" />
+
+```astro showLineNumbers
+---
+// TOPページならtrue、それ以外ならfalse
+const isTopPage = Astro.url.pathname === '/';
+---
+```
+
+`Astro.url.pathname`は、現在のページのパスを取得できます。
+
+現在のパスが`'/'` = TOPページとなるので、`isTopPage`は`true`になります。
+
+反対に、`/about`や`/contact`などのパスの場合は`false`になり、その他のページと判定されます。
+
+### TOPページでのみ表示する場合
+
+TOPページでのみ表示する場合は、`isTopPage`が`true`の場合に表示するようにします。
+
+<CodeHead lang="astro" />
+
+```js showLineNumbers
+---
+const isTopPage = Astro.url.pathname === "/";
+---
+
+{
+  isTopPage && (
+    <div>TOPページでのみ表示する内容</div>
+  )
+}
+```
+
+### TOPページ以外で表示する場合
+
+TOPページ以外で表示する場合は、`isTopPage`が`false`の場合に表示するようにします。
+
+<CodeHead lang="astro" />
+
+```js showLineNumbers
+---
+const isTopPage = Astro.url.pathname === "/";
+---
+
+{
+  !isTopPage && (
+    <div>TOPページ以外で表示する内容</div>
+  )
+}
+```
+
+### TOPページとその他のページで表示を分ける場合
+
+TOPページとその他のページで表示する内容を分けたい場合は、以下のように記述します。
+
+<CodeHead lang="astro" />
+
+```js showLineNumbers
+---
+const isTopPage = Astro.url.pathname === "/";
+---
+
+{
+  isTopPage ? (
+    <div>TOPページでのみ表示する内容</div>
+  ) : (
+    <div>TOPページ以外で表示する内容</div>
+  )
+}
+```
+
+## 【実用例1】TOPページのみロゴをh1タグにする
+
+サイトのヘッダーやフッターに置かれることの多いロゴ画像を、
+
+- TOPページでは`h1`タグにしたい
+- 下層ページでは`a`タグにしてTOPページへのリンクを設定したい
+
+という場合がよくありますが、この場合は以下のように記述します。
+
+<CodeHead lang="astro" name="src/components/Header.astro" />
+
+```js showLineNumbers
+---
+const isTopPage = Astro.url.pathname === "/";
+---
+
+<header>
+  {
+    isTopPage ? (
+      <h1>ロゴ</h1>
+    ) : (
+      <a href="/">ロゴ</a>
+    )
+  }
+</header>
+```
+
+これでTOPページならロゴは`h1`タグに、それ以外ではTOPページへと遷移する`a`タグになります。
+
+## 【実用例2】TOPページのみプロモーションバナーを表示する
+
+TOPページにはプロモーションバナーを表示し、他のページでは省略する場合は、以下のように記述します。
+
+<CodeHead lang="astro" />
+
+```js showLineNumbers
+---
+import PromoBanner from '@/components/PromoBanner.astro';
+const isTopPage = Astro.url.pathname === '/';
+---
+
+{isTopPage && (
+  <PromoBanner />
+)}
+<main>
+  <slot />
+</main>
+```
+
+これでTOPページのみ`<PromoBanner />`コンポーネントが表示され、他のページでは非表示になります。
+
+## 【まとめ】AstroでTOPページやその他のページで条件分岐する方法
+
+今回の記事では、AstroでTOPページかその他のページかどうかを判定し、条件分岐する方法を紹介しました。
+
+<CodeHead lang="astro" />
+
+```astro showLineNumbers
+---
+// TOPページならtrue、それ以外ならfalse
+const isTopPage = Astro.url.pathname === '/';
+---
+```
+
+`Astro.url.pathname`で現在のページのパスを取得し、`'/'`ならTOPページ、それ以外ならその他のページと判定することで条件分岐しています。
+
+もしTOPページとその他のページで表示を分ける必要がある場合は、ぜひ参考にしてみてください。
+
+また、今回使用した`Astro.url`オブジェクトに関しては以下の記事で詳しく解説していますので、併せてご覧いただければと思います。
+
+https://webtech-media.jp/article/astro-get-url

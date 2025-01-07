@@ -217,6 +217,7 @@ const isTopPage = Astro.url.pathname === '/';
   font-weight: 500;
   color: var.$c-white;
   transform: translateY(-1.6rem);
+  pointer-events: none;
 
   @include mixin.sp {
     transform: translateY(0);
@@ -227,6 +228,7 @@ const isTopPage = Astro.url.pathname === '/';
   
   a {
     text-decoration: underline;
+    pointer-events: auto;
     transition: all .3s;
 
     @include mixin.hover {
