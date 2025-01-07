@@ -24,7 +24,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 ---
 
-<Layout title={`${entry.data.title} | ${ARTICLE_SINGLE_METADATA.title}`} ogImageUrl={`${url}${entry.data.thumbnail.src}?4362984378`} description={entry.data.description}>
+<Layout title={`${entry.data.title} | ${ARTICLE_SINGLE_METADATA.title}`} ogImageUrl={`${url}${entry.data.thumbnail.src}`} description={entry.data.description}>
   <div class="page">
     <Container>
       <Breadcrumb data={[
