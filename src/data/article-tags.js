@@ -39,4 +39,8 @@ export const articleTags = [
     slug: "partytown",
     label: "Partytown",
   },
+  {
+    slug: "fontsource",
+    label: "Fontsource",
+  },
 ];

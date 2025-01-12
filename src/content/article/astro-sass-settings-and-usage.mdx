@@ -9,11 +9,13 @@ thumbnail: "./images/astro-sass-settings-and-usage/thumb.png"
 
 今回の記事では、**AstroでSass（SCSS）を使用するための設定や記述方法**を解説します。
 
-AstroでSassを使用する場合は、ぜひこの記事を参考にしてみてください。
+具体的には、以下の3つについて説明します。
 
-<InfoBox type="warning">
-  本記事ではSassという単語を使用していますが、主にSCSSを使用する前提で解説を進めますので、予めご了承ください。
-</InfoBox>
+- AstroにSassをインストールする方法
+- Mixinや変数を使いやすくする設定
+- AstroにおけるSassの記述方法
+
+AstroでSassを使用する場合は、ぜひこの記事を参考にしてみてください。
 
 <ArticleToc />
 
@@ -36,192 +38,15 @@ AstroでSassを使用する場合は、ぜひこの記事を参考にしてみ�
 
 まずはプロジェクトにSassをインストールします。
 
-<CodeHead lang="console" />
+<CodeHead lang="sh" />
 
-```console showLineNumbers
+```sh showLineNumbers
 npm install sass
 ```
 
 これでインストールは完了です！
 
 特別な設定などは不要で、インストールするだけでSassを使用することができます。
-
-## スコープ化されたスタイルを記述する
-
-Astroでは、コンポーネントごとにスコープ化されたスタイルを記述することができます。
-
-- Astroコンポーネント内に記述する方法
-- Sassファイルに記述する方法
-
-の2つの方法がありますので、以下で解説していきます。
-
-### Astroコンポーネント内に記述する
-
-`.astro`ファイルでコンポーネントを作成している場合は、同一ファイル内にスタイルを記述することができます。
-
-ファイルの中に`style`タグを記述し、`lang="scss"`を指定します。（Sassの場合は`lang="sass"`）
-
-<CodeHead lang="astro" name="src/components/Title.astro" />
-
-```astro showLineNumbers
-<h2 class="title">これはタイトルです</h2>
-
-<style lang="scss">
-  .title {
-    color: red;
-  }
-</style>
-```
-
-こうすることで、スコープ化されたスタイルを記述することが可能です。
-
-<Spacer />
-
-上記のコードは、以下のようにコンパイルされます。
-
-<CodeHead lang="html" />
-
-```html
-<h2 class="title" data-astro-cid-tt6rndok>これはタイトルです</h2>
-
-<style>
-  .title[data-astro-cid-tt6rndok] {
-    color: red;
-  }
-</style>
-```
-
-`data-astro-cid-xxxx`というユニークな属性が付与され、その要素に対してスタイルを当てているという仕組みですね。
-
-### Sassファイルに記述する
-
-スタイルを別のファイルに分けたい場合は、CSS Modulesの機能を使用できます。
-
-CSS Modulesはデフォルトでサポートされているので、特に必要な設定などはありません。
-
-`ファイル名.module.scss`というファイルを作成し、その中にスタイルを記述します。
-
-<CodeHead lang="scss" name="src/components/Title.module.scss" />
-
-```scss showLineNumbers
-.title {
-  color: red;
-}
-```
-
-その後、`.astro`ファイル内で`import`文を使って読み込むことで、スタイルを適用することができます。
-
-<CodeHead lang="astro" name="src/components/Title.astro" />
-
-```astro showLineNumbers
----
-import styles from './Title.module.scss';
----
-
-<h2 class={styles.title}>これはタイトルです</h2>
-```
-
-<Spacer />
-
-これらがコンパイルされると、以下のようなコードになります。
-
-<CodeHead lang="html" />
-
-```html
-<h2 class="_title_1uea3_1" data-astro-cid-tt6rndok>これはタイトルです</h2>
-
-<style>
-  ._title_1uea3_1 {
-    color: red;
-  }
-</style>
-```
-
-Astro側の`data-astro-cid`属性も付与されていますが、同時に**CSS Modulesによって生成されるユニークなクラス名**が付与されていることがわかります。
-
-<Spacer />
-
-以上の方法では、コンポーネントファイル内でのみ適用されるスコープ化されたスタイルを記述することができました。
-
-続いては、サイト全体で適用されるグローバルなスタイルの記述方法を見ていきましょう。
-
-## グローバルなスタイルを記述する
-
-グローバルなスタイルを記述するには、以下の方法があります。
-
-- Astroコンポーネント内に記述する方法
-- Sassファイルに記述する方法
-
-### Astroコンポーネント内に記述する
-
-`.astro`コンポーネント内でグローバルなスタイルを記述するには、`is:global`属性を付与します。
-
-<CodeHead lang="astro" />
-
-```astro showLineNumbers
-<style lang="scss" is:global>
-  .title {
-    color: red;
-  }
-</style>
-```
-
-これで、全ての`.title`要素に対してスタイルが適用されるようになります。
-
-このような使い方はあまりしませんが、
-
-- Astro外のコンテンツ（CMSやMDXから取得した記事データなど）をスタイリングする場合
-- JSライブラリ等で動的に生成されるDOM要素をスタイリングする場合
-
-などに有効です。
-
-### Sassファイルに記述する
-
-もう一つの方法として、グローバルなスタイルをSassファイルに記述する方法があります。
-
-こちらの方法は、**プロジェクト全体の基本的なスタイルを記述**する際に使用されることが多いです。
-
-#### global.scssファイルを作成する
-
-一般的には、`src`ディレクトリ内に`styles`ディレクトリを作成し、その中にSassファイルを配置することが多いです。
-
-<CodeHead lang="scss" name="src/styles/global.scss" />
-
-```scss showLineNumbers
-// プロジェクト全体の基本スタイルやリセットCSSなどを記述
-html {
-  font-family: "Noto Sans JP", sans-serif;
-}
-```
-
-#### Layoutコンポーネント内で読み込む
-
-グローバルスタイルを記述したSassファイルは、Astroコンポーネント内で読み込むことができます。
-
-通常は、`src/layouts`ディレクトリ内に`Layout.astro`というファイルを作成し、その中で読み込むようにします。
-
-<CodeHead lang="astro" name="src/layouts/Layout.astro" />
-
-```astro showLineNumbers {2}
----
-import '../styles/global.scss';
----
-
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-  </head>
-  <body>
-    <slot />
-  </body>
-</html>
-```
-
-これで、グローバルなスタイルがサイト全体で適用されるようになりました。
 
 ## MixinやSass変数を使いやすくする設定
 
@@ -329,6 +154,192 @@ export default defineConfig({
 ```
 
 これらの設定がないと、Mixinや変数を使うファイルで毎回`@use`ディレクトリで呼び出す必要があり記述量が増えるので、必ず設定を行っておきましょう。
+
+## AstroにおけるSassの記述方法
+
+AstroでSassを使用する際の記述方法を解説します。
+
+- スコープ化されたスタイルを記述する方法
+- グローバルなスタイルを記述する方法
+
+上記の2つに分けて説明していきますので、ぜひ参考にしてみてください。
+
+### スコープ化されたスタイルを記述する
+
+Astroでは、コンポーネントごとにスコープ化されたスタイルを記述することができます。
+
+- Astroコンポーネント内に記述する方法
+- Sassファイルに記述する方法
+
+の2つの方法がありますので、以下で解説していきます。
+
+#### Astroコンポーネント内に記述する
+
+`.astro`ファイルでコンポーネントを作成している場合は、同一ファイル内にスタイルを記述することができます。
+
+ファイルの中に`style`タグを記述し、`lang="scss"`を指定します。（Sassの場合は`lang="sass"`）
+
+<CodeHead lang="astro" name="src/components/Title.astro" />
+
+```astro showLineNumbers
+<h2 class="title">これはタイトルです</h2>
+
+<style lang="scss">
+  .title {
+    color: red;
+  }
+</style>
+```
+
+こうすることで、スコープ化されたスタイルを記述することが可能です。
+
+<Spacer />
+
+上記のコードは、以下のようにコンパイルされます。
+
+<CodeHead lang="html" />
+
+```html
+<h2 class="title" data-astro-cid-tt6rndok>これはタイトルです</h2>
+
+<style>
+  .title[data-astro-cid-tt6rndok] {
+    color: red;
+  }
+</style>
+```
+
+`data-astro-cid-xxxx`というユニークな属性が付与され、その要素に対してスタイルを当てているという仕組みですね。
+
+#### Sassファイルに記述する
+
+スタイルを別のファイルに分けたい場合は、CSS Modulesの機能を使用できます。
+
+CSS Modulesはデフォルトでサポートされているので、特に必要な設定などはありません。
+
+`ファイル名.module.scss`というファイルを作成し、その中にスタイルを記述します。
+
+<CodeHead lang="scss" name="src/components/Title.module.scss" />
+
+```scss showLineNumbers
+.title {
+  color: red;
+}
+```
+
+その後、`.astro`ファイル内で`import`文を使って読み込むことで、スタイルを適用することができます。
+
+<CodeHead lang="astro" name="src/components/Title.astro" />
+
+```astro showLineNumbers
+---
+import styles from './Title.module.scss';
+---
+
+<h2 class={styles.title}>これはタイトルです</h2>
+```
+
+<Spacer />
+
+これらがコンパイルされると、以下のようなコードになります。
+
+<CodeHead lang="html" />
+
+```html
+<h2 class="_title_1uea3_1" data-astro-cid-tt6rndok>これはタイトルです</h2>
+
+<style>
+  ._title_1uea3_1 {
+    color: red;
+  }
+</style>
+```
+
+Astro側の`data-astro-cid`属性も付与されていますが、同時に**CSS Modulesによって生成されるユニークなクラス名**が付与されていることがわかります。
+
+<Spacer />
+
+以上の方法では、コンポーネントファイル内でのみ適用されるスコープ化されたスタイルを記述することができました。
+
+続いては、サイト全体で適用されるグローバルなスタイルの記述方法を見ていきましょう。
+
+### グローバルなスタイルを記述する
+
+グローバルなスタイルを記述するには、以下の方法があります。
+
+- Astroコンポーネント内に記述する方法
+- Sassファイルに記述する方法
+
+#### Astroコンポーネント内に記述する
+
+`.astro`コンポーネント内でグローバルなスタイルを記述するには、`is:global`属性を付与します。
+
+<CodeHead lang="astro" />
+
+```astro showLineNumbers
+<style lang="scss" is:global>
+  .title {
+    color: red;
+  }
+</style>
+```
+
+これで、全ての`.title`要素に対してスタイルが適用されるようになります。
+
+このような使い方はあまりしませんが、
+
+- Astro外のコンテンツ（CMSやMDXから取得した記事データなど）をスタイリングする場合
+- JSライブラリ等で動的に生成されるDOM要素をスタイリングする場合
+
+などに有効です。
+
+#### Sassファイルに記述する
+
+もう一つの方法として、グローバルなスタイルをSassファイルに記述する方法があります。
+
+こちらの方法は、**プロジェクト全体の基本的なスタイルを記述**する際に使用されることが多いです。
+
+##### global.scssファイルを作成する
+
+一般的には、`src`ディレクトリ内に`styles`ディレクトリを作成し、その中にSassファイルを配置することが多いです。
+
+<CodeHead lang="scss" name="src/styles/global.scss" />
+
+```scss showLineNumbers
+// プロジェクト全体の基本スタイルやリセットCSSなどを記述
+html {
+  font-family: "Noto Sans JP", sans-serif;
+}
+```
+
+##### Layoutコンポーネント内で読み込む
+
+グローバルスタイルを記述したSassファイルは、Astroコンポーネント内で読み込むことができます。
+
+通常は、`src/layouts`ディレクトリ内に`Layout.astro`というファイルを作成し、その中で読み込むようにします。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers {2}
+---
+import '../styles/global.scss';
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+```
+
+これで、グローバルなスタイルがサイト全体で適用されるようになりました。
 
 ## 【まとめ】AstroでのSass（SCSS）の設定方法や使用方法
 

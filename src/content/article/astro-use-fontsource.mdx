@@ -1,0 +1,158 @@
+---
+isDraft: false
+title: "FontsourceでAstroにWebフォントを導入する方法"
+description: "AstroでFontsourceを利用して、Google Fontsやオープンソースのフォントを導入する方法を解説します。フォントのインストールからCSSの設定まで詳しく説明します。"
+tags: ["astro", "fontsource"]
+publishedAt: 2025-01-13T03:00:00Z
+thumbnail: "./images/astro-use-fontsource/thumb.png"
+---
+
+import imgFs from "@article/images/astro-use-fontsource/fontsource.png";
+import imgNsJp from "@article/images/astro-use-fontsource/fs-nsjp.png";
+import imgNsJpInstall from "@article/images/astro-use-fontsource/fs-nsjp-install.png";
+import imgFsImport from "@article/images/astro-use-fontsource/fs-import.png";
+import imgFsCss from "@article/images/astro-use-fontsource/fs-css.png";
+
+AstroでGoogle Fontsやオープンソースのフォントを手軽に使用したい場合、<OuterLink href='https://fontsource.org/'>Fontsource</OuterLink>を使うと便利です。
+
+今回の記事では、AstroのプロジェクトにFontsourceを導入し、フォントを使用する方法を解説します。
+
+## Fontsourceとは
+
+Fontsourceは、Google Fontsやその他のオープンソースのフォントをNPMパッケージとして利用できるライブラリです。
+
+<ImgCaption src={imgFs} alt="Fontsourceのサイト" type="border">
+  <OuterLink href="https://fontsource.org/">Fontsource</OuterLink>
+</ImgCaption>
+
+Fontsourceを使うことで、以下のようなメリットがあります。
+
+- パフォーマンスの向上
+- バージョン管理がしやすい
+- プライバシーの向上
+- オフラインでの利用が可能
+
+### メリット1. パフォーマンスの向上
+
+WebフォントのサービスとしてGoogle Fontsが有名ですが、CDNを経由して読み込むため、パフォーマンスが悪化することがあります。それに対してFontsourceは、**NPMパッケージとしてインストールするため、CDNに比べるとパフォーマンスが向上します。**
+
+### メリット2. バージョン管理がしやすい
+
+また、Google Fontsではフォントのバージョンアップが自動で行われるため、意図しないフォントの変更が発生することがあります。Fontsourceでは、NPMパッケージとしてフォントを利用するので、**バージョンのロックやアップデートなどを自身で管理することが可能**です。
+
+### メリット3. プライバシーの向上
+
+Google Fontsはフォントを読み込む際にユーザーの情報がGoogleに送信されるため、プライバシーが懸念されます。Fontsourceは、**フォントを自身のサーバーに保存すること（セルフホスティング）が可能なので、プライバシーの向上**が期待できます。
+
+### メリット4. オフラインでの利用が可能
+
+Fontsourceでフォントをインストールすると、**オフラインでの利用が可能**です。インターネットに接続できない状況でも、ローカル環境での開発中にフォントを表示することができます。
+
+## AstroにFontsourceでフォントを導入する手順
+
+FontsourceをAstroのプロジェクトに導入する手順は以下の通りです。
+
+1. Fontsourceで使用したいフォントを探す
+2. フォントのパッケージをインストールする
+3. Layoutコンポーネントでフォントを読み込む
+4. CSSでフォントを指定する
+
+### 1. Fontsourceで使用したいフォントを探す
+
+まずは、<OuterLink href="https://fontsource.org/">Fontsource</OuterLink>のサイトから使用したいフォントを探します。
+
+<Img src={imgNsJp} alt="Noto Sans JPのページ" type="border" />
+
+ここでは、<OuterLink href="https://fontsource.org/fonts/noto-sans-jp">Noto Sans JP</OuterLink>
+を読み込む場合を例に進めます。
+
+### 2. フォントのパッケージをインストールする
+
+[Install]をクリックし、Installationの箇所のコマンドをコピーします。
+
+<Img src={imgNsJpInstall} alt="Noto Sans JPをインストール" type="border" />
+
+ターミナルでコマンドを実行して、フォントのパッケージをインストールします。
+
+<CodeHead lang="sh" />
+
+```sh
+npm install @fontsource-variable/noto-sans-jp
+```
+
+### 3. Layoutコンポーネントでフォントを読み込む
+
+サイト全体でフォントを利用するために、共通のコンポーネントである`Layout`コンポーネントでフォントを読み込みます。
+
+インポート時に記述するコードは、Fontsourceの[Import]からコピーしてください。
+
+<Img src={imgFsImport} alt="フォントをLayout.astroでインポート" type="border" />
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers
+---
+// Supports weights 100-900
+import '@fontsource-variable/noto-sans-jp';
+---
+```
+
+これで、プロジェクト全体でNoto Sans JPが利用できるようになりました。
+
+### 4. CSSでフォントを指定する
+
+最後に、CSSでフォントを指定します。
+
+[CSS]からコードをコピーして、スタイルに記述します。
+
+<Img src={imgFsCss} alt="CSSに指定するコード" type="border" />
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers
+---
+// Supports weights 100-900
+import '@fontsource-variable/noto-sans-jp';
+---
+
+<style>
+  body {
+    font-family: 'Noto Sans JP Variable', sans-serif;
+  }
+</style>
+```
+
+これで`body`要素にNoto Sans JPが適用されました。
+
+ここでは`style`タグ内に記述しましたが、CSSファイル内や他の場所でも使用可能です。
+
+もし他のページやコンポーネントでフォントを適用したい場合は、CSS変数化しておくと便利です。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers
+<style>
+  :root {
+    --font-noto: 'Noto Sans JP Variable', sans-serif;
+  }
+</style>
+```
+
+これでサイト全体でCSS変数を利用できるようになります。
+
+## 【まとめ】FontsourceでAstroにフォントを導入する方法
+
+今回の記事では、FontsourceでAstroにWebフォントを導入する方法を解説しました。
+
+1. Fontsourceから使用したいフォントを探す
+2. フォントのパッケージをインストールする
+3. 共通コンポーネントでフォントを読み込む
+4. CSSでフォントを指定する
+
+という手順で簡単にWebフォントを導入することができます。
+
+<Spacer />
+
+実際に使用してみた感想としては、手軽にフォントを導入できるという点においては優れていると感じました。
+
+ただし、パフォーマンスに関してはまだまだ改善点がありそうなので、よりよい方法が見つかればまた記事にしたいと思います。

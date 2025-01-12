@@ -21,7 +21,7 @@ const articleCollection = defineCollection({
           "netlify",
           "jamstack",
           "partytown",
-          "partytown",
+          "fontsource",
         ])
       ),
       publishedAt: z.date(),

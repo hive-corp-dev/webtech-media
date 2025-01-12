@@ -142,4 +142,8 @@
   &[data-lang="mdx"] {
     margin-right: 0.6rem;
   }
+
+  &[data-lang="sh"] {
+    display: flex;
+  }
 }
