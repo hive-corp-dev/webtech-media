@@ -1,0 +1,238 @@
+---
+isDraft: false
+title: "【Astro】GithubのPrivateリポジトリにGiscusのコメント機能を導入する方法"
+description: "Astroのサイトにgiscusでコメント機能を導入する方法を紹介します。Githubのprivateリポジトリでもコメント機能を利用可能にする方法も合わせて説明します。"
+tags: ["astro", "giscus"]
+publishedAt: 2025-01-14T03:00:00Z
+thumbnail: "./images/astro-install-giscus/thumb.png"
+---
+
+import imgNewRepo from "@article/images/astro-install-giscus/new-repo.png";
+import imgSettings from "@article/images/astro-install-giscus/settings.png";
+import imgCategory from "@article/images/astro-install-giscus/category.png";
+import imgGiscusRepo from "@article/images/astro-install-giscus/giscus-repo.png";
+import imgInstall from "@article/images/astro-install-giscus/install.png";
+import imgSelectRepo from "@article/images/astro-install-giscus/select-repo.png";
+import imgDiscussions from "@article/images/astro-install-giscus/discussions.png";
+import imgEmbedScript from "@article/images/astro-install-giscus/embed-script.png";
+import imgScreenshot from "@article/images/astro-install-giscus/screenshot.png";
+import imgCommentLogin from "@article/images/astro-install-giscus/comment-login.png";
+
+Astroでブログやウェブサイトを構築していると、訪問者とのコミュニケーション手段としてコメント機能を追加したいという場合があるでしょう。
+
+しかし、コメント機能を一から自作するのは技術的なハードルが高い上に、運用やセキュリティ面でも手間がかかります。
+
+そこで今回の記事では、Github Discussionsをベースにしたシステム「giscus」を導入して、Astroのサイトにコメント機能を追加する方法を紹介します！
+
+Astro製のサイトにコメント機能を手軽に追加したい場合は、ぜひこの記事を参考に試してみてください。
+
+<ArticleToc />
+
+## giscusとは
+
+本題に入る前に、まずはgiscusについて簡単に説明します。
+
+giscusに関する説明をスキップしたい場合は<a href="#astroでgiscusを利用する手順">こちら</a>から読み進めてください。
+
+### giscusの特徴
+
+<OuterLink href="https://giscus.app/ja">giscus</OuterLink>とは、**Github Discussionsを利用したコメントシステム**です。
+
+メリットを簡単にまとめると、以下の通りです。
+
+- オープンソース
+- 利用は完全無料
+- データベース不要（データはGithub Discussionsに保管される）
+- Light/Darkモードに対応
+- 多言語対応
+- 自動でコメントや編集内容を取得
+- セルフホスティング可能
+
+無料で使える上にデータベースを用意しなくてもいいので、実装のハードルが低いのが強みですね。
+
+### giscusの注意点
+
+上で紹介した通りgiscusには多くのメリットがありますが、以下のような注意点もあります。
+
+- コメントするにはGithubアカウントが必要
+- publicリポジトリのみで利用可能
+
+#### コメントするにはGithubアカウントが必要
+
+giscusで作成したコメント機能でコメントやリアクションを行うには、**Githubアカウントが必要**となります。
+
+<ImgCaption src={imgCommentLogin} alt="コメントを残すにはGithubアカウントでログインする必要がある" type="border">
+  コメントを投稿するには、Githubアカウントでログインする必要がある
+</ImgCaption>
+
+開発者であればGithubアカウントを持っていることが多いので良いですが、それ以外のユーザーはコメント機能は一切使えないという問題があります。
+
+そのため、サイトのターゲットによってはgiscusは適していないかもしれません。当サイトのようなテックブログであれば、訪問者の多くは開発者なので問題ないでしょう。
+
+#### publicリポジトリのみで利用可能
+
+giscusを利用するには、Githubのリポジトリがpublicである必要があります。
+
+しかし、この点に関しては**Privateリポジトリでも利用する方法**がありますので、問題ありません。
+
+giscusコメント専用のリポジトリを新規で作成し、
+
+- プロジェクトのリポジトリをprivateにする
+- コメント専用のリポジトリをpublicにする
+
+という方法で、Privateリポジトリでもgiscusを利用することができます。
+
+<InfoBox type="success">
+  プロジェクトのリポジトリがpublicであれば、1つのリポジトリ内で両方とも利用することも可能です。
+</InfoBox>
+
+## Astroでgiscusを利用する手順
+
+ここからは、実際にAstroのサイトにgiscusを導入する手順を解説します。
+
+1. Githubでpublicの新規リポジトリを作成する
+2. SettingsからDiscussionsにチェックをつける
+3. giscusをインストールする
+4. giscusの設定を行う
+5. scriptタグを記事ページに追加する
+
+### 1. Githubでpublicの新規リポジトリを作成する
+
+まず最初に、giscusのコメントを保管するためのリポジトリを作成します。
+
+※もしプロジェクトのリポジトリが`public`の場合は、スキップしてください。
+
+<Img src={imgNewRepo} alt="新規リポジトリを作成する" type="border" />
+
+### 2. SettingsからDiscussionsにチェックをつける
+
+次に、リポジトリの[Settings]ページに移動します。
+
+<Img src={imgSettings} alt="Settingsに移動" type="border" />
+
+[Discussions]にチェックをつけます。
+
+<Img src={imgDiscussions} alt="Discussionsにチェックをつける" type="border" />
+
+### 3. giscusをインストールする
+
+次に、giscusアプリをインストールします。
+
+Github Appsの<OuterLink href="https://github.com/apps/giscus">giscusページ</OuterLink>にアクセスし、[Install]をクリックします。
+
+<Img src={imgInstall} alt="giscusをインストール" type="border" />
+
+giscusを利用するリポジトリを選択し、[Save]をクリックします。
+
+<Img src={imgSelectRepo} alt="giscusを利用するリポジトリを選択" type="border" />
+
+### 4. giscusの設定を行う
+
+giscusがインストールできたので、次はgiscusの設定を行います。
+
+<OuterLink href="https://giscus.app/ja">{`https://giscus.app/ja`}</OuterLink>にアクセスします。
+
+まずは[設定]→[リポジトリ]から、ユーザー名/リポジトリ名を入力します。
+
+<Img src={imgGiscusRepo} alt="ユーザー名/リポジトリ名を入力する" type="border" />
+
+全ての条件を満たしている場合は、緑のチェックマークが表示されるはずです。
+
+<Spacer />
+
+上記以外の設定に関しては、自身のサイトに合わせて行ってください。
+
+- ページとDiscussions連携設定
+- Discussionで使用するカテゴリ
+- 機能
+- テーマ
+
+これらの4つの設定を行うことで、giscusの設定は完了です。
+
+このうちの「Discussionで使用するカテゴリ」に関しては`Announcements`にすることが推奨されているので、`Announcements`を設定しておきましょう。
+
+<Img src={imgCategory} alt="Discussionで使用するカテゴリ" type="border" />
+
+これらの設定が終わると、埋め込み用の`script`タグが表示されるので、コピーしておきます。
+
+<Img src={imgEmbedScript} alt="giscusのscriptタグ" type="border" />
+
+これでgiscus側での作業は完了です！
+
+### 5. scriptタグを記事ページに追加する
+
+最後に、Astroプロジェクトをエディタで開き作業を行います。
+
+`Comments.astro`コンポーネントを作成し、先ほどコピーした`script`タグをペーストします。
+
+また、`script`タグには`is:inline`を追記しておきます。
+
+<CodeHead lang="astro" name="src/components/Comments.astro" />
+
+```astro {showLineNumbers}
+<script is:inline src="https://giscus.app/client.js"
+  data-repo="リポジトリ名"
+  data-repo-id="リポジトリID"
+  data-category="カテゴリー"
+  data-category-id="カテゴリーID"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="preferred_color_scheme"
+  data-lang="ja"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async>
+</script>
+```
+
+こちらのコードはダミーですので、自身の埋め込みタグを使用してください。
+
+スタイルを追加する場合は、`style`タグに`is:global`ディレクティブを付与することで適用できます。
+
+<CodeHead lang="astro" name="src/components/Comments.astro" />
+
+```astro {showLineNumbers}
+<style is:global>
+  .giscus {
+    margin-top: 40px;
+  }
+</style>
+```
+
+<Spacer />
+
+次に、この`Comments.astro`コンポーネントを記事ページに追加します。
+
+記事のテンプレートファイルを開き、コメント機能を表示したい箇所に`Comments`コンポーネントを追加してください。
+
+<CodeHead lang="astro" name="src/pages/[...slug].astro" />
+
+```astro {showLineNumbers}
+---
+import Comments from '@/components/Comments.astro';
+---
+
+<Layout>
+  <!-- 任意の箇所に埋め込む -->
+  <Comments />
+</Layout>
+```
+
+これで記事ページをブラウザで開くと、添付のようなコメントセクションが表示されているはずです。
+
+<Img src={imgScreenshot} alt="giscusのデザイン確認用スクリーンショット" type="border" />
+
+以上でgiscusの導入は完了です！
+
+## 【まとめ】GithubのPrivateリポジトリにGiscusのコメント機能を導入する方法
+
+今回は、Astroのサイトにgiscusを導入する方法を解説しました。
+
+Privateリポジトリでサイトを管理している場合でも、コメント用のPublicリポジトリを別で作成することで利用可能になります。
+
+Astroで作成したサイトやブログにコメント機能を追加したい場合は、ぜひgiscusを利用してみてください。
+
+もしこの記事が役に立ったなら、以下からリアクションやコメントをいただけると嬉しいです・・！

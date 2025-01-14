@@ -22,6 +22,7 @@ const articleCollection = defineCollection({
           "jamstack",
           "partytown",
           "fontsource",
+          "giscus",
         ])
       ),
       publishedAt: z.date(),

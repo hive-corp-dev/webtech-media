@@ -43,4 +43,8 @@ export const articleTags = [
     slug: "fontsource",
     label: "Fontsource",
   },
+  {
+    slug: "giscus",
+    label: "giscus",
+  },
 ];

@@ -10,6 +10,7 @@ import Breadcrumb from '@components/common/Breadcrumb.astro';
 import ArticleSidebar from '@components/article/ArticleSidebar.astro';
 import { ARTICLE_SINGLE_METADATA } from '@data/metadata';
 import ArticleShare from '@components/article/ArticleShare.astro';
+import ArticleComments from '@components/article/ArticleComments.astro';
 
 const url = Astro.url.origin;
 const currentPostUrl = Astro.url.href;
@@ -38,6 +39,7 @@ const { entry } = Astro.props;
             <ArticleHead title={entry.data.title} thumbnail={entry.data.thumbnail} publishedAt={entry.data.publishedAt} revisedAt={entry.data.revisedAt} tags={entry.data.tags} />
             <ArticleContent entry={entry} components={{CodeHead, TestBtn}} />
             <ArticleShare postUrl={currentPostUrl} title={entry.data.title} />
+            <ArticleComments />
           </Container>
         </main>
         <ArticleSidebar />
