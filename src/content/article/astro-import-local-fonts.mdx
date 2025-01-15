@@ -1,0 +1,238 @@
+---
+isDraft: false
+title: "Astroで独自フォントファイルを@font-faceで設定する方法"
+description: "Astroで独自フォントを@font-faceで設定する具体的な手順を解説！フォントファイルの配置方法から、CSSの記述例や@font-faceの記法など、初心者にも分かりやすく説明します。"
+tags: ["astro"]
+publishedAt: 2025-01-15T21:00:00Z
+thumbnail: "./images/astro-import-local-fonts/thumb.png"
+---
+
+Astroプロジェクト内で、ダウンロードしたフォントファイルを使用したい場合があるかと思います。今回の記事では、Astroで独自フォントファイルを使用する方法を紹介します。
+
+<ArticleToc />
+
+## Astroでフォントファイルを設定する手順
+
+Astroでカスタムフォントを使用する手順は、以下の通りです。
+
+1. フォントファイルを用意する
+2. フォントファイルをpublicディレクトリに配置する
+3. @font-face文を記述する
+4. CSSでフォントを指定する
+
+### 1. フォントファイルを用意する
+
+まずは、使用したいフォントファイルを用意しましょう。
+
+フォントの種類が多く、`woff2`形式でダウンロードできる<OuterLink href="https://gwfh.mranftl.com/fonts">google-webfonts-helper</OuterLink>がおすすめです。
+
+### 2. フォントファイルをpublicディレクトリに配置する
+
+ダウンロードしたフォントファイルを、Astroプロジェクトの`public`ディレクトリに配置します。
+
+ここでは、`public/fonts`ディレクトリを作成し、その中にフォントファイルを格納しています。
+
+### 3. @font-face文を記述する
+
+`@font-face`文を使用して、フォントファイルを読み込みます。
+
+<CodeHead lang="css" />
+
+```css
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/noto-sans-jp-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+```
+
+Astroでは、`public`ディレクトリは`/`で参照できるため、`url("/fonts/...")`のように記述します。
+
+#### @font-faceの記述場所
+
+`@font-face`の記述は、CSSファイル内でも`<style>`タグ内でも構いません。
+
+##### CSSファイル内で記述する場合
+
+CSSファイルに記述し、全体の共通コンポーネントで読み込む場合は、`src/styles/global.css`を作成します。（ファイル名は任意）
+
+<CodeHead lang="css" name="src/styles/global.css" />
+
+```css showLineNumbers
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/noto-sans-jp-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+```
+
+共通コンポーネント内（一般的には`Layout.astro`）のフロントマターでCSSファイルを読み込むと完了です。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers
+---
+import '../styles/global.css';
+---
+```
+
+##### styleタグに記述する場合
+
+`<style>`タグ内に記述する場合は、コンポーネント内に直接記述します。
+
+サイト全体に適用するには、`is:global`ディレクティブを付与します。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers
+<style is:global>
+  @font-face {
+    font-family: "Noto Sans JP";
+    src: url("/fonts/noto-sans-jp-regular.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
+</style>
+```
+
+特定のコンポーネントのみで使用する場合は、`is:global`なしで記述することも可能です。
+
+<CodeHead lang="astro" name="src/components/Example.astro" />
+
+```astro showLineNumbers
+<style>
+  @font-face {
+    font-family: "Noto Sans JP";
+    src: url("/fonts/noto-sans-jp-regular.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
+</style>
+```
+
+### 4. CSSでフォントを指定する
+
+最後に、フォントを使用したい箇所でCSSを記述します。
+
+<CodeHead lang="astro" name="src/pages/example.astro" />
+
+```astro showLineNumbers
+
+<p>ダミーテキストです。</p>
+
+<p class="noto">このテキストには、Noto Sans JPが適用されます。</p>
+
+<style>
+  .noto {
+    font-family: "Noto Sans JP", sans-serif;
+  }
+</style>
+```
+
+`font-family`には、`@font-face`で指定した`font-family`を記述します。
+
+これでカスタムフォントの導入と使用方法の解説は終わりです。
+
+## 【おまけ】@font-faceの書き方
+
+`@font-face`の記述方法を簡単にまとめましたので、必要であれば参考にしてください。
+
+### 同じフォントで複数のweightを指定する場合
+
+同一フォントで異なる太さを指定する場合は、`font-family`は同じままで、`src`と`font-weight`を変更します。
+
+<CodeHead lang="css" />
+
+```css showLineNumbers
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/noto-sans-jp-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/noto-sans-jp-medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/noto-sans-jp-bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+```
+
+### 同じフォントでstyleを指定する場合
+
+同じフォントで異なる`font-style`を指定する場合には、`src`と`font-style`を変更します。
+
+<CodeHead lang="css" />
+
+```css showLineNumbers
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/noto-sans-jp-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/noto-sans-jp-italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+```
+
+### 複数のフォーマットを指定する場合
+
+`src`は複数指定することが可能です。
+
+例えば、`woff2`をサポートしているブラウザには`woff2`を適用し、フォールバックとして他のフォーマットを指定することができます。
+
+<CodeHead lang="css" />
+
+```css showLineNumbers
+@font-face {
+  font-family: "Noto Sans JP";
+  src:
+    url("/fonts/noto-sans-jp-regular.woff2") format("woff2"),
+    url("/fonts/noto-sans-jp-regular.woff") format("woff"),
+    url("/fonts/noto-sans-jp-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+```
+
+`src`を複数指定する場合、**上から順番にブラウザがサポートしているフォーマットが適用される**ので、一番上に圧縮率が高いフォーマットを指定しましょう。
+
+## 【まとめ】Astroで独自フォントファイルを@font-faceで設定する方法
+
+今回の記事では、Astroで独自フォントファイルを使用する手順を解説しました。
+
+1. フォントファイルを用意する
+2. フォントファイルをpublicディレクトリに配置する
+3. @font-face文を記述する
+4. CSSでフォントを指定する
+
+もしAstroでカスタムフォントを使用する場合は、ぜひ参考にしてみてください！
+
+また、Fontsourceでフォントを使用する方法についても解説していますので、こちらも合わせてご覧ください。
+
+https://webtech-media.jp/article/astro-use-fontsource

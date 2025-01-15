@@ -3,6 +3,9 @@ import Container from "./common/Container.astro"
 import { Image } from "astro:assets"
 import logo from '@assets/images/logo-white.svg';
 const isTopPage = Astro.url.pathname === '/';
+import { FaXTwitter } from "react-icons/fa6";
+import { FiGithub } from "react-icons/fi";
+import {X_PROFILE_URL, GITHUB_PROFILE_URL} from '@data/sitedata';
 ---
 <footer class="footer">
   <div class="content">
@@ -43,7 +46,13 @@ const isTopPage = Astro.url.pathname === '/';
           </ul>
         </nav>
       </div>
-      <div class="owned-site">運用中のサイト: <a href="https://web-dev.tech/" target="_blank">WebDev Tech</a></div>
+      <div class="sub-info">
+        <span>運用中のサイト: <a href="https://web-dev.tech/" target="_blank">WebDev Tech</a></span>
+      </div>
+      <div class="sns">
+        <a href={X_PROFILE_URL} target="_blank" class="sns-icon"><FaXTwitter /></a>
+        <a href={GITHUB_PROFILE_URL} target="_blank" class="sns-icon -gh"><FiGithub /></a>
+      </div>
     </Container>
   </div>
   <p class="copy">&copy; WebTech Media All Rights Reserved.</p>
@@ -60,7 +69,7 @@ const isTopPage = Astro.url.pathname === '/';
 }
 
 .content {
-  padding: 8rem 0 6rem;
+  padding: 8rem 0 2.4rem;
 
   @include mixin.sp {
     padding: 6.4rem 0 4rem;
@@ -212,18 +221,27 @@ const isTopPage = Astro.url.pathname === '/';
   }
 }
 
-.owned-site {
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: var.$c-white;
+.sub-info {
   transform: translateY(-1.6rem);
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
 
   @include mixin.sp {
     transform: translateY(0);
     text-align: center;
-    font-size: 1.1rem;
     margin-top: 4rem;
+  }
+
+  span {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var.$c-white;
+
+    @include mixin.sp {
+      font-size: 1.1rem;
+    }
   }
   
   a {
@@ -235,6 +253,40 @@ const isTopPage = Astro.url.pathname === '/';
       &:hover {
         opacity: .8;
       }
+    }
+  }
+}
+
+.sns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .8rem;
+  margin-top: 2.4rem;
+
+  @include mixin.sp {
+    margin-top: 4rem;
+  }
+}
+
+.sns-icon {
+  width: 4rem;
+  height: 4rem;
+  background-color: #26326f;
+  color: var.$c-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all .3s;
+
+  &.-gh {
+    font-size: 1.7rem;
+  }
+
+  @include mixin.hover {
+    &:hover {
+      background-color: var.$c-main-v;
     }
   }
 }

@@ -35,11 +35,11 @@
 
   h2 {
     position: relative;
-    font-size: 2.6rem;
+    font-size: 2.8rem;
     background-color: #1b85ff;
     background-color: var.$c-main;
     // background-image: linear-gradient(to right bottom, #006ce8, #31b3ff);
-    padding: 0.8rem 1.6rem;
+    padding: 1.6rem;
     color: #fff;
 
     @include mixin.sp {
@@ -48,9 +48,9 @@
   }
 
   h3 {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
     padding: 0 1.2rem;
-    border-left: 0.4rem solid var.$c-main;
+    border-left: 0.4rem solid var.$c-text;
 
     @include mixin.sp {
       font-size: 1.8rem;
@@ -60,17 +60,17 @@
 
   h4 {
     font-size: 2.2rem;
-    background-color: #f3f3fa;
-    padding: 0.8rem 1.2rem;
+    padding: 0 0 0.8rem 0;
+    border-bottom: 0.3rem solid var.$c-text;
 
     @include mixin.sp {
       font-size: 1.6rem;
+      border-bottom-width: 0.2rem;
     }
   }
 
   h5 {
     font-size: 2rem;
-    border-bottom: 0.2rem solid #e8edf2;
     padding-bottom: 0.8rem;
 
     @include mixin.sp {
