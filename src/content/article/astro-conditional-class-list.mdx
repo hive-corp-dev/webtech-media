@@ -1,0 +1,288 @@
+---
+isDraft: false
+title: "Astroでクラスを動的に付け替える方法【class:list】"
+description: ""
+tags: ["astro"]
+publishedAt: 2025-01-22T03:00:00Z
+thumbnail: "./images/astro-conditional-class-list/thumb.png"
+---
+
+Astroで、Propsによってクラスを動的に付け替えたり、条件によってクラスを付与/削除したい場合があるかと思います。
+
+また、子コンポーネントに追加のクラスを付与し、コンポーネントのスタイルを上書きしたい場合もあるかもしれません。
+
+これらの挙動は、Astroの`class:list`ディレクティブを使うことで簡単に実装可能です！
+
+<Spacer />
+
+そこで今回の記事では、`class:list`を使用してAstroでクラスを動的に付け替える方法を解説します。
+
+実用例も合わせて紹介しますので、ぜひ参考にしてみてください。
+
+## class:listディレクティブとは
+
+`class:list`ディレクティブは、文字列、配列、オブジェクト形式のクラス値を配列で受け取り、1つのまとまった文字列に変換してくれる機能です。
+
+公式ドキュメントによると<OuterLink href='https://github.com/lukeed/clsx'>clsx</OuterLink>ライブラリが使用されているそうなので、Reactを触ったことがある方は馴染みがあるかもしれません。
+
+<CodeHead lang="astro" />
+
+```jsx showLineNumbers
+<div class:list={[]}></div>
+```
+
+`{[]}`には、**文字列、配列、オブジェクト形式**のクラス値を入れることができます。
+
+- 文字列：そのままのクラスとして追加される
+- オブジェクト：値が真の場合、キーがクラス名として追加される
+- 配列：配列内の文字列が展開されクラスとして追加される
+
+<CodeHead lang="astro" />
+
+```jsx showLineNumbers
+// 文字列を入れた場合
+<div class:list={["sample", "sample-1", "sample-2"]}></div>
+// ↓そのまま出力される
+<div class="sample sample-1 sample-2"></div>
+
+// オブジェクトを入れた場合
+<div class:list={[{"sample": true}, {"sample-1": false}, {"sample-2": true}]}></div>
+// ↓trueのものだけ出力される
+<div class="sample sample-2"></div>
+
+// 配列を入れた場合
+<div class:list={[["sample", "sample-1", "sample-2"]]}></div>
+// ↓配列内のクラスが展開される
+<div class="sample sample-1 sample-2"></div>
+
+// 複数の形式を組み合わせた場合
+<div class:list={["sample", ["sample-1", "sample-2"], {"sample-3": true}]}></div>
+// ↓それぞれの形式が展開される
+<div class="sample sample-1 sample-2 sample-3"></div>
+```
+
+テキストはそのまま、オブジェクトは真のキーだけ、配列は展開されてクラスとして追加されます。
+
+また、`false`, `null`, `undefined`の値は無視されます。
+
+<CodeHead lang="astro" />
+
+```jsx showLineNumbers
+// false, null, undefinedを含む場合
+<div class:list={[{ sample: false }, { "sample-1": null }, { "sample-2": undefined }]}></div>;
+
+// ↓false, null, undefinedは無視される
+<div></div>;
+```
+
+全てのクラス値が`false`, `null`, `undefined`の場合、`class`は属性ごと取り除かれます。
+
+これで`class:list`ディレクティブの基本的な使い方の説明は終わりです！
+
+次は、実際の使用例を状況別に見ていきましょう。
+
+## 【実用例】class:listディレクティブの使い方
+
+実際によくある状況を例に、`class:list`ディレクティブの使い方を説明していきます。
+
+### Propsの真偽値によってクラスを付与する
+
+Propsの真偽値によってクラスを付与する場合を見てみましょう。
+
+ここでは、`<CustomImage />`コンポーネントを例に、`rounded`というPropsが`true`の場合に`rounded`クラスを付与する例を紹介します。
+
+<CodeHead lang="astro" name="src/components/CutomImage.astro" />
+
+```jsx showLineNumbers
+---
+const {src, alt, rounded} = Astro.props;
+---
+
+<img src={src} alt={alt} class:list={['image', {rounded: rounded}]} />
+
+<style>
+  .image {
+    width: 100%;
+    height: auto;
+  }
+
+  image.rounded {
+    border-radius: 20px;
+  }
+</style>
+```
+
+デフォルトの`image`クラスに加えて、propsの`rounded`が`true`の場合に`rounded`クラスが追加されます。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```jsx showLineNumbers
+---
+import CustomImage from '../components/CustomImage.astro';
+---
+
+// roundedクラスが付与される
+<CustomImage src="/image.jpg" alt="image" rounded={true} />
+
+// roundedクラスが付与されない
+<CustomImage src="/image.jpg" alt="image" />
+```
+
+### Propsの文字列によってクラスを付与する
+
+Propsの真偽値では、`true`か`false`の2択しか扱えませんが、文字列を使うことでより柔軟にクラスを付与することができます。
+
+ここでは、さまざまなデザインパターンがある`<CustomBtn />`コンポーネントを例に、Propsの文字列によってクラスを付与する例を紹介します。
+
+ボタンのタイプを`primary`, `secondary`, `tertiary`の3つから選べるようにします。
+
+<CodeHead lang="astro" name="src/components/CustomBtn.astro" />
+
+```jsx showLineNumbers
+---
+const {type} = Astro.props;
+---
+
+<button class:list={['btn', type]}>
+  <slot />
+</button>
+
+<style>
+.btn {
+  display: block;
+}
+
+.btn.primary {
+  background-color: red;
+}
+
+.btn.secondary {
+  background-color: green;
+}
+
+.btn.tertiary {
+  background-color: blue;
+}
+</style>
+```
+
+`<CustomBtn>`を呼び出す際に、`type`に`primary`, `secondary`, `tertiary`のいずれかを指定することで、ボタンのデザインを変更できます。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```jsx showLineNumbers
+---
+import CustomBtn from '../components/CustomBtn.astro';
+---
+
+<CustomBtn type="primary">Primaryボタン</CustomBtn>
+
+<CustomBtn type="secondary">Secondaryボタン</CustomBtn>
+
+<CustomBtn type="tertiary">Tertiaryボタン</CustomBtn>
+```
+
+### 子コンポーネントにクラスを追加してスタイルを上書きする
+
+子コンポーネント側にクラスを追加して、親コンポーネントのスタイルを上書きすることもできます。
+
+ここでは、`<CustomContainer />`コンポーネントを例に、子コンポーネントにクラスを追加してスタイルを上書きする例を紹介します。
+
+<Spacer />
+
+まずは、通常通りコンポーネントを作成するのですが、ハイライト部分に注目してください。
+
+<CodeHead lang="astro" name="src/components/CustomContainer.astro" />
+
+```jsx showLineNumbers {2,5}
+---
+const { class: className, ...rest } = Astro.props;
+---
+
+<div class:list={['container', className]} {...rest}>
+  <slot />
+</div>
+
+<style>
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+</style>
+```
+
+`class`はJavaScriptの予約語なので、以下のように`class`をAstro.propsから取り出すことができません。
+
+そのため、`class`を`className`などの別名で取り出すようにします。
+
+<CodeHead lang="astro" name="src/components/CustomContainer.astro" />
+
+```jsx showLineNumbers
+---
+// 以下のように書くとエラーになる
+const { class } = Astro.props;
+
+// 代わりに以下のように書く
+const { class: className } = Astro.props;
+---
+```
+
+Astro.propsから`class`以外の全てのプロパティをまとめて取得するために、`{...rest}`を使用しています。（これがないと正しく動作しません）
+
+<CodeHead lang="astro" name="src/components/CustomContainer.astro" />
+
+```jsx showLineNumbers
+<div class:list={["container", className]} {...rest}>
+  <slot />
+</div>
+```
+
+<Spacer />
+
+`<CustomContainer>`を呼び出す際に、`className`に追加のクラスを指定することで、スタイルを上書きできます。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```jsx showLineNumbers
+---
+import CustomContainer from '../components/CustomContainer.astro';
+---
+
+<CustomContainer class="custom">
+  <p>ダミーテキストです。</p>
+</CustomContainer>
+
+<style>
+.custom {
+  max-width: 1000px; /* 親コンポーネントのmax-widthを上書き */
+  background-color: lightgray; /* 追加のスタイルも記述可能 */
+}
+</style>
+```
+
+これで、子コンポーネントにクラスを追加してスタイルを上書きする方法は終わりです。
+
+こちらは比較的よく使うパターンなので、ぜひ覚えておいてください。
+
+## 【まとめ】Astroでクラスを動的に付け替える方法とclass:listの使用法
+
+今回は、Astroでクラスを動的に付け替える方法を解説しました。
+
+`class:list`には、以下の3つの形式でクラスを指定することができます。
+
+- 文字列：そのままのクラスとして追加される
+- オブジェクト：値が真の場合、キーがクラス名として追加される
+- 配列：配列内の文字列が展開されクラスとして追加される
+
+<Spacer />
+
+また、実際に使用する例として、
+
+- Propsの真偽値によってクラスを付与する
+- Propsの文字列によってクラスを付与する
+- 子コンポーネントにクラスを追加してスタイルを上書きする
+
+といった状況別の例を紹介しました。
+
+Astroでクラスを動的に付け替える際には、ぜひ`class:list`ディレクティブを活用してみてください！
