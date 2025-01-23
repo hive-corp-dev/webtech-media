@@ -8,7 +8,6 @@ import HamburgerMenu from '@components/HamburgerMenu.astro';
 import Seo from '@components/Seo.astro';
 import GoogleAnalytics from '@components/meta/GoogleAnalytics.astro';
 import Clarity from '@components/meta/Clarity.astro';
-import { ClientRouter } from 'astro:transitions';
 
 // 
 import { getImage } from 'astro:assets';
@@ -39,7 +38,6 @@ const isProduction = import.meta.env.ENVIRONMENT === 'production';
 		<meta name="generator" content={Astro.generator} />
 		<style define:vars={{optimizedImage: `url(${optimizedImage.src})`}}></style>
 		<Seo title={title} description={description} ogImageUrl={ogImageUrl} ogType={ogType} noindex={noindex} nofollow={nofollow} />
-		<ClientRouter />
 		{
 			isProduction && (<script is:inline>console.log('this is prod')</script>)
 		}

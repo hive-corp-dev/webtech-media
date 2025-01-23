@@ -44,13 +44,11 @@ const pathname = Astro.url.pathname;
 </header>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
-    const hamburgerBtn = document.querySelector('.js-hamburger-btn');
-    const body = document.body;
+  const hamburgerBtn = document.querySelector('.js-hamburger-btn');
+  const body = document.body;
 
-    hamburgerBtn.addEventListener('click', () => {
-      body.classList.toggle('is-hamburger-menu-open');
-    });
+  hamburgerBtn.addEventListener('click', () => {
+    body.classList.toggle('is-hamburger-menu-open');
   });
 </script>
 

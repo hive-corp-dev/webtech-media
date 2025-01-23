@@ -144,9 +144,7 @@
 </style>
 
 <script>
-document.addEventListener('astro:page-load', () => {
-
-  if(!document.querySelector('.js-sidebar-toc-block')) return;
+  // if(!document.querySelector('.js-sidebar-toc-block')) return;
   
   const btn = document.querySelector('.js-toggle-toc');
   const body = document.body;
@@ -161,5 +159,4 @@ document.addEventListener('astro:page-load', () => {
       body.classList.remove('is-toc-open');
     }
   });
-})
 </script>

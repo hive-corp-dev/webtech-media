@@ -52,8 +52,6 @@ const { entry } = Astro.props;
 
 <script>
   import * as tocbot from 'tocbot'
-
-  document.addEventListener('astro:page-load', () => {
     // 目次
     tocbot.init({
       tocSelector: '.toc', // 目次を追加するクラス名
@@ -79,7 +77,6 @@ const { entry } = Astro.props;
     })
     }, 500);
   
-  
     // コードのコピー
     const copyBtns = document.querySelectorAll('.js-pre-copy');
     copyBtns.forEach(btn => {
@@ -99,10 +96,6 @@ const { entry } = Astro.props;
         }, 1500);
       }
     });
-  })
-
-
-
 </script>
 
 <style lang="scss">
@@ -143,5 +136,4 @@ const { entry } = Astro.props;
     padding: 2.4rem 0 4rem;
   }
 }
-
 </style>
