@@ -1,7 +1,6 @@
 ---
-const uniqueId = Math.random().toString(36).substring(7);
 ---
-<div id={uniqueId} class="ad-unit">
+<div class="ad-unit">
   <ins class="adsbygoogle"
   style="display:block; text-align:center;"
   data-ad-layout="in-article"
@@ -9,30 +8,7 @@ const uniqueId = Math.random().toString(36).substring(7);
   data-ad-client="ca-pub-1076760418024606"
   data-ad-slot="8654068992"></ins>
 </div>
-<script is:inline define:vars={{uniqueId}}>
 
-  document.addEventListener('astro:before-preparation', () => {
-    // const adElement = document.getElementById(`${uniqueId}`); // ユニークIDで特定の広告を取得
-    // if (adElement) {
-    //   adElement.remove();
-    // }
-    // const adUnits = document.querySelectorAll('.ad-unit .adsbygoogle');
-
-    // console.log('AFTERSWAP');
-    // console.log(adUnits);
-
-    // if(adUnits.length !== 0) {
-    //   window.adsbygoogle = [];
-    // }
-
-    // console.log('remove ad');
-    // console.log(window.adsbygoogle);
-  });
-
-  document.addEventListener('astro:page-load', () => {
-    const adElement = document.getElementById(`${uniqueId}`); // ユニークIDで特定の広告を取得
-    if (adElement) {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    }
-  });
+<script is:inline>
+  (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
