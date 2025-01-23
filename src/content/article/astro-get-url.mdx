@@ -15,6 +15,8 @@ Astroでは便利なグローバルオブジェクトやAPIが提供されてお
 
 <ArticleToc />
 
+<AdUnit />
+
 ## 動作環境
 
 当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
@@ -91,6 +93,8 @@ const currentPageUrl = Astro.request.url;
 
 https://docs.astro.build/en/reference/api-reference/#request
 
+<AdUnit />
+
 ## Astroで現在のページのホスト名やパス等を取得する
 
 次に、現在のページのホスト名やパスを取得する方法を見ていきましょう。
@@ -124,6 +128,8 @@ const currentPagePathname = Astro.url.pathname;
 
 他にも取得できるプロパティはいくつかありますので、詳しくは<OuterLink href="https://docs.astro.build/en/reference/api-reference/#url">公式ドキュメント</OuterLink>を参照してください。
 
+<AdUnit />
+
 ## 本番環境でURLが正しく取得されない場合
 
 上記で紹介したコードを使用しても、本番環境で`localhost`のURLが取得される場合があります。
@@ -146,6 +152,8 @@ export default defineConfig({
 ```
 
 上記の通り、`site`プロパティに本番環境のURLを指定することで、本番環境で正式なURLを取得できるようになります。
+
+<AdUnit />
 
 ## まとめ：Astroで現在のページのパスやURLを取得する方法
 
