@@ -11,19 +11,22 @@ const uniqueId = Math.random().toString(36).substring(7);
 </div>
 <script is:inline define:vars={{uniqueId}}>
 
-  document.addEventListener('astro:after-swap', () => {
+  document.addEventListener('astro:before-preparation', () => {
     // const adElement = document.getElementById(`${uniqueId}`); // ユニークIDで特定の広告を取得
     // if (adElement) {
     //   adElement.remove();
     // }
-    const adUnits = document.querySelectorAll('.ad-unit .adsbygoogle');
+    // const adUnits = document.querySelectorAll('.ad-unit .adsbygoogle');
 
-    console.log('AFTERSWAP');
-    console.log(adUnits);
+    // console.log('AFTERSWAP');
+    // console.log(adUnits);
 
-    if(adUnits.length !== 0) {
-      window.adsbygoogle = [];
-    }
+    // if(adUnits.length !== 0) {
+    //   window.adsbygoogle = [];
+    // }
+
+    // console.log('remove ad');
+    // console.log(window.adsbygoogle);
   });
 
   document.addEventListener('astro:page-load', () => {
