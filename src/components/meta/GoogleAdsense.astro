@@ -1,15 +1,6 @@
 ---
 const isProduction = import.meta.env.ENVIRONMENT === 'production';
 ---
-<!-- 
-{
-  isProduction ? (
-  <script is:inline data-astro-rerun async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076760418024606" crossorigin="anonymous"></script>
-  ) : (
-  <script is:inline data-astro-rerun data-adbreak-test="on" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076760418024606" crossorigin="anonymous"></script>
-  )
-} -->
-
 <script is:inline data-astro-rerun define:vars={{isProduction}}>
   let ad = document.createElement('script');
   ad.type = 'text/javascript';
