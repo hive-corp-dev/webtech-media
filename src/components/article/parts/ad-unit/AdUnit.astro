@@ -1,7 +1,7 @@
 ---
 const uniqueId = Math.random().toString(36).substring(7);
 ---
-<div id={uniqueId}>
+<div id={uniqueId} class="ad-unit">
   <ins class="adsbygoogle"
   style="display:block; text-align:center;"
   data-ad-layout="in-article"
@@ -11,10 +11,18 @@ const uniqueId = Math.random().toString(36).substring(7);
 </div>
 <script is:inline define:vars={{uniqueId}}>
 
-  document.addEventListener('astro:before-swap', () => {
-    const adElement = document.getElementById(`${uniqueId}`); // ユニークIDで特定の広告を取得
-    if (adElement) {
-      adElement.remove();
+  document.addEventListener('astro:after-swap', () => {
+    // const adElement = document.getElementById(`${uniqueId}`); // ユニークIDで特定の広告を取得
+    // if (adElement) {
+    //   adElement.remove();
+    // }
+    const adUnits = document.querySelectorAll('.ad-unit .adsbygoogle');
+
+    console.log('AFTERSWAP');
+    console.log(adUnits);
+
+    if(adUnits.length !== 0) {
+      window.adsbygoogle = [];
     }
   });
 
