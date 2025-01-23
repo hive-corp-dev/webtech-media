@@ -28,28 +28,3 @@ const adSlot = '8654068992';
     )
   }
 </div>
-
-<!-- <script is:inline data-astro-rerun define:vars={{adClient, isProduction}}>
-  function init() {
-    const adElement = document.querySelector('.ad-unit');
-    const observer = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) {
-        let ad = document.createElement('script');
-        ad.type = 'text/javascript';
-        ad.async = true;
-        ad.src =
-          'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + adClient;
-        ad.crossOrigin = 'anonymous';
-        if (!isProduction) {
-          ad.dataset.adbreakTest='on';
-        }
-        document.head.appendChild(ad);
-        observer.disconnect();
-      }
-    })
-    if (adElement) {
-      observer.observe(adElement);
-    }
-  }
-  init();
-</script> -->

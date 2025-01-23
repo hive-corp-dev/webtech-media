@@ -12,10 +12,10 @@ import { ARTICLE_SINGLE_METADATA } from '@data/metadata';
 import ArticleShare from '@components/article/ArticleShare.astro';
 import ArticleComments from '@components/article/ArticleComments.astro';
 
-
-
 const url = Astro.url.origin;
 const currentPostUrl = Astro.url.href;
+
+const isProduction = import.meta.env.ENVIRONMENT === 'production';
 
 export async function getStaticPaths() {
   const articleEntries = await getCollection('article');
@@ -100,9 +100,35 @@ const { entry } = Astro.props;
       }
     });
   })
+</script>
 
+<script is:inline data-astro-rerun define:vars={{isProduction}}>
+  function init() {
+  const adElements = document.querySelectorAll('.ad-unit');
+  const observer = new IntersectionObserver(function (entries, obs) {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        let ad = document.createElement('script');
+        ad.type = 'text/javascript';
+        ad.async = true;
+        ad.src =
+          'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076760418024606';
+        ad.crossOrigin = 'anonymous';
+        if (!isProduction) {
+          ad.dataset.adbreakTest = 'on';
+        }
+        document.head.appendChild(ad);
+        obs.unobserve(entry.target); // 一度だけ適用するために監視を停止
+      }
+    });
+  });
 
+    adElements.forEach((adElement) => {
+      observer.observe(adElement);
+    });
+  }
 
+  init();
 </script>
 
 <style lang="scss">
