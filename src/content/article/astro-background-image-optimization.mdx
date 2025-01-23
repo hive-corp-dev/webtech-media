@@ -22,6 +22,8 @@ Astroでは、画像最適化を自動で行ってくれる`<Image />`や`<Pictu
 
 <ArticleToc />
 
+<AdUnit />
+
 ## 開発環境のバージョン
 
 当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
@@ -60,6 +62,8 @@ import myImage from '../assets/images/my-image.jpg';
 画像の`width`・`height`は自動的に設定され、フォーマットはデフォルトでWebPに変換されます。
 
 当記事では、**CSSで設定する背景画像をWebPやその他の効率的なフォーマットに変換する方法**を解説します。
+
+<AdUnit />
 
 ## Astroで背景画像を最適化する方法
 
@@ -139,6 +143,8 @@ const optimizedImage = await getImage({
 以上で画像の最適化は完了です。
 
 次で、画像を背景画像として設定する2つの方法を説明していきます。
+
+<AdUnit />
 
 ## 最適化した画像を背景画像として設定する方法
 
@@ -279,6 +285,8 @@ const optimizedImageSp = await getImage({src: myImageSp});
 ```
 
 以上で、背景画像の最適化&設定方法の解説は終わりです！
+
+<AdUnit />
 
 ## 【まとめ】Astroで背景画像を最適化する方法と、ブレイクポイントでの画像切り替え
 
