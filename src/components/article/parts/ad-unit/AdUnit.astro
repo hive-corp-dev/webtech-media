@@ -1,38 +1,55 @@
 ---
-const uniqueId = Math.random().toString(36).substring(7);
+const isProduction = import.meta.env.ENVIRONMENT === 'production';
+
+const adClient = 'ca-pub-1076760418024606';
+const adSlot = '8654068992';
 ---
-<div id={uniqueId} class="ad-unit">
+
+<div class="ad-unit">
   <ins class="adsbygoogle"
   style="display:block; text-align:center;"
   data-ad-layout="in-article"
   data-ad-format="fluid"
-  data-ad-client="ca-pub-1076760418024606"
-  data-ad-slot="8654068992"></ins>
+  data-ad-client={adClient}
+  data-ad-slot={adSlot}></ins>
+
+  {
+    isProduction ? (
+    <script is:inline data-astro-rerun>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    ) : (
+    <script is:inline data-astro-rerun>
+      window.adsbygoogle = window.adsbygoogle || [];
+      const adBreak = adConfig = function(o) {
+        adsbygoogle.push(o);
+      }
+    </script>
+    )
+  }
 </div>
-<script is:inline define:vars={{uniqueId}}>
 
-  document.addEventListener('astro:before-preparation', () => {
-    // const adElement = document.getElementById(`${uniqueId}`); // ユニークIDで特定の広告を取得
-    // if (adElement) {
-    //   adElement.remove();
-    // }
-    // const adUnits = document.querySelectorAll('.ad-unit .adsbygoogle');
-
-    // console.log('AFTERSWAP');
-    // console.log(adUnits);
-
-    // if(adUnits.length !== 0) {
-    //   window.adsbygoogle = [];
-    // }
-
-    // console.log('remove ad');
-    // console.log(window.adsbygoogle);
-  });
-
-  document.addEventListener('astro:page-load', () => {
-    const adElement = document.getElementById(`${uniqueId}`); // ユニークIDで特定の広告を取得
+<!-- <script is:inline data-astro-rerun define:vars={{adClient, isProduction}}>
+  function init() {
+    const adElement = document.querySelector('.ad-unit');
+    const observer = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) {
+        let ad = document.createElement('script');
+        ad.type = 'text/javascript';
+        ad.async = true;
+        ad.src =
+          'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + adClient;
+        ad.crossOrigin = 'anonymous';
+        if (!isProduction) {
+          ad.dataset.adbreakTest='on';
+        }
+        document.head.appendChild(ad);
+        observer.disconnect();
+      }
+    })
     if (adElement) {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      observer.observe(adElement);
     }
-  });
-</script>
+  }
+  init();
+</script> -->
