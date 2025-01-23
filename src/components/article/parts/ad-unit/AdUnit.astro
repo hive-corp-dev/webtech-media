@@ -1,20 +1,30 @@
 ---
 const isProduction = import.meta.env.ENVIRONMENT === 'production';
+
+const adClient = 'ca-pub-1076760418024606';
+const adSlot = '8654068992';
 ---
-{
-  isProduction ? (
-  <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076760418024606" crossorigin="anonymous"></script>
-  ) : (
-  <script is:inline data-adbreak-test="on" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076760418024606" crossorigin="anonymous"></script>
-  )
-}
-<ins class="adsbygoogle"
+
+<div class="ad-unit">
+  <ins class="adsbygoogle"
   style="display:block; text-align:center;"
   data-ad-layout="in-article"
   data-ad-format="fluid"
-  data-ad-client="ca-pub-1076760418024606"
-  data-ad-slot="8654068992"></ins>
+  data-ad-client={adClient}
+  data-ad-slot={adSlot}></ins>
 
-<script is:inline>
-  (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+  {
+    isProduction ? (
+    <script is:inline data-astro-rerun>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+    ) : (
+    <script is:inline data-astro-rerun>
+      window.adsbygoogle = window.adsbygoogle || [];
+      const adBreak = adConfig = function(o) {
+        adsbygoogle.push(o);
+      }
+    </script>
+    )
+  }
+</div>
