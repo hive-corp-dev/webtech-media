@@ -5,8 +5,6 @@ import logoWhite from '@assets/images/logo-white.svg';
 import { Image } from 'astro:assets';
 const isTopPage = Astro.url.pathname === '/';
 const pathname = Astro.url.pathname;
-
-console.log(pathname, "pathname");
 ---
 
 <header class="header js-header">
@@ -44,12 +42,6 @@ console.log(pathname, "pathname");
     </div>
   </Container>
 </header>
-
-<script is:inline define:vars={{pathname}}>
-  document.addEventListener('astro:page-load', () => {
-    console.log(pathname, "pathname");
-  });
-</script>
 
 <script>
   document.addEventListener('astro:page-load', () => {
