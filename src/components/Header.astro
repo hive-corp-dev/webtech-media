@@ -25,7 +25,7 @@ console.log(pathname, "pathname");
           </a>
         )
       }
-      <nav class="nav">
+      <nav class="nav" data-astro-rerun>
         <ul class="nav-list">
           <li class="nav-item">
             <a class:list={["nav-link", {active: pathname === '/'}]} href="/">HOME</a>
@@ -44,6 +44,12 @@ console.log(pathname, "pathname");
     </div>
   </Container>
 </header>
+
+<script is:inline define:vars={{pathname}}>
+  document.addEventListener('astro:page-load', () => {
+    console.log(pathname, "pathname");
+  });
+</script>
 
 <script>
   document.addEventListener('astro:page-load', () => {
