@@ -1,0 +1,288 @@
+---
+isDraft: false
+title: "AstroでGoogle Adsenseの広告を設定する方法"
+description: "AstroでGoogle Adsenseの広告を設定する方法を紹介します。自動広告を利用する場合と、広告を自身で作成して設定する方法を解説します。"
+tags: ["astro", "google-adsense"]
+publishedAt: 2025-01-27T03:00:00Z
+thumbnail: "./images/astro-google-adsense/thumb.png"
+---
+
+import imgAdAuto from "@article/images/astro-google-adsense/ad-auto.png";
+import imgAdAutoEnable from "@article/images/astro-google-adsense/ad-auto-enable.png";
+import imgAdAutoDetails from "@article/images/astro-google-adsense/ad-auto-details.png";
+import imgAdAutoApply from "@article/images/astro-google-adsense/ad-auto-apply.png";
+import imgAdAutoGetCode from "@article/images/astro-google-adsense/ad-auto-get-code.png";
+import imgAdAutoCode from "@article/images/astro-google-adsense/ad-auto-code.png";
+
+import imgAdCreate from "@article/images/astro-google-adsense/ad-create.png";
+import imgAdSetting from "@article/images/astro-google-adsense/ad-setting.png";
+import imgAdCode from "@article/images/astro-google-adsense/ad-code.png";
+
+Astro製のサイトで、Google Adsenseの広告を設定したいという場合があるかと思います。
+
+今回の記事では、**Google Adsenseでの広告ユニット作成方法と、作成した広告をAstroサイト内に設置する方法**を紹介します！
+
+自動広告を利用する場合と、広告を自身で作成して設定する方法を紹介しますので、ぜひ参考にしてみてください。
+
+<InfoBox type="success">当記事では、すでにGoogle Adsenseの審査に合格していることを前提に進めます。</InfoBox>
+
+<ArticleToc />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions versions={[{ name: "astro", version: "5.1.3" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## Google Adsenseの自動広告を利用する場合と、自身で設定する場合
+
+Google Adsenseでは、広告を自動で設定する「自動広告」を利用するか、自身で広告を作成してサイト内に設置するという2つの方法があります。
+
+また、2つを組み合わせて使用する方法もあります。
+
+当記事では、
+
+- 自動広告を設定する方法
+- 広告を自身で設定する方法
+
+の順番に説明していきますね。
+
+<AdUnit />
+
+## 自動広告を設定する方法
+
+自動広告とは、**Googleが広告に最適な場所を自動で判断し、広告を設置してくれる機能**です。
+
+### 1. 自動広告をONにする
+
+自動広告を利用する場合は、管理画面サイドバーの[広告]を開き、編集ボタン（右の鉛筆アイコン）をクリックします。
+
+<Img src={imgAdAuto} alt="Google Adsenseの管理画面から自動広告を作成" type={["border", "shadow"]} />
+
+<Spacer />
+
+すると自動広告の設定画面が表示されるので、画面右上の[自動広告]をONにします。
+
+<Img src={imgAdAutoEnable} alt="Google Adsenseの自動広告をONにする" type={["border", "shadow"]} />
+
+### 2. 自動広告に関する詳細設定をする
+
+表示する広告の種類や場所、除外するエリアやページなどを設定します。
+
+まず広告の種類ですが、記事執筆時点（2025年1月）では、
+
+- インテント重視のフォーマット（ベータ版）
+- オーバーレイフォーマット
+- ページ内フォーマット
+
+から選択することができます。
+
+<Img src={imgAdAutoDetails} alt="Google Adsenseの自動広告の詳細設定" type={["border", "shadow"]} />
+
+それぞれの広告の詳細情報は、Google Adsenseのページからご確認ください。
+
+<Spacer />
+
+また、広告を表示したくないエリアやページがある場合は、[除外エリア]、[除外ページ]から設定しておきましょう。
+
+全ての設定が終わったら、[サイトに適用]をクリックして完了です。
+
+### 3. 広告コードを取得する
+
+[サイトに適用]をクリックすると、以下のような画面が表示されます。
+
+<Img src={imgAdAutoGetCode} alt="Google Adsenseの自動広告のコードを取得する" type={["border", "shadow"]} />
+
+[コードを取得]をクリックすると、埋め込み用の`script`タグが表示されるので、これをコピーします。
+
+<Img src={imgAdAutoCode} alt="Google Adsenseの自動広告のコード" type={["border", "shadow"]} />
+
+### 4. Astroの共通コンポーネントで読み込む
+
+自動広告を全ページに適用する場合は、Astroの共通コンポーネントで`script`を読み込みます。
+
+Astroのプロジェクトを開き、`src/layouts/Layout.astro`を作成し、以下のように`script`を追加します。
+
+また、開発環境では広告を表示しないようにするため、<OuterLink href='https://docs.astro.build/ja/guides/environment-variables/#%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0'>Astroのデフォルト環境変数</OuterLink>を使用して、本番環境でのみ`script`を読み込むようにします。
+
+<CodeHead lang="astro" name="src/layouts/Layout.astro" />
+
+```astro showLineNumbers
+---
+// Astroにデフォルトで用意されている環境変数
+const isProd = import.meta.env.PROD;
+---
+
+<html lang="ja">
+  <head>
+    {
+      isProd && (
+        <script
+          is:inline
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX"
+          crossorigin="anonymous">
+        </script>
+      )
+    }
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+```
+
+コピーしておいた`script`を`head`タグの中に貼り付けてください。
+
+また、`script`タグには`is:inline`を追加することで、コードの最適化・バンドルされずにそのままの形で読み込まれるようにします。
+
+<InfoBox type="warning" icon="warning">
+  `script`タグに`src`以外の属性がある場合は、自動的に`is:inline`が適用されます。この埋め込みコードに関しては`async`や`crossorigin`などの属性が含まれているので、`is:inline`が抜けていても問題ありません。
+</InfoBox>
+
+<Spacer />
+
+このコードを本番環境にアップすると、Googleの自動広告が有効になります！
+
+自動広告が適用されるまでに時間がかかる場合があるので、表示されない場合は時間をおいてから確認してみてください。
+
+<AdUnit />
+
+## 広告を自身で設定する方法
+
+続いては、自身で広告を作成してAstroサイト内に設置する方法を紹介します。
+
+### 1. 広告の種類を選択して作成する
+
+まずは、Google Adsenseの管理画面で、広告ユニットを作成します。
+
+管理画面サイドバーの[広告]をクリックし、[広告ユニットごと]を選択します。
+
+<Img src={imgAdCreate} alt="Google Adsenseの管理画面から広告を作成" type={["border", "shadow"]} />
+
+広告の種類は何でもいいのですが、ここではさまざまな場所に設置できる「ディスプレイ広告」で進めます。
+
+### 2. 広告の設定を行う
+
+ディスプレイ広告の場合は、
+
+- 広告のタイプ
+- 広告ユニット名
+- 広告サイズ
+
+を設定できます。
+
+<Img src={imgAdSetting} alt="Google Adsenseの管理画面から広告を作成" type={["border", "shadow"]} />
+
+広告のタイプは、
+
+- スクエア
+- 横長タイプ
+- 縦長タイプ
+
+から選択できます。
+
+ヘッダー下なら横長、サイドバーなら縦長など、設置場所に合わせて選択してください。
+
+<Spacer />
+
+広告ユニット名は、後からわかりやすい名前をつけておくと管理がしやすくなります。
+
+1つのアドセンスアカウントで複数のサイトを管理する場合は、「サイト名 + 設置場所」にするのがおすすめです。
+
+<Spacer />
+
+広告サイズは、「レスポンシブ」か「固定」かを選択できますが、特に理由がない限り「レスポンシブ」を選択しましょう。
+
+「固定」にすると広告サイズを自身で指定できますが、**表示される広告が少なくなる可能性があるため注意が必要**です。
+
+すべての設定が終わったら、作成をクリックします。
+
+### 3. 広告コードを取得する
+
+広告ユニットを作成すると、以下のように広告コードが表示されます。
+
+<Img src={imgAdCode} alt="Google Adsenseの管理画面から広告コードを取得" type={["border", "shadow"]} />
+
+こちらのコードはAstroに追加するので、コピーしておいてください。（後からいつでも確認することができます）
+
+### 4. Astroで広告コンポーネントを作成して設置する
+
+Astroで広告用のコンポーネントを作成し、先ほどコピーした広告コードを貼り付けます。
+
+ここでは、`src/components/AdUnit.astro`を作成し、以下のように編集します。
+
+- `script`タグに`is:inline`を追加
+- Astroの環境変数を使用して、本番環境でのみ広告を表示するように設定
+
+<CodeHead lang="astro" name="src/components/AdUnit.astro" />
+
+```astro
+---
+const isProd = import.meta.env.PROD;
+---
+
+{isProd && (
+  <script
+    is:inline
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX"
+    crossorigin="anonymous">
+  </script>
+
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-XXXXXXXX"
+    data-ad-slot="XXXXXXXX"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+
+  <script is:inline>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+)}
+```
+
+こちらのコードはダミーなので、自身で取得した広告コードに置き換えてください。
+
+このコンポーネントを使用したいページに設置することで、広告が表示されるようになります。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro showLineNumbers
+---
+import AdUnit from '../../components/AdUnit.astro';
+---
+
+<div>
+  <AdUnit />
+</div>
+```
+
+<AdUnit />
+
+## 【まとめ】AstroでGoogle Adsenseの広告を設定する方法
+
+今回の記事では、Google Adsenseの広告ユニット作成方法と、作成した広告をAstroサイト内に設置する方法を紹介しました。
+
+この記事を読むことで、
+
+- 自動広告を設定する方法
+- 広告を自身で設定する方法
+
+が理解できたかと思います。
+
+<Spacer />
+
+当ブログでは、
+
+- オーバーレイフォーマットの広告は自動広告を利用
+- コンテンツ内の広告は自身で作成した広告を設置
+
+というふうに、2つの方法を組み合わせて使用しています。
+
+この記事を参考に、自身のサイトに合った広告設定を行ってみてください！

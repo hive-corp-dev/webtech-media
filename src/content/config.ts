@@ -23,6 +23,7 @@ const articleCollection = defineCollection({
           "partytown",
           "fontsource",
           "giscus",
+          "google-adsense",
         ])
       ),
       publishedAt: z.date(),

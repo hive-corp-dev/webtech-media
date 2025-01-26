@@ -47,4 +47,8 @@ export const articleTags = [
     slug: "giscus",
     label: "giscus",
   },
+  {
+    slug: "google-adsense",
+    label: "Google Adsense",
+  },
 ];
