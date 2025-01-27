@@ -1,0 +1,252 @@
+---
+isDraft: false
+title: "Astroで子コンポーネントにクラスを渡す方法"
+description: "Astroで子コンポーネントにクラスを渡す方法を解説します。Astro.propsやclass:listディレクティブを使用して、スタイルの追加や上書き方法も説明しています。"
+tags: ["astro"]
+publishedAt: 2025-01-28T02:00:00Z
+thumbnail: "./images/astro-pass-class-to-child/thumb.png"
+---
+
+ReactやVue.jsなどのフレームワークの使用経験がある方なら、子コンポーネントにクラスを渡してスタイルを調整したことがあるかと思います。
+
+Astroでも同様のことができますが、他のフレームワークとは少し異なる方法で実装する必要があります。
+
+そこで今回の記事では、**Astroで子コンポーネントにクラスを渡す方法**を解説していきます！
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+<NpmVersions versions={[{ name: "astro", version: "5.1.9" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## Astroで子コンポーネントにクラスを渡す方法
+
+まずは完成形のコードを載せておきます。
+
+解説が必要ない場合は、こちらのコードを参考に実装してみてください。
+
+### 1. コンポーネントを作成する
+
+<CodeHead lang="astro" name="src/components/MyComponent.astro" />
+
+```astro showLineNumbers
+---
+const { class: className, ...rest } = Astro.props;
+---
+<div class:list={['default-class', className]} {...rest}>
+  <slot/>
+</div>
+
+<style>
+  .default-class {
+    /* ここにコンポーネントの共通スタイルを記述 */
+    color: black;
+  }
+</style>
+```
+
+### 2. 親コンポーネントで呼び出し、クラスを渡す
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro showLineNumbers
+---
+import MyComponent from '../components/MyComponent.astro';
+---
+
+<MyComponent class="additional-class">
+  <p>子コンポーネント。このテキストは赤になります。</p>
+</MyComponent>
+
+<style>
+  .additional-class {
+    /* ここに追加したいスタイルを記述 */
+    color: red;
+  }
+</style>
+```
+
+これで、親コンポーネントから子コンポーネントにクラスを渡し、**スタイルの追加や上書きをすることが可能**になります。
+
+次で各コードの詳しい説明をしていきますので、さらに理解を深めたい方は読み進めてください。
+
+## Astroで子コンポーネントにクラスを渡す手順の解説
+
+以下の順番で、子コンポーネントにクラスを渡す手順を説明していきます。
+
+1. コンポーネントを作成する
+2. 子コンポーネントにクラスを渡せるように調整する
+3. 子コンポーネントにクラスを渡す
+
+### 1. コンポーネントを作成する
+
+まずは、コンポーネントを作成します。
+
+今回は例として、要素の最大幅や余白などのレイアウトを調整する`Container`コンポーネントを作成します。
+
+<CodeHead lang="astro" name="src/components/Container.astro" />
+
+```astro showLineNumbers
+<div class="container">
+  <slot />
+</div>
+
+<style>
+  .container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+</style>
+```
+
+これでコンポーネントは完成ですが、このままではクラスを渡すことができません。
+
+### 2. 子コンポーネントにクラスを渡せるように調整する
+
+子コンポーネントにクラスを渡すには、コードを以下のように変更します。
+
+<CodeHead lang="astro" name="src/components/Container.astro" />
+
+```astro showLineNumbers
+---
+const {class: className, ...rest} = Astro.props;
+---
+
+<div class:list={["container", className]} {...rest}>
+  <slot />
+</div>
+
+<style>
+  /* スタイルはそのまま */
+</style>
+```
+
+それぞれ分割して説明していきます。
+
+#### 2-1. フロントマターでクラスを分割代入
+
+まずフロントマター内で、`Astro.props`から渡されたプロパティを分解し、必要なプロパティを抽出します。
+
+<CodeHead lang="astro" name="src/components/Container.astro" />
+
+```astro showLineNumbers
+---
+const {class: className, ...rest} = Astro.props;
+---
+```
+
+`class`はJavaScriptの予約語なので、分割代入で`className`という変数に代入します。
+
+`...rest`は、スプレッド構文で残りのプロパティをまとめて`rest`という変数に代入しています。
+
+#### 2-2. class:listでクラスを動的に付与する
+
+`class:list`ディレクティブを使うことで、クラスを動的に制御することが可能になります。
+
+`class:list`には文字列、配列、オブジェクト形式でクラスを指定することができます。
+
+<CodeHead lang="astro" name="src/components/Container.astro" />
+
+```jsx showLineNumbers
+<div class:list={["container", className]} {...rest}>
+  <slot />
+</div>
+```
+
+ここでは、デフォルトのクラスとして`container`を指定し、`Astro.props`から`className`受け取った場合に、そのクラスを追加します。
+
+もし`className`が指定されていない場合は、`container`のみが適用されることになります。
+
+https://webtech-media.jp/article/astro-conditional-class-list
+
+#### 2-3. スプレッド構文で残りのプロパティを渡す
+
+最後に、`...rest`を`<div>`要素にスプレッド構文で渡しています。
+
+<CodeHead lang="astro" name="src/components/Container.astro" />
+
+```jsx showLineNumbers
+<div {...rest}>
+  <slot />
+</div>
+```
+
+これで親コンポーネントの`data-astro-cid`から始まるデータ属性が子コンポーネントに渡され、
+
+- 親コンポーネントのスタイル
+- 子コンポーネントのスタイル
+
+が両方適用されるようになります。
+
+これで、子コンポーネントにクラスを渡す準備が整いました。
+
+### 3. 子コンポーネントにクラスを渡す
+
+次に、親コンポーネントから子コンポーネントにクラスを渡します。
+
+作成したコンポーネントを使用するページで、以下のように記述します。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro showLineNumbers {5, 10-18}
+---
+import Container from '../components/Container.astro';
+---
+
+<Container class="page-container">
+  <h1>タイトル</h1>
+  <p>本文</p>
+</Container>
+
+<style>
+  .page-container {
+    /* スタイルの上書き */
+    max-width: 1200px;
+
+    /* スタイルの追加 */
+    background-color: #f0f0f0;
+  }
+</style>
+```
+
+`class`に追加したいクラス名を記述し、そのクラスに対して`style`を記述します。
+
+これで、最終的に`Container`コンポーネントのスタイルを引き継いだ上で、追加のスタイルを適用することができます。
+
+CSSを見てみると、以下のようになっているはずです。
+
+<CodeHead lang="css" />
+
+```css showLineNumbers
+/* 共通スタイル */
+.container[data-astro-cid-j7pv25f6] {
+  max-width: 800px; /* これは上書きされる */
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 上書きスタイル */
+.page-container[data-astro-cid-d6puh33w] {
+  max-width: 1200px;
+  background-color: #f0f0f0;
+}
+```
+
+これで、子コンポーネントにクラスを渡すことができました！
+
+## 【まとめ】Astroで子コンポーネントにクラスを渡す方法
+
+今回の記事では、Astroで子コンポーネントにクラスを渡す方法を解説しました。
+
+**コンポーネント自体の共通スタイルを引き継いだまま追加のスタイルを適用できる**ので、柔軟なスタイリングが可能になります。
+
+ReactやVue.jsとは異なる書き方になるので、慣れるまで少し時間がかかるかもしれませんが、ぜひ活用してみてください！
