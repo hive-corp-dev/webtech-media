@@ -6,12 +6,19 @@ const adSlot = '8654068992';
 ---
 
 <div class="ad-unit">
-  <ins class="adsbygoogle"
-  style="display:block; text-align:center;"
-  data-ad-layout="in-article"
-  data-ad-format="fluid"
-  data-ad-client={adClient}
-  data-ad-slot={adSlot}></ins>
+  {
+    isProduction ? (
+    <ins class="adsbygoogle"
+    style="display:block; text-align:center;"
+    data-ad-layout="in-article"
+    data-ad-format="fluid"
+    data-ad-client={adClient}
+    data-ad-slot={adSlot}></ins>
+    )
+    : (
+      <div class="ad-placeholder">広告</div>
+    )
+  }
 
   {
     isProduction ? (
@@ -28,3 +35,15 @@ const adSlot = '8654068992';
     )
   }
 </div>
+
+<style lang="scss">
+  .ad-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20rem;
+    background-color: var.$c-gray-l-2;
+    font-size: 1.6rem;
+    border: .1rem solid #ccc;
+  }
+</style>
