@@ -7,6 +7,8 @@ publishedAt: 2025-01-01T20:00:00Z
 thumbnail: "./images/astro-sass-settings-and-usage/thumb.png"
 ---
 
+import imgError from "@article/images/astro-sass-settings-and-usage/error.png";
+
 今回の記事では、**AstroでSass（SCSS）を使用するための設定や記述方法**を解説します。
 
 具体的には、以下の3つについて説明します。
@@ -120,6 +122,29 @@ export default defineConfig({
 これでMixinや変数をどこからでも呼び出せるようになりました。
 
 もしエラーが出る場合は、`npm run dev`でサーバーを再起動してみてください。
+
+#### 【追記】ファイルが存在するにもかかわらずUnknown CSS Errorが出る場合
+
+ファイルは存在していてパスも合っているのにもかかわらず、以下のようなエラーが出る場合があります。
+
+<Img src={imgError} alt="Unknown CSS Errorが出る場合" type={["border", "shadow"]} />
+
+この場合は、`tsconfig.json`に必要な記述が抜けていないか確認してみてください。
+
+<CodeHead lang="json" />
+
+```json showLineNumbers {5-7}
+{
+  "extends": "astro/tsconfigs/base",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}
+```
+
+`compilerOptions`に`baseUrl`を追加することで、解決するかと思います。
 
 ### 3. Mixinや変数を使用する
 
