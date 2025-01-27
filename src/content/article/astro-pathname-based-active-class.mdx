@@ -1,0 +1,216 @@
+---
+isDraft: false
+title: "Astroで表示中のページによってactiveクラスを付け替える方法"
+description: "Astroで表示中のページによってナビゲーションメニューのリンクにactiveクラスを付け替える方法を解説します。Astro.url.pathnameを使用して、ページのパス名を取得し、class:listでクラスを動的に付与します。"
+tags: ["astro"]
+publishedAt: 2025-01-27T17:00:00Z
+thumbnail: "./images/astro-pathname-based-active-class/thumb.png"
+---
+
+import imgActiveExample from "@article/images/astro-pathname-based-active-class/active-example.png";
+
+Web制作において、表示中のページに応じてナビゲーションメニューのリンクに`active`クラスを付け替えることがあります。
+
+例えば、HOMEページにいる時はHOMEリンクに`active`クラスを付け、ABOUTページにいる時はABOUTリンクに`active`クラスを付けるといった処理です。
+
+<ImgCaption src={imgActiveExample} alt="表示中のページによってactiveクラスを付け替える例" type={["border", "shadow"]}>
+  例）ABOUTページを開いている場合に、ABOUTにactiveクラスを付与する
+</ImgCaption>
+
+今回の記事では、Astroで上記のような実装をする方法を紹介していきます！
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions versions={[{ name: "astro", version: "5.1.9" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## 表示中のページによってactiveクラスを付け替える手順
+
+以下の手順に分けて説明していきます。
+
+1. ナビゲーションコンポーネントを作成する
+2. activeクラス用のスタイルを追加する
+3. ページのパス名を取得する
+4. class:listでクラスを動的に付与する
+
+### 1. ナビゲーションコンポーネントを作成する
+
+まずは、ナビゲーションコンポーネントを作成します。
+
+ヘッダーにナビゲーションを置くことが一般的なので、ここでは`Header.astro`としています。
+
+<CodeHead lang="astro" name="src/components/Header.astro" />
+
+```astro showLineNumbers
+<header class="header">
+  <nav>
+    <ul>
+      <li><a class="link" href="/">HOME</a></li>
+      <li><a class="link" href="/about">ABOUT</a></li>
+      <li><a class="link" href="/contact">CONTACT</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+※デモなのでクラス名や構成は最小限にしています。
+
+### 2. activeクラス用のスタイルを追加する
+
+`active`クラスがついた要素をハイライトするためのスタイルを用意します。
+
+Astroでは`style`タグを直接埋め込めるので、`Header.astro`内に以下を追記してください。
+
+<CodeHead lang="astro" name="src/components/Header.astro" />
+
+```astro showLineNumbers
+<style>
+  /* デフォルトのスタイルを記述 */
+  .link {
+    color: black;
+  }
+
+  /* activeクラスがついた時のスタイルを記述 */
+  .link.active {
+    color: red;
+  }
+</style>
+```
+
+### 3. ページのパス名を取得する
+
+次に、表示中のページのパス名を取得します。
+
+Astroでは`Astro.url.pathname`で現在のページのパス名を取得できます。
+
+`Header.astro`内の一番上に、以下を追記してください。
+
+<CodeHead lang="astro" name="src/components/Header.astro" />
+
+```astro showLineNumbers
+---
+const pathname = Astro.url.pathname;
+---
+```
+
+https://webtech-media.jp/article/astro-get-url
+
+### 4. class:listでクラスを動的に付与する
+
+最後に、`class:list`を使用して、表示中のページに応じて`active`クラスを付与します。
+
+先ほど取得した`pathname`を使用して、各リンクのクラスに条件分岐を追加します。
+
+<CodeHead lang="astro" name="src/components/Header.astro" />
+
+```astro showLineNumbers
+---
+const pathname = Astro.url.pathname;
+---
+
+<header class="header">
+  <nav>
+    <ul>
+      <li><a class:list={['link', {active: pathname === '/'}]} href="/">HOME</a></li>
+      <li><a class:list={['link', {active: pathname === '/about'}]} href="/about">ABOUT</a></li>
+      <li><a class:list={['link', {active: pathname === '/contact'}]} href="/contact">CONTACT</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+`class:list`は、Astroに用意されているディレクティブの一つで、**クラスを動的に付与**することができます。
+
+ここでは、デフォルトのクラスとして`link`を指定し、`pathname === '〇〇'`の条件に合致する場合に`active`クラスを付与しています。
+
+https://webtech-media.jp/article/astro-conditional-class-list
+
+<Spacer />
+
+これでほぼ完成なのですが、Astroの本番環境では、`pathname`の最後に必ず`/`が付きます。
+
+それを考慮して、条件分岐を以下のように変更してください。
+
+<CodeHead lang="astro" name="src/components/Header.astro" />
+
+```astro showLineNumbers
+---
+const pathname = Astro.url.pathname;
+---
+
+<header class="header">
+  <nav>
+    <ul>
+      <li><a class:list={['link', {active: pathname === '/'}]} href="/">HOME</a></li>
+      <li><a class:list={['link', {active: /^\/about\/?$/.test(pathname)}]} href="/about">ABOUT</a></li>
+      <li><a class:list={['link', {active: /^\/contact\/?$/.test(pathname)}]} href="/contact">CONTACT</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+`/^\/文字列\/?$/`とすることで、`/文字列`でも`/文字列/`でも`active`クラスを付与できるようになります。
+
+開発環境と本番環境の挙動の違いで個人的に少し詰まったので、参考にしていただければと思います。
+
+以上で、表示中のページによって`active`クラスを付け替える方法の解説は終わりです！
+
+<AdUnit />
+
+## 特定のパスの配下にあるページにもactiveクラスを付与する方法
+
+例えば、`/blog`というパス名のページと、その配下の記事のページ（例：`/blog/hello-world`）にも`active`クラスを付与したい場合があるとします。
+
+その場合は、`pathname`の条件分岐を以下のように変更してください。
+
+<CodeHead lang="astro" name="src/components/Header.astro" />
+
+```astro showLineNumbers
+---
+const pathname = Astro.url.pathname;
+---
+
+<header class="header">
+  <nav>
+    <ul>
+      <li><a class:list={['link', {active: /^\/blog(\/|$)/}]} href="/blog">BLOG</a></li>
+    </ul>
+  </nav>
+</header>
+```
+
+`/^\/文字列(\/|$)/`とすることで、`/文字列`と`/文字列/`の両方に対応しつつ、`/文字列`の配下にあるページにも`active`クラスを付与できます。
+
+- `/blog`：○
+- `/blog/`：○
+- `/blog/hello-world`：○
+- `/blog/hello-world/`：○
+- `/blog-page`：×
+
+これで、特定のパスを持つ配下のページにも`active`クラスを付与することができます！
+
+<AdUnit />
+
+## 【まとめ】Astroで表示中のページによってactiveクラスを付け替える方法
+
+今回は、Astroで表示中のページによって`active`クラスを付け替える方法を解説しました。
+
+Webサイト制作において、特によく見かける機能かと思います。
+
+もしAstroでサイトを制作する際には、ぜひ参考にしてみてください！
+
+<Spacer />
+
+また、当記事で使用した`Astro.url`と`class:list`については別で解説記事を出しているので、詳しく知りたい方はぜひご覧ください。
+
+- [Astro.urlの解説記事](https://webtech-media.jp/article/astro-get-url)
+- [class:listの解説記事](https://webtech-media.jp/article/astro-conditional-class-list)

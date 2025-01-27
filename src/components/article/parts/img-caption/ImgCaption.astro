@@ -22,6 +22,14 @@ const {src, alt, type} = Astro.props;
     &.border {
       border: .1rem solid var.$c-gray-l;
     }
+
+    &.shadow {
+      box-shadow: 0 0 1.6rem 1rem rgba(0,0,0,0.04);
+
+      @include mixin.sp {
+        box-shadow: 0 0 1.2rem .6rem rgba(0,0,0,0.04);
+      }
+    }
   }
 
   .caption {
