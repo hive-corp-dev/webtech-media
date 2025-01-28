@@ -1,0 +1,42 @@
+<form class="ref-form">
+  <label for="referrer">サービスを知ったきっかけ</label>
+  <select name="referrer" class="ref-select">
+    <option value="google">Google検索</option>
+    <option value="sns">SNS</option>
+    <option value="ads">Web広告</option>
+    <option value="referral">知人の紹介</option>
+    <option value="others">その他</option>
+  </select>
+
+  <div class='ref-input-wrap'>
+    <label for="others">その他</label>
+    <input type="text" name="others" class="ref-input" />
+  </div>
+</form>
+
+<style lang="scss">
+  .ref-form {
+    label {
+      display: block;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .ref-select,
+  .ref-input {
+    width: 100%;
+    max-width: 30rem;
+    padding: 0.4rem;
+    color: var.$c-text;
+  }
+
+  .ref-input-wrap {
+    display: none;
+    margin-top: 1.6rem;
+  }
+
+  .ref-form:has(select[name="referrer"] option[value="others"]:checked) .ref-input-wrap {
+    display: block;
+  }
+</style>

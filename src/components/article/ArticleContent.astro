@@ -11,14 +11,18 @@ import InfoBox from './parts/info-box/InfoBox.astro';
 import NpmVersions from './parts/npm-versions/NpmVersions.astro';
 import Spacer from './parts/spacer/Spacer.astro';
 import BrowserBox from './parts/browser-box/BrowserBox.astro';
+import AdUnit from '@components/article/parts/ad-unit/AdUnit.astro';
 import AstroGetUrlDemo from "@article/components/astro-get-url/AstroGetUrlDemo.astro";
 import AstroGetUrlDemoRequest from '@article/components/astro-get-url/AstroGetUrlDemoRequest.astro';
 import AstroGetUrlDemoObj from '@article/components/astro-get-url/AstroGetUrlDemoObj.astro';
-import AdUnit from '@components/article/parts/ad-unit/AdUnit.astro';
+// css-has-pseudo-class
+import DemoSelectPlaceholder from '@article/components/css-has-pseudo-class/DemoSelectPlaceholder.astro';
+import DemoConditionalInput from '@article/components/css-has-pseudo-class/DemoConditionalInput.astro';
+import DemoSnsBtns from '@article/components/css-has-pseudo-class/DemoSnsBtns.astro';
 ---
 
 <div class:list={["content", styles.content]} id="article-content">
-  <Content components={{...components, pre: Pre, Img, ImgCaption, OuterLink, ArticleToc, InfoBox, NpmVersions, Spacer, BrowserBox, AdUnit, AstroGetUrlDemo, AstroGetUrlDemoRequest, AstroGetUrlDemoObj}} />
+  <Content components={{...components, pre: Pre, Img, ImgCaption, OuterLink, ArticleToc, InfoBox, NpmVersions, Spacer, BrowserBox, AdUnit, AstroGetUrlDemo, AstroGetUrlDemoRequest, AstroGetUrlDemoObj, DemoSelectPlaceholder, DemoConditionalInput, DemoSnsBtns}} />
 </div>
 
 <style lang="scss" is:global>

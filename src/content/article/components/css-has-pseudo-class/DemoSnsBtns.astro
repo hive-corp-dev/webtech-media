@@ -1,0 +1,76 @@
+---
+import { FaXTwitter } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa";
+import { FaFacebookF } from "react-icons/fa";
+---
+
+<div class="btns">
+  <button class="btn -is-tw">
+    <FaXTwitter />
+  </button>
+  <button class="btn -is-ig">
+    <FaInstagram />
+  </button>
+  <button class="btn -is-fb">
+    <FaFacebookF />
+  </button>
+</div>
+
+<style lang="scss">
+  .btns {
+    padding: 6.4rem 2.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.6rem;
+    transition: all 0.3s;
+
+    &:has(.-is-tw:hover) {
+      background-color: #333;
+    }
+
+    &:has(.-is-ig:hover) {
+      background-color: #c13584;
+    }
+
+    &:has(.-is-fb:hover) {
+      background-color: #1877f2;
+    }
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    border: 0.1rem solid #ccc;
+    font-size: 1.8rem;
+    background-color: var.$c-white;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    &.-is-tw {
+      &:hover {
+        background-color: #000;
+        color: var.$c-white;
+      }
+    }
+
+    &.-is-ig {
+      &:hover {
+        background-color: #c13584;
+        color: var.$c-white;
+      }
+    }
+
+    &.-is-fb {
+      &:hover {
+        background-color: #1877f2;
+        color: var.$c-white;
+      }
+    }
+  }
+
+</style>

@@ -10,7 +10,6 @@ thumbnail: "./images/css-has-pseudo-class/thumb.png"
 import imgFigure from "@article/images/css-has-pseudo-class/figure.png";
 import imgSelectPlaceholder from "@article/images/css-has-pseudo-class/select-placeholder.png";
 import imgHasSupport from "@article/images/css-has-pseudo-class/has-support.png";
-import CssHasPseudoClass from "@article/components/css-has-pseudo-class/css-has-pseudo-class.jsx";
 
 皆さんはCSSの`:has()`擬似クラスをご存知でしょうか？
 
@@ -304,7 +303,7 @@ figure:has(figcaption) {
 以下の例では、SNSボタンにマウスカーソルを当てると、親要素の背景色が各SNSの色に変わるようにしています。
 
 <BrowserBox type="no-padding" name="ホバーすると背景色が変わるSNSボタンのデモ">
-  <CssHasPseudoClass.sns client:load />
+  <DemoSnsBtns />
 </BrowserBox>
 
 <CodeHead lang="html" />
@@ -391,7 +390,7 @@ form:has(option[value=""]:checked) .select[name="option"] {
 
 <BrowserBox name="placeholderのような文字色を実装したselectタグのデモ">
   <p>以下にselectタグのデモを用意しましたので、実際の動作を試してみてください。</p>
-  <CssHasPseudoClass.select />
+  <DemoSelectPlaceholder />
 </BrowserBox>
 
 従来までは、JavaScriptを使用して、`option`の値に応じてスタイルを動的に変更する必要がありましたが、`:has()`を使用することでCSSのみで実装可能になりました。
@@ -450,7 +449,7 @@ form:has(select[name="referrer"] option[value="others"]:checked) .others-input {
 追加の入力欄が表示されることが確認できるかと思います。
 
 <BrowserBox>
-  <CssHasPseudoClass.refSelect />
+  <DemoConditionalInput />
 </BrowserBox>
 
 このように、`:has()`を使用することで、選択肢に応じて追加の入力欄を表示することが可能です。

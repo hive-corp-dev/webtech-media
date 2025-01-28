@@ -1,0 +1,27 @@
+---
+---
+
+<form class="form">
+  <select name="option" class="select">
+    <option value="">選択してください</option>
+    <option value="選択肢1">選択肢1</option>
+    <option value="選択肢2">選択肢2</option>
+    <option value="選択肢3">選択肢3</option>
+  </select>
+</form>
+
+<style lang="scss">
+
+.form {
+  &:has(option[value=""]:checked) .select[name="option"] {
+    color: gray;
+  }
+}
+
+.select {
+  width: 100%;
+  max-width: 30rem;
+  padding: 0.4rem;
+  color: var.$c-text;
+}
+</style>
