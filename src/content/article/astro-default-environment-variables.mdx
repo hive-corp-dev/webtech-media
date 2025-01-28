@@ -1,0 +1,132 @@
+---
+isDraft: false
+title: "Astroのデフォルト環境変数を使って開発環境と本番環境で条件分岐する方法"
+description: ""
+tags: ["astro"]
+publishedAt: 2025-01-29T01:00:00Z
+thumbnail: "./images/astro-default-environment-variables/thumb.png"
+---
+
+Astroでは、すぐに使用できる<OuterLink href='https://docs.astro.build/ja/guides/environment-variables/#%E3%83%87%E3%83%95%E3%82%A9%E3%83%AB%E3%83%88%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0'>デフォルト環境変数</OuterLink>というものが存在します。
+
+その中でも、開発環境と本番環境を判別できる環境変数が便利だったので、この記事で紹介していきます。
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions versions={[{ name: "astro", version: "5.1.3" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## Astroのデフォルト環境変数
+
+Astroで開発環境か本番環境かを判別するためのデフォルト環境変数は、以下の3つです。
+
+- `import.meta.env.MODE`：現在のモード（`development`または`production`）を取得
+- `import.meta.env.PROD`：本番環境なら`true`
+- `import.meta.env.DEV`：開発環境なら`true`
+
+### import.meta.env.MODE
+
+`import.meta.env.MODE`は、現在動いているサイトのモードを取得できます。
+
+`astro dev`を実行している場合は`development`、`astro build`を実行している場合は`production`になります。
+
+<CodeHead lang="astro" />
+
+```astro showLineNumbers
+---
+const mode = import.meta.env.MODE;
+---
+
+<!-- developmentかproductionとなる -->
+<p>現在のモード: {mode}</p>
+```
+
+### import.meta.env.PROD
+
+`import.meta.env.PROD`は、本番環境の場合は`true`、開発環境の場合は`false`になります。
+
+<CodeHead lang="astro" />
+
+```jsx showLineNumbers
+---
+const isProd = import.meta.env.PROD;
+---
+
+{
+  isProd && (
+    // 本番環境のみで表示する要素
+  )
+}
+```
+
+本番環境でのみ表示したい要素や解析タグなどを設定する際に便利ですね。
+
+### import.meta.env.DEV
+
+`import.meta.env.DEV`は、開発環境の場合は`true`、本番環境の場合は`false`になります。
+
+<CodeHead lang="astro" />
+
+```jsx showLineNumbers
+---
+const isDev = import.meta.env.DEV;
+---
+
+{
+  isDev && (
+    // 開発環境のみで表示する要素
+  )
+}
+```
+
+開発環境でのみ表示したい要素やデバッグ用のコードなどを設定する際に便利です。
+
+## Astroの本番環境に関する注意点
+
+Astroでは、`astro build`を実行して生成された静的ファイルを`astro preview`でプレビューすることが可能です。
+
+<CodeHead lang="json" name="package.json" />
+
+```json
+{
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  }
+}
+```
+
+しかし、このプレビュー環境では`import.meta.env.PROD`が`true`になります。
+
+つまり、**本番ビルドをローカルで確認しているにもかかわらず、環境変数的には「本番環境」として扱われる**点に注意が必要です。
+
+本番用のコードが意図せず表示されてしまう可能性があるため、開発時には注意してください。
+
+<AdUnit />
+
+## 【まとめ】Astroのデフォルト環境変数を使って開発環境と本番環境で条件分岐する方法
+
+Astroのデフォルト環境変数を使って、開発環境と本番環境で条件分岐する方法を紹介しました。
+
+デフォルト環境変数をおさらいすると、
+
+- `import.meta.env.MODE`：現在のモード（`development`または`production`）を取得
+- `import.meta.env.PROD`：本番環境なら`true`
+- `import.meta.env.DEV`：開発環境なら`true`
+
+となります。
+
+デフォルト環境変数は手軽に扱えて便利ですが、`astro preview`での挙動には注意して使用してください。
+
+https://docs.astro.build/ja/guides/environment-variables/
