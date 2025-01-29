@@ -9,6 +9,8 @@ import { IoIosPricetags } from "react-icons/io";
 import Toc from './sidebar-widgets/Toc.astro';
 import { MdOutlineToc } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
+import CodeHive from './sidebar-widgets/CodeHive.astro';
+import { FaLaptopCode } from "react-icons/fa";
 
 const articleEntries = await getCollection('article', ({data}) => {
 	return data.isDraft === false;
@@ -26,6 +28,10 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
   <div class="sidebar__block">
     <p class="sidebar__block-title"><FaCrown />人気記事一覧</p>
     <Ranking />
+  </div>
+  <div class="sidebar__block">
+    <p class="sidebar__block-title"><FaLaptopCode />コーディング代行</p>
+    <CodeHive />
   </div>
   <div class="sidebar__sticky js-sidebar-sticky">
     <div class="sidebar__block -toc">

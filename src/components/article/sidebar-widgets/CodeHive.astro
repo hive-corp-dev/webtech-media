@@ -1,0 +1,30 @@
+---
+import { Image } from "astro:assets"
+import imgBanner from '@assets/images/codehive-banner.png';
+---
+
+<a href="https://codehive.jp/?utm_source=webtech-media&utm_medium=banner&utm_id=1" class="banner">
+  <Image src={imgBanner} alt="CodeHive" />
+  <p class="text">コーディング代行チーム「コードハイブ」を立ち上げました。<br />コーディングのご相談はこちらから！</p>
+</a>
+
+<style lang="scss">
+  .banner {
+    display: block;
+    margin-top: 2.4rem;
+    transition: opacity 0.3s;
+
+    @include mixin.hover {
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .text {
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-top: .8rem;
+  }
+</style>
