@@ -1,0 +1,175 @@
+---
+isDraft: false
+title: "Vercel × AstroでBasic認証を有効にする方法"
+description: "VercelでホスティングしているAstroプロジェクトにBasic認証をかける方法を紹介します。"
+tags: ["astro"]
+publishedAt: 2025-02-01T01:00:00Z
+thumbnail: "./images/astro-vercel-basic-auth/thumb.png"
+---
+
+import imgVercelEb from "@article/images/astro-vercel-basic-auth/vercel-eb.png";
+import imgAuth from "@article/images/astro-vercel-basic-auth/auth.png";
+
+Webサイトを公開する際、特定のページやサイト全体にアクセス制限をかけたい場面があるかと思います。
+
+例えば、開発中のサイトを関係者のみに限定したり、特定のコンテンツを非公開にしたりするケースが考えられますね。
+
+そこで簡単にアクセス制限をかける方法として、Basic認証を利用するという手段があります。
+
+<Spacer />
+
+今回の記事では、**VercelでホスティングしているAstroプロジェクトにBasic認証をかける方法**を紹介します！
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<NpmVersions
+  versions={[
+    { name: "astro", version: "5.1.4" },
+    {
+      name: "@vercel/edge",
+      version: "1.2.1",
+    },
+  ]}
+/>
+
+サイトのホスティングは、Vercelを利用しています。
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## Basic認証の設定手順
+
+VercelでホスティングしているAstroプロジェクトにBasic認証をかける手順は、以下の通りです。
+
+1. middleware.tsをAstroのルートに設置
+2. Vercelの環境変数にBasic認証用のログイン情報を設定
+
+### 1. middleware.tsをAstroのルートに設置
+
+まずは、Astroのルートディレクトリに`middleware.ts`を作成します。
+
+そして、以下のコードをペーストしてください。
+
+<CodeHead lang="typescript" name="middleware.ts" />
+
+```typescript
+import { next } from "@vercel/edge";
+
+export const config = {
+  matcher: "/(.*)",
+};
+
+export default function middleware(request: Request) {
+  const authorizationHeader = request.headers.get("authorization");
+
+  if (authorizationHeader) {
+    const basicAuth = authorizationHeader.split(" ")[1];
+    const [user, password] = atob(basicAuth).toString().split(":");
+
+    if (user === process.env.BASIC_AUTH_USER && password === process.env.BASIC_AUTH_PASSWORD) {
+      return next();
+    }
+  }
+
+  return new Response("Basic Auth required", {
+    status: 401,
+    headers: {
+      "WWW-Authenticate": 'Basic realm="Secure Area"',
+    },
+  });
+}
+```
+
+#### matcherには制限をかけるURLを指定
+
+`config`オブジェクトの`matcher`には、Basic認証をかけるURLを指定します。
+
+##### 全ページにBasic認証をかける場合
+
+<CodeHead lang="typescript" name="middleware.ts" />
+
+```typescript
+export const config = {
+  matcher: "/(.*)",
+};
+```
+
+##### TOPページのみにBasic認証をかける場合
+
+<CodeHead lang="typescript" name="middleware.ts" />
+
+```typescript
+export const config = {
+  matcher: "/",
+};
+```
+
+##### 特定のページにBasic認証をかける場合
+
+<CodeHead lang="typescript" name="middleware.ts" />
+
+```typescript
+export const config = {
+  matcher: "/blog",
+};
+```
+
+##### 特定のディレクトリ配下にBasic認証をかける場合
+
+<CodeHead lang="typescript" name="middleware.ts" />
+
+```typescript
+export const config = {
+  matcher: "/blog/:path*",
+};
+```
+
+##### 複数の条件にBasic認証をかける場合
+
+<CodeHead lang="typescript" name="middleware.ts" />
+
+```typescript
+export const config = {
+  matcher: ["/", "/blog/:path*"],
+};
+```
+
+さらに詳しく知りたい方は、Vercelのドキュメントを参照してください。
+
+https://vercel.com/docs/functions/edge-middleware/middleware-api
+
+<AdUnit />
+
+### 2. Vercelの環境変数にBasic認証用のログイン情報を設定
+
+次に、Vercelのダッシュボードから環境変数を設定します。
+
+[Settings]から[Environment Variables]を選択し、以下の環境変数を設定してください。
+
+- KEY：`BASIC_AUTH_USER`　VALUE：Basic認証のユーザー名
+- KEY：`BASIC_AUTH_PASSWORD`　VALUE：Basic認証のパスワード
+
+<Img src={imgVercelEb} alt="環境変数の設定" type={["border", "shadow"]} />
+
+<Spacer />
+
+これらの作業が終わったらデプロイを行い、Basic認証が有効になっているか確認してください。
+
+<Img src={imgAuth} alt="Basic認証の画面" type={["border", "shadow"]} />
+
+このように、Basic認証がかかっていることが確認できました！
+
+<AdUnit />
+
+## 【まとめ】VercelでAstroプロジェクトにBasic認証をかける方法
+
+今回の記事では、VercelでホスティングしているAstroプロジェクトにBasic認証をかける方法を紹介しました。
+
+ちょっとしたアクセス制限をかけるならBasic認証が便利なので、ぜひこの記事を参考にしてみてください！
