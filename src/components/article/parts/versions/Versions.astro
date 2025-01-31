@@ -1,0 +1,189 @@
+---
+import { Image } from 'astro:assets';
+import iconAstro from '@assets/images/versions/icon-astro-white.svg'
+import iconNext from '@assets/images/versions/icon-nextjs-white.svg'
+import iconNpm from '@assets/images/versions/icon-npm.svg'
+import iconSass from '@assets/images/versions/icon-sass.svg'
+import iconPartytown from '@assets/images/versions/icon-partytown.svg'
+import { LuCodeXml } from "react-icons/lu";
+
+type VersionKey = "astro" | "next"| "app-router" | 'vercel-edge' | 'sass' | 'partytown' | 'next-third-parties';
+
+/* パターン
+アイコンあり | 名前あり | バージョンあり
+アイコンあり | 名前あり | バージョンなし
+アイコンなし | 名前あり | バージョンあり
+アイコンなし | 名前あり | バージョンなし
+*/
+const versionMetadata: Record<VersionKey, { icon?: ImageMetadata; name: string }> = {
+  "astro": { icon: iconAstro, name: "Astro" },
+  "next": { icon: iconNext,  name: "Next.js" },
+  "app-router": { icon: iconNext, name: "App Router" },
+  "vercel-edge": { icon: iconNpm, name: "@vercel/edge" },
+  "sass": { icon: iconSass, name: "Sass" },
+  "partytown": { icon: iconPartytown, name: "Partytown" },
+  "next-third-parties": { icon: iconNpm, name: "@next/third-parties" },
+};
+
+interface Props {
+  title?: string;
+  versions: {
+    key: VersionKey;
+    version?: string;
+  }[];
+}
+
+const {title = '検証環境のバージョン情報', versions} = Astro.props;
+
+const getVersionData = (key: VersionKey) => {
+  const { icon, name } = versionMetadata[key];
+  return { icon, name };
+};
+---
+
+<div class="box">
+  <p class="title">
+    <span><LuCodeXml /></span>
+    {title}</p>
+  <div class="list">
+    {versions.map((v) => {
+      const {version, key} = v;
+      const { icon, name } = getVersionData(v.key);
+
+      return (
+      <div class:list={["item", {icon: icon}, {version: version}]}>
+        {
+          icon && (
+          <div class:list={["img", `icon-${key}`]}>
+            <Image src={icon} alt={name} />
+          </div>
+          )
+        }
+        <span class='package-name'>{name}</span>
+        {
+          version && (
+            
+            <span class='version'>{version}</span>
+          )
+        }
+      </div>
+      )
+    })}
+  </div>
+
+  <style lang="scss">
+
+    .box {
+      border: .1rem solid #dfdfef;
+      padding: 1.6rem;
+
+      @include mixin.sp {
+        padding: 1.2rem;
+      }
+    }
+
+    .title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+
+      @include mixin.sp {
+        font-size: 1.3rem;
+      }
+
+      span {
+        width: 2.4rem;
+        height: 2.4rem;
+        background: var.$c-main-v;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-right: .6rem;
+
+        @include mixin.sp {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+    }
+
+    .list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 1.6rem;
+
+      @include mixin.sp {
+        gap: 0.6rem;
+        margin-top: 1.2rem;
+      }
+    }
+
+    .item {
+      border: 0.1rem solid #dfdfef;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      border-radius: 3rem;
+
+      // アイコンなし、バージョン無しの場合
+      // アイコンなし、バージョンありの場合
+      padding: .1rem 1.2rem;
+      
+      // それ以外の場合
+      &.icon {
+        padding: 0.1rem 1rem 0.1rem .6rem;
+      }
+    }
+
+    .img {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+
+      @include mixin.sp {
+        width: 1.8rem;
+        height: 1.8rem;
+      }
+
+      &.icon-astro {
+        background-color: #333;
+        padding: .5rem .4rem .4rem;
+
+        @include mixin.sp {
+          padding: .4rem .3rem .3rem;
+        }
+      }
+
+      &.icon-vercel-edge,
+      &.icon-next-third-parties {
+        padding: .5rem;
+        background-color: #cc0000;
+
+        @include mixin.sp {
+          padding: .4rem;
+        }
+      }
+
+      &.icon-partytown {
+        padding: 0.2rem 0.2rem .3rem 0.4rem;
+        background-color: #e1f6ff;
+      }
+    }
+
+    .package-name,
+    .version {
+      font-size: 1.3rem;
+      letter-spacing: 0.02em;
+      font-weight: bold;
+
+      @include mixin.sp {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
