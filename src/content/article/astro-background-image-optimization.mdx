@@ -44,7 +44,7 @@ Astroでは、`<Image />`や`<Picture />`コンポーネントが用意されて
 
 ```astro
 ---
-import { Image } from '@astro:assets';
+import { Image } from 'astro:assets';
 import myImage from '../assets/images/my-image.jpg';
 ---
 
@@ -93,14 +93,14 @@ Astroでは、`public`と`src`ディレクトリに画像を配置すること�
 
 ```astro
 ---
-import { getImage } from '@astro:assets';
+import { getImage } from 'astro:assets';
 
 // 背景画像をインポート
 import myImage from '../../assets/images/my-image.jpg';
 ---
 ```
 
-Astroの`getImage`関数を使用するので、`@astro:assets`からインポートします。
+Astroの`getImage`関数を使用するので、`astro:assets`からインポートします。
 
 次に、`src`ディレクトリ内に配置した画像をインポートします。
 
@@ -114,7 +114,7 @@ Astroの`getImage`関数を使用するので、`@astro:assets`からインポ�
 
 ```astro showLineNumbers {5}
 ---
-import { getImage } from '@astro:assets';
+import { getImage } from 'astro:assets';
 import myImage from '../../assets/images/my-image.jpg';
 
 const optimizedImage = await getImage({src: myImage});
@@ -127,7 +127,7 @@ const optimizedImage = await getImage({src: myImage});
 
 ```astro showLineNumbers {7-8}
 ---
-import { getImage } from '@astro:assets';
+import { getImage } from 'astro:assets';
 import myImage from '../../assets/images/my-image.jpg';
 
 const optimizedImage = await getImage({
@@ -167,7 +167,7 @@ const optimizedImage = await getImage({
 
 ```astro showLineNumbers {7}
 ---
-import { getImage } from '@astro:assets';
+import { getImage } from 'astro:assets';
 import myImage from '../../assets/images/my-image.jpg';
 const optimizedImage = await getImage({src: myImage});
 ---
@@ -217,7 +217,7 @@ const optimizedImage = await getImage({src: myImage});
 
 ```astro showLineNumbers {2-4}
 ---
-import { getImage } from '@astro:assets';
+import { getImage } from 'astro:assets';
 import myImage from '../assets/images/my-image.jpg';
 import myImageSp from '../assets/images/my-image-sp.jpg';
 
@@ -242,7 +242,7 @@ const optimizedImageSp = await getImage({src: myImageSp});
 
 ```astro showLineNumbers {14}
 ---
-import { getImage } from '@astro:assets';
+import { getImage } from 'astro:assets';
 import myImage from '../assets/images/my-image.jpg';
 import myImageSp from '../assets/images/my-image-sp.jpg';
 
