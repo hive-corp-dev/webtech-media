@@ -96,6 +96,30 @@ export default defineConfig({
 });
 ```
 
+##### 2/3追記：Partytownにconfigを追加
+
+以下のコードの設定が抜けていたので追記しました🙇
+
+<CodeHead lang="js" name="astro.config.mjs" />
+
+```js showLineNumbers {8-10}
+import { defineConfig } from "astro/config";
+import partytown from "@astrojs/partytown";
+
+export default defineConfig({
+  // ...
+  integrations: [
+    partytown({
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),
+  ],
+});
+```
+
+ウェブワーカーからは`window`オブジェクトを参照できないため、`forward`オプションを使用して、`dataLayer.push`の呼び出しをウェブワーカー経由で処理できるように設定する必要があります。
+
 Partytownの導入は以上で完了です。
 
 他の方法でPartytownを導入したい場合は、以下の公式ドキュメントを参照してください。
