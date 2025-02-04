@@ -1,0 +1,277 @@
+---
+isDraft: false
+title: "【Astroの基本】スクリプトの最適化の仕組みやJSの記述方法について"
+description: "AstroでJavaScriptを記述する方法と、最適化の仕組みについて紹介しています。Astroのスクリプト最適化の仕組みを、実際のコード例と合わせて解説します。"
+tags: ["astro"]
+publishedAt: 2025-02-05T03:00:00Z
+thumbnail: "./images/astro-javascript-optimization/thumb.png"
+---
+
+Astroでは、ReactやVue、Svelteやその他のフレームワークがサポートされており、自身の慣れ親しんだフレームワークを使用して開発を行うことができます。
+
+しかしAstroで静的サイトを組む場合のほとんどは、JavaScriptで十分という場合が多いですよね。
+
+今回の記事では、
+
+- `script`タグを使用してJavaScriptを記述する方法
+- Astroの`script`最適化の仕組み
+
+について解説していきます。
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<Versions versions={[{ key: "astro", version: "5.1.3" }]} />
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## Astroでscriptを使用する方法
+
+Astroでは、ファイル内に`script`タグを追加することで、クライアントサイドのJavaScriptを記述することができます。
+
+<InfoBox type="success">
+  今回の記事ではJavaScriptで書いていますが、TypeScriptもデフォルトでサポートされています。
+</InfoBox>
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro
+---
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout>
+  <h1>TOPページ</h1>
+</Layout>
+
+<script>
+  console.log("これはTOPページです");
+</script>
+```
+
+このようにして、`.astro`ファイル内にJavaScriptを埋め込むことが可能です。
+
+埋め込まれた`script`は、Astroによって最適化の処理が行われます。
+
+<Spacer />
+
+また、`src`属性を使用してローカルのJavaScriptファイルを読み込んだり、外部ライブラリを読み込むことも可能です。
+
+### ローカルのJavaScriptファイルを読み込む
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro
+<script src="../scripts/local.js"></script>
+```
+
+このようにして、ローカルのJavaScriptファイルを読み込むことができます。
+
+この場合、**Astroの最適化を適用するために、JSファイルは`src`ディレクトリ内に配置する必要があります。**
+
+### 外部のスクリプトを読み込む
+
+CDNや外部ライブラリを読み込む場合は、以下のように記述します。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro showLineNumbers
+<!-- publicディレクトリに配置したスクリプトを読み込む -->
+<script is:inline src="/my-script.js"></script>
+
+<!-- 外部のスクリプトを読み込む -->
+<script is:inline src="https://my-analytics.com/script.js"></script>
+```
+
+外部のスクリプトの場合は、Astro側でのバンドルと最適化の処理は必要ないので、`is:inline`属性を追加します。
+
+こうすることで、Astroで処理されることなくそのままの形で読み込むことができます。
+
+<Spacer />
+
+また、プロジェクト内にスクリプトを置く場合は、`public`ディレクトリに配置してください。
+
+`public`ディレクトリを参照する場合は、`/public/my-script.js`ではなく`/my-script.js`と記述することができます。
+
+<AdUnit />
+
+## Astroのスクリプトの最適化について
+
+ここからは、Astro側でスクリプトがどのように最適化されるかについて解説していきます。
+
+### type="module"属性が付与される
+
+Astroでは、スクリプト最適化の際に`script`タグに`type="module"`属性を自動で付与します。
+
+`type="module"`属性が付与されたスクリプトは、ページの読み込みが完了してから実行されます。
+
+つまり、**スクリプトの読み込みが非同期になり、ページのレンダリングをブロックすることがなくなる**のでパフォーマンス向上につながります。
+
+内部的には`defer`属性がついた状態と同じになりますね。
+
+<InfoBox type="warning">
+  `type="module"`がついたスクリプトは非同期に読み込まれるので、`async`属性を追加する必要はありません。もし`async`属性を追加すると、ページの読み込みを待たずに即座に実行されてしまいます。
+</InfoBox>
+
+### スクリプトが複数回使われている場合、一度だけ読み込まれる
+
+Astroでは、**同じスクリプトがページ内で複数回使われている場合、一度だけ読み込まれるように最適化**されます。
+
+例えば、以下のようなコンポーネントがあるとします。
+
+<CodeHead lang="astro" name="src/components/AlertBtn.astro" />
+
+```astro showLineNumbers
+---
+const { message } = Astro.props;
+---
+
+<button class="alert-btn" data-message={message}>
+  <slot />
+</button>
+
+<script>
+  const btns = document.querySelectorAll('.alert-btn');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', (event) => {
+      alert(event.target.dataset.message);
+    });
+  });
+</script>
+```
+
+ボタンをクリックすると、`data-message`属性の値がアラートで表示されるというシンプルなコンポーネントです。
+
+`script`内では、`querySelectorAll`でクリックイベントを登録しています。しかし、このスクリプトは1度だけ読み込まれれば十分ですね。
+
+<Spacer />
+
+このコンポーネントを1つのページ内で複数回使用してみます。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro showLineNumbers
+---
+import AlertBtn from '@/components/AlertBtn.astro';
+---
+
+<main>
+  <AlertBtn message="アラートメッセージ01">ボタン01</AlertBtn>
+  <AlertBtn message="アラートメッセージ02">ボタン02</AlertBtn>
+  <AlertBtn message="アラートメッセージ03">ボタン03</AlertBtn>
+</main>
+```
+
+これをコンパイルするとどうなるかを確認するために、ビルドを実行し`astro preview`で本番環境と同じ状態を再現します。
+
+コンパイル後のHTMLを見ると、以下のようになっています。
+
+<CodeHead lang="html" />
+
+```html showLineNumbers
+<main>
+  <button class="alert-btn" data-message="アラートメッセージ01" data-astro-cid-XXXXXX>ボタン01</button>
+  <script type="module">
+    const a = document.querySelectorAll(".alert-btn");
+    a.forEach((t) => {
+      t.addEventListener("click", (e) => {
+        alert(e.target.dataset.message);
+      });
+    });
+  </script>
+  <button class="alert-btn" data-message="アラートメッセージ02" data-astro-cid-XXXXXX>ボタン02</button>
+  <button class="alert-btn" data-message="アラートメッセージ03" data-astro-cid-XXXXXX>ボタン03</button>
+</main>
+```
+
+スクリプトは1度だけ読み込まれ、2個目以降のボタンにはスクリプトが挿入されていませんね。
+
+これでAstroの`script`の最適化がどのように行われるかがわかりました。
+
+#### is:inlineを付与するとどうなる？
+
+`script`に`is:inline`を付与すると最適化が行われないと説明しましたが、実際に試してみましょう。
+
+ここではシンプルに、`is:inline`を付与したスクリプトを追加してみます。
+
+<CodeHead lang="astro" name="src/components/SimpleBtn.astro" />
+
+```astro showLineNumbers
+<button>
+  <slot />
+</button>
+
+<script is:inline>
+  console.log("このスクリプトは最適化されません");
+</script>
+```
+
+このコンポーネントを使用して、ページ内に複数回配置してみます。
+
+<CodeHead lang="astro" name="src/pages/index.astro" />
+
+```astro showLineNumbers
+---
+import SimpleBtn from '@/components/SimpleBtn.astro';
+---
+
+<main>
+  <SimpleBtn>ボタン01</SimpleBtn>
+  <SimpleBtn>ボタン02</SimpleBtn>
+  <SimpleBtn>ボタン03</SimpleBtn>
+</main>
+```
+
+ビルドを実行し、コンパイル後のHTMLを確認してみます。
+
+<CodeHead lang="html" />
+
+```html showLineNumbers
+<main>
+  <button>ボタン01</button>
+  <script>
+    console.log("このスクリプトは最適化されません");
+  </script>
+  <button>ボタン02</button>
+  <script>
+    console.log("このスクリプトは最適化されません");
+  </script>
+  <button>ボタン03</button>
+  <script>
+    console.log("このスクリプトは最適化されません");
+  </script>
+</main>
+```
+
+すると`script`タグは最適化されず、そのままの形で出力されているのが確認できました。
+
+また、コンポーネントを呼び出した数だけスクリプトが挿入されていますね。
+
+<AdUnit />
+
+## 【まとめ】Astroのscriptタグの最適化の仕組みについて
+
+今回は、AstroでJavaScriptを記述する方法と、Astroのスクリプト最適化の仕組みについて解説しました。
+
+Astroでは、`.astro`ファイル内で`script`タグを使用してJavaScriptを書くことができます。
+
+また、TypeScriptもデフォルトでサポートされているので、TypeScriptでの開発も可能ですね。
+
+<Spacer />
+
+Astroのスクリプト最適化については、
+
+- `type="module"`属性が付与される
+- 同じスクリプトが複数回使われている場合は一度だけ読み込まれる
+
+というように、ページの読み込み速度を向上させるための工夫がされています。
+
+今回の記事が参考になれば幸いです！
