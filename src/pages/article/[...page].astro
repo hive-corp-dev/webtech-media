@@ -1,0 +1,167 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getSortedPosts } from '@utils/article';
+
+import Container from '@components/common/Container.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
+import Pagination from '@components/article/Pagination.astro';
+import ArticleList from '@components/article/ArticleList.astro';
+import { ARTICLE_METADATA } from '@data/metadata';
+
+export async function getStaticPaths({ paginate }) {
+  const articles = await getCollection('article', ({ data }) => {
+		return data.isDraft === false;
+	});
+
+  const sortedArticles = getSortedPosts(articles);
+  const paginateData = paginate(sortedArticles, { pageSize: 10 });
+
+  return paginateData;
+}
+
+const { page } = Astro.props;
+
+const currentPage = page.currentPage;
+const lastPage = page.lastPage;
+---
+
+<Layout title={ARTICLE_METADATA.title} description={ARTICLE_METADATA.description}>
+  <div class="page">
+		<div class="hero">
+			<h1>
+			 <span class="en">ARTICLES</span>
+			 <span class="jp">記事一覧</span>
+		 </h1>
+	 </div>
+	 <div class="body">
+		 <Container>
+			 <Breadcrumb data={[
+				 { label: 'ホーム', href: '/' },
+				 { label: '記事一覧' },
+			 ]} />
+       <div class="page-count">
+          <p>{currentPage}/{lastPage}ページ目</p>
+       </div>
+			 <div class="wrap">
+				 <main class="main">
+          <ArticleList articles={page.data} />
+          
+          <div class="pagination">
+            <Pagination page={page} />
+          </div>
+				 </main>
+				 <ArticleArchiveSidebar />
+			 </div>
+		 </Container>
+	 </div>
+	</div>
+</Layout>
+
+<style lang="scss">
+.hero {
+  position: relative;
+  padding: 16rem 4rem;
+  overflow: hidden;
+  background-color: #f1f6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  @include mixin.sp {
+    padding: 6.4rem 1.6rem;
+  }
+
+  h1 {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    span {
+
+      &.en {
+        font-family: var.$font-en;
+        font-size: 1.6rem;
+        letter-spacing: .08em;
+        color: var.$c-main-v;
+        font-weight: 500;
+
+        @include mixin.sp {
+          font-size: 1.4rem;
+        }
+      }
+
+      &.jp {
+        font-size: 3.6rem;
+        font-weight: bold;
+        margin-top: .4rem;
+
+        @include mixin.sp {
+          font-size: 2.4rem;
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}
+
+.page {
+  padding: 8rem 0 0;
+
+  @include mixin.sp {
+    padding: 5.6rem 0 0;
+  }
+}
+
+.body {
+  padding-top: 6.4rem;
+  padding-bottom: 12rem;
+  border-top: .1rem solid var.$c-gray-l;
+  background-image: linear-gradient(to bottom, var.$c-white 0, var.$c-gray-l 100%);
+
+  @include mixin.sp {
+    padding-bottom: 6.4rem;
+  }
+}
+
+.page-count {
+  font-size: 1.4rem;
+  margin-top: 2.4rem;
+
+  @include mixin.sp {
+    font-size: 1.2rem;
+    margin-top: 1.6rem;
+  }
+}
+
+.wrap {
+  display: flex;
+  justify-content: space-between;
+  gap: 4rem;
+  margin-top: 2.4rem;
+
+  @include mixin.tab {
+    flex-wrap: wrap;
+  }
+}
+
+.main {
+  flex-grow: 1;
+  max-width: 84rem;
+
+  @include mixin.tab {
+    max-width: 100%;
+  }
+}
+
+.pagination {
+  margin-top: 6.4rem;
+
+  @include mixin.tab {
+    margin-top: 3.2rem;
+  }
+}
+</style>
+  

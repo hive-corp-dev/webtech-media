@@ -8,12 +8,19 @@ import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.ast
 import logo from '@assets/images/logo.svg';
 import { Image } from 'astro:assets';
 import { TOP_METADATA } from '@data/metadata';
+import HomePagination from '@components/article/HomePagination.astro';
+import {POSTS_PER_PAGE} from '@data/sitedata';
 
 const articles = await getCollection('article', ({data}) => {
 	return data.isDraft === false;
 });
 
 const sortedArticles = getSortedPosts(articles);
+const trimmedArticles = sortedArticles.slice(0, POSTS_PER_PAGE);
+
+
+const totalPages = Math.ceil(sortedArticles.length / POSTS_PER_PAGE);
+
 ---
 <Layout title={TOP_METADATA.title} description={TOP_METADATA.description}>
 	<div class="page">
@@ -27,7 +34,10 @@ const sortedArticles = getSortedPosts(articles);
 			<Container>
 				<div class="wrap">
 					<main class="main">
-						<ArticleList articles={sortedArticles} />
+						<ArticleList articles={trimmedArticles} />
+						<div class="pagination">
+							<HomePagination totalPages={totalPages} />
+						</div>
 					</main>
 					<ArticleArchiveSidebar />
 				</div>
@@ -130,6 +140,14 @@ const sortedArticles = getSortedPosts(articles);
 
 		@include mixin.tab {
 			max-width: 100%;
+		}
+	}
+
+	.pagination {
+		margin-top: 6.4rem;
+
+		@include mixin.tab {
+			margin-top: 3.2rem;
 		}
 	}
 	</style>
