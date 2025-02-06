@@ -74,12 +74,14 @@ figure[data-rehype-pretty-code-figure] {
     display: grid;
     font-family: var.$font-editor;
     letter-spacing: 0;
+
     // to reset CSS from code tag outside of highlighter
     margin: 0;
     border: none;
     background-color: transparent;
     box-shadow: none;
     line-height: 1.5;
+    white-space: pre;
 
     &[data-line-numbers] {
       counter-reset: line;
@@ -194,5 +196,10 @@ figure[data-rehype-pretty-code-figure] {
       left: 0;
     }
   }
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
 }
 </style>

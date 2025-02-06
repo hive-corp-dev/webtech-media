@@ -39,7 +39,7 @@
     background-color: #1b85ff;
     background-color: var.$c-main;
     // background-image: linear-gradient(to right bottom, #006ce8, #31b3ff);
-    padding: 1.6rem;
+    padding: 1rem 1.6rem;
     color: #fff;
 
     @include mixin.sp {
@@ -163,7 +163,8 @@
     color: #1b85ff;
     color: var.$c-main-v;
     color: var.$c-code-option;
-    word-break: break-all;
+    // word-break: break-all;
+    white-space: nowrap;
   }
 
   a:not([class]) {
@@ -187,6 +188,35 @@
 
   select {
     appearance: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-top: 2em;
+    // font-size: 1.6rem;
+    line-height: 1.75;
+
+    code {
+      white-space: nowrap;
+    }
+
+    th,
+    td {
+      padding: 1em;
+      border: 0.1rem solid #e0e0e0;
+
+      @include mixin.sp {
+        padding: 0.75em;
+        min-width: 20rem;
+      }
+    }
+
+    th {
+      background-color: #f8f8f8;
+      font-weight: bold;
+    }
   }
 
   // margins

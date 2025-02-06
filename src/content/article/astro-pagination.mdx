@@ -1,0 +1,649 @@
+---
+isDraft: false
+title: "Astroのサイトにページネーションを実装する方法【コピペ用コード付き】"
+description: "Astroのサイトに、前後のリンクや数字付きのページネーションを実装する方法を解説します。すぐに使用できるコピペ用のコードも合わせて紹介しています。"
+tags: ["astro"]
+publishedAt: 2025-02-06T18:00:00Z
+thumbnail: "./images/astro-pagination/thumb.png"
+---
+
+import imgPagination from "@article/images/astro-pagination/pagination.png";
+
+Astroで制作したサイトに、1, 2, 3...のような番号付きのページネーションを実装したいという場合があるかと思います。
+
+ページネーションの実装方法については、Astro公式のドキュメントでも紹介されています。
+
+しかし、[前へ][次へ]だけのシンプルなものなので、当記事では、
+
+- [最後へ][最初へ]のリンク
+- [次へ][前へ]のリンク
+- [1][2][3]のような番号のリンク
+
+を全て含んだページネーションを作成する方法を紹介します！
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<Versions versions={[{ key: "astro", version: "5.1.3" }]} />
+
+また、記事のフォーマットはMDXを使用していますが、ヘッドレスCMSから記事を取得する場合も同様に実装可能です。
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## ページネーションを設置するための記事一覧ページを作成
+
+まずは、ページネーションを設置するための記事一覧ページを作成します。
+
+1. 記事一覧ページ`[...page].astro`を作成
+2. `getStaticPaths`でページネーションのパスを生成
+3. ページごとの記事一覧を表示
+4. ページネーションのコンポーネントを設置
+
+### 1. 記事一覧ページ`[...page].astro`を作成
+
+記事一覧ページは、
+
+- `/blog/`：1ページ目
+- `/blog/2`：2ページ目
+- `/blog/3`：3ページ目
+
+となるようにしたいので、`/src/pages/blog/`ディレクトリに`[...page].astro`、もしくは`[page].astro`を作成します。
+
+<InfoBox>`blog`の部分は自由に変えてください。</InfoBox>
+
+#### `[page]`と`[...page]`はどちらを使うべき？
+
+日本語のページネーション部分のドキュメントでは、`[...page].astro`ではなく`[page].astro`が使用されていますが、この場合、
+
+- `/blog/1`
+- `/blog/2`
+- `/blog/3`
+
+というパスが生成されます。
+
+しかし多くの場合、`/blog/1`は`/blog/`と同じ内容になるので、`/blog/1`は必要ないことが多いですよね。
+
+実際にログを出力してみると、以下のようになります。
+
+<CodeHead lang="sh" />
+
+```sh
+# [page].astroとした場合
+[
+  { params: { page: '1' }, props: { page: [Object] } },
+  { params: { page: '2' }, props: { page: [Object] } },
+  { params: { page: '3' }, props: { page: [Object] } }
+]
+
+# [...page].astroとした場合
+[
+  { params: { page: undefined }, props: { page: [Object] } },
+  { params: { page: '2' }, props: { page: [Object] } },
+  { params: { page: '3' }, props: { page: [Object] } }
+]
+```
+
+`[page]`では`/blog/1`のパスが生成されてしまいますが、`[...page]`とすると、`/blog/1`が消えて、`/blog/`が1ページ目になります。
+
+これは英語版のドキュメントにのみ記載されていましたので、見落としがちなポイントですね・・。
+
+もし`/blog/`と`/blog/1`の内容を別にするならば`[page].astro`でもいいのですが、そうでない場合はコンテンツの重複を防ぐため、`[...page].astro`を使用することをおすすめします。
+
+### 2. `getStaticPaths`でページネーションのパスを生成
+
+ここからは、作成した`[...page].astro`ページの中身を作成していきます。
+
+まずは、`getStaticPaths`を使用して、ページネーションのパスを生成します。
+
+<CodeHead lang="astro" name="/src/pages/blog/[...page].astro" />
+
+```astro showLineNumbers
+---
+// Astroのコンテンツコレクションを使用している場合は、getCollectionをインポート
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths({ paginate }) {
+  // 記事のコレクションを取得 + 下書き記事を除外する
+  const posts = await getCollection('blog', ({ data }) => {
+    return data.isDraft === false;
+  });
+
+  // 記事を新しい順に並び替え
+  const sortedPosts = posts.sort((a, b) => {
+    return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+  });
+
+  // ページネーションのパスを生成 + 1Pごとの記事数を指定
+  return paginate(sortedPosts, { pageSize: 10 });
+}
+
+const { page } = Astro.props;
+---
+```
+
+それぞれ分解しながら説明していきます。
+
+#### getCollectionで記事を取得
+
+当記事ではAstroの<OuterLink href='https://docs.astro.build/en/guides/content-collections/'>コンテンツコレクション</OuterLink>を利用しているため、`getCollection`を使用して記事を取得しています。
+
+<CodeHead lang="astro" name="/src/pages/blog/[...page].astro" />
+
+```astro showLineNumbers
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths({ paginate }) {
+  const posts = await getCollection('blog', ({ data }) => {
+    return data.isDraft === false;
+  });
+  // 省略
+}
+---
+```
+
+ヘッドレスCMSなど、コンテンツコレクション以外で記事を管理している場合は、別の方法で記事を取得してください。
+
+#### 記事を新しい順に並び替え
+
+取得した記事を新しい順に並び替えるために、`publishedAt`を基準に`sort`メソッドを使用しています。
+
+<CodeHead lang="astro" name="/src/pages/blog/[...page].astro" />
+
+```astro showLineNumbers
+---
+const sortedPosts = posts.sort((a, b) => {
+  return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+});
+---
+```
+
+こちらもそれぞれの方法で並び替えを行なってください。
+
+#### ページネーションのパスを生成
+
+Astroにはページネーションを生成するための`paginate`関数が用意されています。
+
+<CodeHead lang="astro" name="/src/pages/blog/[...page].astro" />
+
+```astro showLineNumbers
+---
+export async function getStaticPaths({ paginate }) {
+
+  // 省略
+  const sortedPosts = ...;
+
+  return paginate(sortedPosts, { pageSize: 10 });
+}
+---
+```
+
+`paginate()`には、取得した記事の配列と、1ページあたりの記事数を指定します。
+
+ここでは`10`としているので、全記事を10記事ずつに分割するのに必要なページ分のパスを生成します。
+
+検証環境では23記事あるので、`paginate()`で3ページ分のパスが生成されます。
+
+<CodeHead lang="sh" />
+
+```sh
+[
+  { params: { page: undefined }, props: { page: [Object] } },
+  { params: { page: '2' }, props: { page: [Object] } },
+  { params: { page: '3' }, props: { page: [Object] } }
+]
+```
+
+これでページネーションのパスが生成されました！
+
+`/blog/○`のページにアクセスできるようになりましたが、まだページの中身は空なので、次で作成していきます。
+
+### 3. ページごとの記事一覧を表示
+
+1ページ目には1〜10番目の記事、2ページ目には11〜20番目の記事・・・というように、記事の一覧データを表示していきます。
+
+<CodeHead lang="astro" name="/src/pages/blog/[...page].astro" />
+
+```astro showLineNumbers {20-36}
+---
+import { getCollection } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+
+export async function getStaticPaths({ paginate }) {
+  const posts = await getCollection('blog', ({ data }) => {
+    return data.isDraft === false;
+  });
+
+  const sortedPosts = posts.sort((a, b) => {
+    return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+  });
+
+  return paginate(sortedPosts, { pageSize: 10 });
+}
+
+const { page } = Astro.props;
+---
+
+<Layout>
+  <h1>記事一覧</h1>
+  <ul>
+    {
+      page.data.map((post) => {
+        return (
+          <li>
+            <a href={`/blog/${post.slug}`}>
+              <h2>{post.data.title}</h2>
+              <p>{post.data.description}</p>
+            </a>
+          </li>
+        )
+      })
+    }
+  </ul>
+</Layout>
+```
+
+記事のデータは、`page.data`に配列として格納されているので、`map`メソッドを使用して一覧表示しています。
+
+ブログカードに表示する内容やレイアウトは、各自のデザインに合わせて変更してください。
+
+`console.log(page.data)`で中身を確認しながら調整すると良いでしょう。
+
+これで、ページごとの記事一覧を表示することができました！
+
+### 4. ページネーションのコンポーネントを設置
+
+最後に、ページネーションのコンポーネントを設置します。
+
+<CodeHead lang="astro" name="/src/pages/blog/[...page].astro" />
+
+```astro showLineNumbers {4, 10, 18}
+---
+import { getCollection } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import Pagination from '@/components/Pagination.astro';
+
+export async function getStaticPaths({ paginate }) {
+  // 省略
+}
+
+const { page } = Astro.props;
+---
+
+<Layout>
+  <h1>記事一覧</h1>
+  <!-- 記事一覧を表示 -->
+  <ul></ul>
+
+  <Pagination page={page} />
+</Layout>
+```
+
+ページネーション作成に必要なデータは`page`プロパティに格納されているので、次で作成する`<Pagination />`コンポーネントに`page`を渡します。
+
+## ページネーションコンポーネントを作成
+
+ここからは、ページネーションのコンポーネントを作成します。
+
+簡易的ですが、以下のようなデザインにしてみます。
+
+<Img src={imgPagination} alt="ページネーションのデザイン" type={["border", "shadow"]} />
+
+`src`内の任意のディレクトリで、`Pagination.astro`というファイルを作成してください。
+
+ここでは、`src/components/Pagination.astro`としています。
+
+まずはコード全体の紹介から。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+---
+// paginate()関数で取得したpageプロパティ
+const {page} = Astro.props;
+
+// ページネーションの総ページ数
+const totalPages = page.lastPage;
+
+// ページ番号の配列 [1, 2, 3]のような形式で生成
+const pageNumbers = Array.from({length: totalPages}, (_, i) => {
+  return i + 1;
+});
+
+// ページ番号からページURLを生成
+const getPageUrl = (pageNumber) => {
+  return pageNumber === 1 ? page.url.first : `/blog/${pageNumber}`;
+}
+---
+
+<nav class="pagination" aria-label="ページネーション">
+
+  <ul class="list">
+    <!-- 最初のページ -->
+    <li class="item">
+      {
+        page.url.first ? (
+          <a class="link" href={page.url.first}>&lt;&lt;</a>
+        ) : (
+          <span class="link">&lt;&lt;</span>
+        )
+      }
+    </li>
+
+    <!-- 前のページ -->
+    <li class="item">
+      {
+        page.url.prev ? (
+          <a class="link" href={page.url.prev}>&lt;</a>
+        ) : (
+          <span class="link">&lt;</span>
+        )
+      }
+    </li>
+
+    <!-- ○番目のページ -->
+    {
+      pageNumbers.map((pageNumber) => {
+        return (
+          <li class="item">
+            {
+              page.currentPage === pageNumber ? (
+                <span class="link current" aria-current="page">{pageNumber}</span>
+              ) : (
+                <a class="link" href={getPageUrl(pageNumber)}>{pageNumber}</a>
+              )
+            }
+          </li>
+        );
+      })
+    }
+
+    <!-- 次のページ -->
+    <li class="item">
+      {
+        page.url.next ? (
+          <a class="link" href={page.url.next}>&gt;</a>
+        ) : (
+          <span class="link">&gt;</span>
+        )
+      }
+    </li>
+
+    <!-- 最後のページ -->
+    <li class="item">
+      {
+        page.url.last ? (
+          <a class="link" href={page.url.last}>&gt;&gt;</a>
+        ) : (
+          <span class="link">&gt;&gt;</span>
+        )
+      }
+    </li>
+  </ul>
+</nav>
+
+<style>
+  .pagination {
+    width: 100%;
+
+    .list {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .link {
+      width: 4rem;
+      height: 4rem;
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.current {
+        background-color: #333;
+        color: #fff;
+      }
+    }
+  }
+</style>
+```
+
+主な仕様は以下の通りです。
+
+- [最後へ][最初へ]のリンク
+- [次へ][前へ]のリンク
+- [1][2][3]のような番号のリンク
+- 現在表示中のページ、またはリンク不可の場合は`<a>`タグではなく`<span>`タグで表示
+
+必要のない機能は削除して、自身の使用用途に合わせてカスタマイズしてください。
+
+### 1. pageプロパティから必要な情報を取得
+
+`[...page].astro`から渡される`page`プロパティから、ページネーションに必要な情報を取得します。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+---
+// paginate()関数で取得したpageプロパティ
+const {page} = Astro.props;
+```
+
+今回使用するプロパティは以下の通りです。
+
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>プロパティ名</th>
+        <th>説明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>`page.data`</td>
+        <td>現在のページに表示する記事の配列。`pageSize`が`10`なら、10記事分のデータが格納された配列になる。</td>
+      </tr>
+      <tr>
+        <td>`page.size`</td>
+        <td>ページごとに表示する記事数。`pageSize`に設定した値と同じ。</td>
+      </tr>
+      <tr>
+        <td>`page.total`</td>
+        <td>`getCollection`で取得した記事の総数。</td>
+      </tr>
+      <tr>
+        <td>`page.currentPage`</td>
+        <td>`1`から始まる現在のページの番号。（例：現在のページが`/blog/2`なら`2`になる）</td>
+      </tr>
+      <tr>
+        <td>`page.lastPage`</td>
+        <td>ページネーションに必要なトータルのページ数。（例：記事数が`30`で`pageSize`が`10`なら、`3`になる）</td>
+      </tr>
+      <tr>
+        <td>`page.url.current`</td>
+        <td>現在のページのURL。</td>
+      </tr>
+      <tr>
+        <td>`page.url.prev`</td>
+        <td>前のページのURL。もし現在表示中のページが1ページ目なら、`undefined`になる。</td>
+      </tr>
+      <tr>
+        <td>`page.url.prev`</td>
+        <td>次のページのURL。もし現在表示中のページが最後のページなら、`undefined`になる。</td>
+      </tr>
+      <tr>
+        <td>`page.url.first`</td>
+        <td>最初のページのURL。もし現在表示中のページが最初のページなら、`undefined`になる。</td>
+      </tr>
+      <tr>
+        <td>`page.url.last`</td>
+        <td>最後のページのURL。もし現在表示中のページが最後のページなら、`undefined`になる。</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+#### ページ番号の配列を作成
+
+まずはページネーションの総ページ数を取得します。
+
+例えば記事総数が`30`で`pageSize`が`10`の場合、3ページ分のページネーションが必要になりますね。
+
+ページネーションの総数は、以下のプロパティから取得可能です。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+---
+const totalPages = page.lastPage;
+---
+```
+
+`page.lastPage`でページネーションの総数を取得できますが、`lastPage`という名前は分かりにくいので、`totalPages`という変数に格納しています。
+
+この数字から、`[1, 2, 3]`というようなページ番号の配列を生成するために、以下のように`Array.from()`を使用します。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+---
+const pageNumbers = Array.from({length: totalPages}, (_, i) => {
+  return i + 1;
+});
+---
+```
+
+`Array.from()`は、第1引数に配列の長さを指定し、第2引数に各要素に対して実行する関数を指定します。
+
+配列の長さは`totalPages`、各要素は`i + 1`として、`[1, 2, 3]`というような配列を生成しています。
+
+#### ページ番号からページURLを生成する関数を作成
+
+[最後へ][最初へ][次へ][前へ]のリンクは`page`プロパティから生成できますが、数字部分のリンクは自作する必要があります。
+
+以下は、`1`や`2`などのページ番号から、そのページのURLを生成する関数です。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+---
+const getPageUrl = (pageNumber) => {
+  return pageNumber === 1 ? page.url.first : `/blog/${pageNumber}`;
+}
+```
+
+`pageNumber`が`1`の場合は`page.url.first`を返し、それ以外は`/blog/数字`の形式でURLを生成します。
+
+`blog`の部分は自身のページのパスに合わせて変更してください。
+
+これでフロントマター内のコードは完成です！
+
+### 2. 最初、前、次、最後のページへのリンクを表示
+
+次に、[最初へ][前へ][次へ][最後へ]のリンクを表示します。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+<!-- 最初のページ -->
+<li class="item">
+  {
+    page.url.first ? (
+      <a class="link" href={page.url.first}>&lt;&lt;</a>
+    ) : (
+      <span class="link">&lt;&lt;</span>
+    )
+  }
+</li>
+```
+
+最初のページへのURLは、`page.url.first`で取得できます。
+
+もし現在表示中のページが最初のページなら、`page.url.first`は`undefined`になるので、条件分岐で`<a>`タグか`<span>`タグかを切り替えています。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+<!-- 前のページ -->
+<li class="item">
+  {
+    page.url.prev ? (
+      <a class="link" href={page.url.prev}>&lt;</a>
+    ) : (
+      <span class="link">&lt;</span>
+    )
+  }
+</li>
+```
+
+前のページへのURLは、`page.url.prev`で取得できます。
+
+こちらもこれ以上前のページがない場合は`undefined`になるので、同様に条件分岐を行なっています。
+
+[最後へ][次へ]は同じ仕組みなので、説明は割愛します。
+
+### 3. ページ番号のリンクを表示
+
+最後に、[1][2][3]のようなページ番号のリンクを作成します。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```jsx {showLineNumbers}
+{
+  pageNumbers.map((pageNumber) => {
+    return (
+      <li class="item">
+        {page.currentPage === pageNumber ? (
+          <span class="link current" aria-current="page">
+            {pageNumber}
+          </span>
+        ) : (
+          <a class="link" href={getPageUrl(pageNumber)}>
+            {pageNumber}
+          </a>
+        )}
+      </li>
+    );
+  });
+}
+```
+
+先ほどフロントマターで生成した`pageNumbers`には、`[1, 2, 3]`のようなページ番号が格納されています。
+
+これを`map`メソッドでループし、現在表示中のページ番号と一致する場合は`<span>`タグで表示し、それ以外は`<a>`タグのリンクを表示しています。
+
+各ページ番号のリンクは、先ほど作成した`getPageUrl`関数を使用して生成しています。
+
+また、現在表示中のページ番号には`aria-current="page"`を設定します。これでスクリーンリーダーに「現在のページ」であることを伝えることができます。
+
+これでページネーションのコンポーネントが完成しました！
+
+## 【まとめ】Astroのサイトにページネーションを実装する方法
+
+今回は、Astroでページネーションを実装する方法を紹介しました。
+
+公式のドキュメントでは前後のページを表示するだけのページネーションが紹介されていますが、当記事では、
+
+- [最後へ][最初へ]のリンク
+- [次へ][前へ]のリンク
+- [1][2][3]のような番号のリンク
+
+を全て含んだページネーションを実装しています。
+
+コピペして自由にお使いいただけるよう作成しましたので、自身の使用用途に合わせてカスタマイズしてください。
+
+<InfoBox type='warning'>
+現状ではページ番号が全て表示されるようになっているので、記事数が多くなるとデザインが崩れる場合があります。
+
+ページ番号を省略して`...`などで表示するように調整するコードを追記する予定ですので、お待ちいただければと思います。
+
+</InfoBox>
