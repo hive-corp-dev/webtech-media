@@ -115,7 +115,9 @@ import Script from "next/script";
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
 export function Clarity() {
-  CLARITY_ID && (
+  if (!CLARITY_ID) return null;
+
+  return (
     <Script strategy="afterInteractive" id="clarity-tag">
       {`
     (function(c,l,a,r,i,t,y){
@@ -161,7 +163,9 @@ Clarityを含む分析ツールは、ページがインタラクティブにな�
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
 export function Clarity() {
-  CLARITY_ID && (
+  if (!CLARITY_ID) return null;
+
+  return (
     /* ここにscriptの内容が入ります */
   )
 }
