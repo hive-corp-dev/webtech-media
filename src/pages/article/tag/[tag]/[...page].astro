@@ -71,7 +71,7 @@ const tagSlug = getTagDataBySlug(params.tag).slug;
 					 <ArticleList articles={page.data} />
 
            <div class="pagination">
-            <Pagination page={page} baseUrl={currentPathname} />
+            <Pagination page={page} baseUrl=`/article/tag/${params.tag}` />
           </div>
 				 </main>
 				 <ArticleArchiveSidebar />
