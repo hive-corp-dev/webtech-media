@@ -32,3 +32,5 @@ export const getTagListBySlugs = (slugs) => {
 export const tagPaths = articleTags.map((tag) => ({
   params: { tag: tag.slug },
 }));
+
+export const allTagSlugs = articleTags.map((tag) => tag.slug);

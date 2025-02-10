@@ -12,6 +12,20 @@ export const ARTICLE_METADATA = {
   description: "WebTech Mediaの記事一覧です。",
 };
 
+export const getPaginatedArticlesMetadata = (page) => {
+  return {
+    title: `記事一覧 - ${page}ページ目 | ${SITE_NAME}`,
+    description: `WebTech Mediaの記事一覧です。（${page}ページ目）`,
+  };
+};
+
+export const getPaginatedTagArticlesMetadata = (tagLabel, page) => {
+  return {
+    title: `タグ:${tagLabel}${page !== 1 ? " - " + page + "ページ目" : ""} | 記事一覧 | ${SITE_NAME}`,
+    description: `タグ:${tagLabel}に属する記事一覧です。${page !== 1 ? "（" + page + "ページ目）" : ""}`,
+  };
+};
+
 export const ARTICLE_SINGLE_METADATA = {
   title: `${SITE_NAME}`,
 };

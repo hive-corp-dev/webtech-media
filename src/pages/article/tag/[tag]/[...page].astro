@@ -1,65 +1,75 @@
 ---
-import Layout from '@layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getSortedPosts } from '@utils/article';
-
+import Layout from '@layouts/Layout.astro';
 import Container from '@components/common/Container.astro';
+import ArticleList from '@components/article/ArticleList.astro';
 import Breadcrumb from '@components/common/Breadcrumb.astro';
+import {tagPaths, getTagListBySlugs, getTagDataBySlug, allTagSlugs} from '@utils/article-tags';
+import { getSortedPosts } from '@utils/article';
 import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
 import Pagination from '@components/article/Pagination.astro';
-import ArticleList from '@components/article/ArticleList.astro';
-import { ARTICLE_METADATA, getPaginatedArticlesMetadata } from '@data/metadata';
+import { TAG_SINGLE_METADATA, getPaginatedTagArticlesMetadata } from '@data/metadata';
 
-export async function getStaticPaths({ paginate }) {
-  const articles = await getCollection('article', ({ data }) => {
-		return data.isDraft === false;
-	});
+export async function getStaticPaths({paginate}) {
+  const allTags = allTagSlugs;
 
-  const sortedArticles = getSortedPosts(articles);
-  const paginateData = paginate(sortedArticles, { pageSize: 10 });
+  const allPosts = await getCollection('article', ({data}) => {
+    return data.isDraft === false;
+  });
 
-  return paginateData;
+  return allTags.flatMap((tag) => {
+    const filteredPosts = allPosts.filter((post) => post.data.tags.includes(tag));
+    const sortedPosts = getSortedPosts(filteredPosts);
+
+    return paginate(sortedPosts, {params: {tag}, pageSize: 10})
+  })
 }
 
 const { page } = Astro.props;
+const params = Astro.params;
 
 const currentPage = page.currentPage;
 const lastPage = page.lastPage;
+
+const tagLabel = getTagDataBySlug(params.tag).label;
+const tagSlug = getTagDataBySlug(params.tag).slug;
 ---
 
-<Layout title={currentPage === 1 ? ARTICLE_METADATA.title : getPaginatedArticlesMetadata(currentPage).title} description={currentPage === 1 ? ARTICLE_METADATA.description : getPaginatedArticlesMetadata(currentPage).description}>
-  <div class="page">
+<Layout title={getPaginatedTagArticlesMetadata(tagLabel, currentPage).title} description={getPaginatedTagArticlesMetadata(tagLabel, currentPage).description}>
+	<div class="page">
 		<div class="hero">
 			<h1>
-			 <span class="en">ARTICLES</span>
-			 <span class="jp">記事一覧</span>
+			 <span class="en">TAGGED ARTICLES</span>
+			 <span class="jp">タグ:{tagLabel}</span>
 		 </h1>
 	 </div>
 	 <div class="body">
 		 <Container>
-			  {
-          currentPage === 1 ? (
-          <Breadcrumb data={[
-            { label: 'ホーム', href: '/' },
-            { label: '記事一覧' },
-          ]} />
-          ) : (
+			 {
+       currentPage === 1 ? (
           <Breadcrumb data={[
             { label: 'ホーム', href: '/' },
             { label: '記事一覧', href: '/article' },
+            { label: `タグ:${tagLabel}の記事一覧` },
+          ]} />
+        ) : (
+          <Breadcrumb data={[
+            { label: 'ホーム', href: '/' },
+            { label: '記事一覧', href: '/article' },
+            { label: `タグ:${tagLabel}の記事一覧`, href: `/article/tag/${tagSlug}` },
             { label: `${currentPage}ページ目` },
           ]} />
-          )
-        }
+        )
+       }
        <div class="page-count">
-          <p>{currentPage}/{lastPage}ページ目</p>
-       </div>
+        <p>{currentPage}/{lastPage}ページ目</p>
+      </div>
 			 <div class="wrap">
 				 <main class="main">
-          <ArticleList articles={page.data} />
-          
-          <div class="pagination">
-            <Pagination page={page} baseUrl="/article" />
+					 <ArticleList articles={page.data} />
+
+           <div class="pagination">
+            <Pagination page={page} baseUrl=`/article/tag/${params.tag}` />
           </div>
 				 </main>
 				 <ArticleArchiveSidebar />
@@ -112,6 +122,12 @@ const lastPage = page.lastPage;
           font-size: 2.4rem;
           margin-top: 0;
         }
+      }
+
+      &.tag {
+        font-size: 1.6rem;
+        font-weight: bold;
+        margin-top: 1.6rem;
       }
     }
   }
@@ -174,4 +190,3 @@ const lastPage = page.lastPage;
   }
 }
 </style>
-  

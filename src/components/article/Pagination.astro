@@ -5,7 +5,7 @@ import { FiChevronLeft } from "react-icons/fi";
 import { FiChevronRight } from "react-icons/fi";
 
 // paginate()関数で取得したpageプロパティ
-const {page, isHome} = Astro.props;
+const {page, baseUrl} = Astro.props;
 
 // ページネーションの総ページ数
 const totalPages = page.lastPage;
@@ -17,7 +17,7 @@ const pageNumbers = Array.from({length: totalPages}, (_, i) => {
 
 // ページ番号からページURLを生成
 const getPageUrl = (pageNumber) => {
-  return pageNumber === 1 ? page.url.first : `/article/${pageNumber}`;
+  return pageNumber === 1 ? page.url.first : `${baseUrl}/${pageNumber}`;
 }
 ---
 
