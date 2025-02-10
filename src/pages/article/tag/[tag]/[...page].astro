@@ -28,6 +28,8 @@ export async function getStaticPaths({paginate}) {
 const { page } = Astro.props;
 const params = Astro.params;
 
+const currentPathname = Astro.url.pathname;
+
 const currentPage = page.currentPage;
 const lastPage = page.lastPage;
 
@@ -69,7 +71,7 @@ const tagSlug = getTagDataBySlug(params.tag).slug;
 					 <ArticleList articles={page.data} />
 
            <div class="pagination">
-            <Pagination page={page} baseUrl=`/article/tag/${params.tag}` />
+            <Pagination page={page} baseUrl={currentPathname} />
           </div>
 				 </main>
 				 <ArticleArchiveSidebar />
