@@ -21,14 +21,15 @@ export async function getStaticPaths({paginate}) {
     const filteredPosts = allPosts.filter((post) => post.data.tags.includes(tag));
     const sortedPosts = getSortedPosts(filteredPosts);
 
-    return paginate(sortedPosts, {params: {tag}, pageSize: 10})
+    return paginate(sortedPosts, {params: {tag}, pageSize: 10});
   })
 }
 
 const { page } = Astro.props;
 const params = Astro.params;
 
-const currentPathname = Astro.url.pathname;
+console.log(params);
+
 
 const currentPage = page.currentPage;
 const lastPage = page.lastPage;

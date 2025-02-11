@@ -1,0 +1,525 @@
+---
+isDraft: false
+title: "【Astro】カテゴリーやタグ一覧にページネーションを実装する方法【コピペ用コード付き】"
+description: "Astroのカテゴリーやタグ一覧ページに、前後のリンクや数字付きのページネーションを実装する方法を解説します。すぐに使用できるコピペ用のコードも合わせて紹介しています。"
+tags: ["astro"]
+publishedAt: 2025-02-11T23:00:00Z
+thumbnail: "./images/astro-nested-pagination/thumb.png"
+---
+
+import imgDirectory from "@article/images/astro-nested-pagination/directory.png";
+
+前回の記事では、記事一覧ページにページネーションを実装する方法を解説しました。
+
+https://webtech-media.jp/article/astro-pagination
+
+今回はその発展編として、**カテゴリー別やタグ別の記事一覧ページにページネーションを実装する方法**を解説します。
+
+記事一覧ページで作成したページネーションと同様に、
+
+- [最後へ][最初へ]のリンク
+- [次へ][前へ]のリンク
+- [1][2][3]のような番号のリンク
+
+を表示するページネーションを作成しますので、ぜひ参考にしてみてください。
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<Versions versions={[{ key: "astro", version: "5.1.3" }]} />
+
+また、記事のフォーマットはMDXを使用していますが、ヘッドレスCMSから記事を取得する場合も同様に実装可能です。
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## カテゴリーもしくはタグ一覧ページを作成
+
+まずは、カテゴリー別、もしくはタグ別の記事一覧ページを作成します。
+
+ここでは例として、`/blog/tag/タグのスラッグ名`のURLでアクセスできるタグ別の記事一覧ページを作成します。
+
+以下の手順に沿って、一覧ページを作成していきます。
+
+1. タグ別記事一覧ページを作成
+2. `getStaticPaths`で動的にパスを生成
+3. ページごとの記事一覧を表示
+4. ページネーションのコンポーネントを設置
+
+### 1. タグ別記事一覧ページを作成
+
+まずは、タグ別の記事一覧ページを作成します。
+
+最終的なURLは、`/blog/tag/タグのスラッグ名/数字`となるようにしたいので、
+
+`/src/pages/blog/tag/[tag]/`ディレクトリに、`[...page].astro`ファイルを作成します。URLの構成は適宜変更してください。
+
+<Img src={imgDirectory} alt="ディレクトリ構造のスクリーンショット" type={["border", "shadow"]} />
+
+`[tag]`はタグのスラッグ名、`[...page].astro`は`2`、`3`などページネーションのためのパスが入ります。
+
+<Spacer />
+
+この構造で`astro`というタグの記事一覧ページを作成する場合、
+
+- `/blog/tag/astro`：1ページ目
+- `/blog/tag/astro/2`：2ページ目
+- `/blog/tag/astro/3`：3ページ目
+
+となります。
+
+### 2. `getStaticPaths`で動的にパスを生成
+
+ここからは、作成した`[...page].astro`ページの中身を作成していきます。
+
+まずは、`getStaticPaths`を使用して、動的にページを生成するためのパスを取得します。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro showLineNumbers
+---
+// Astroのコンテンツコレクションを使用している場合は、getCollectionをインポート
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths({paginate}) {
+  // タグの一覧を取得
+  const allTags = ['tag1', 'tag2', 'tag3'];
+
+  // 記事のコレクションを取得(isDraftがfalseの記事のみ)
+  const allPosts = await getCollection('blog', ({data}) => {
+    return data.isDraft === false;
+  });
+
+  return allTags.flatMap((tag) => {
+    // タグに属する記事をフィルタリング
+    const filteredPosts = allPosts.filter((post) => post.data.tags.includes(tag));
+
+    // 記事を新しい順に並び替え
+    const sortedPosts = filteredPosts.sort((a, b) => {
+      return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+    });
+
+    // ページネーションのパスを生成 + 1Pごとの記事数を指定
+    return paginate(sortedPosts, {
+      params: { tag },
+      pageSize: 10
+    });
+  })
+}
+
+const { page } = Astro.props;
+const params = Astro.params;
+---
+```
+
+それぞれ分解しながら解説していきます。
+
+#### タグの一覧を取得
+
+まず、サイトに登録されている全てのタグを取得します。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+---
+const allTags = ['tag1', 'tag2', 'tag3'];
+---
+```
+
+ここでは手動でタグを定義していますが、実際にはAPIなどから取得したり、ユーティリティ関数を使用して取得するのがいいかと思います。
+
+#### getCollectionで記事一覧を取得
+
+次に、記事一覧を取得します。
+
+当記事ではAstroの<OuterLink href='https://docs.astro.build/en/guides/content-collections/'>コンテンツコレクション</OuterLink>を利用しているため、`getCollection`を使用して記事を取得しています。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths({ paginate }) {
+  const allPosts = await getCollection('blog', ({ data }) => {
+    return data.isDraft === false;
+  });
+  // 省略
+}
+---
+```
+
+コンテンツコレクション以外で記事を管理している場合は、別の方法で記事一覧を取得してください。
+
+#### ページネーションのパスを生成
+
+ここでは、
+
+- タグに属する記事をフィルタリング
+- 記事を新しい順に並び替え
+- ページネーションのパスを生成
+
+という3つの処理を行います。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+---
+return allTags.flatMap((tag) => {
+  // タグに属する記事をフィルタリング
+  const filteredPosts = allPosts.filter((post) => post.data.tags.includes(tag));
+
+  // 記事を新しい順に並び替え
+  const sortedPosts = filteredPosts.sort((a, b) => {
+    return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+  });
+
+  // ページネーションのパスを生成 + 1Pごとの記事数を指定
+  return paginate(sortedPosts, {
+    params: { tag },
+    pageSize: 10
+  });
+})
+---
+```
+
+まず、`tag`に属する記事のみを抽出するために、`filter`メソッドを使用しています。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+---
+const filteredPosts = allPosts.filter((post) => post.data.tags.includes(tag));
+---
+```
+
+コンテンツコレクションで記事を取得している場合、記事のフロントマターの情報は`post.data`でアクセスできます。
+
+その中の`tags`プロパティには、タグのスラッグを配列で指定しているので、`includes`メソッドを使用して`tag`に一致する記事を抽出しています。
+
+参考までに、当ブログのフロントマターの構成は以下の通りです。
+
+<CodeHead lang="mdx" name="src/content/article/astro-nested-pagination.mdx" />
+
+```mdx
+---
+isDraft: false
+title: "記事タイトル"
+description: "記事の説明"
+tags: ["tag1", "tag2"]
+publishedAt: 2025-02-11T11:00:00Z
+thumbnail: "./images/nested-astro-pagination/thumb.png"
+---
+```
+
+<Spacer />
+
+続いて、フィルタリングした記事を新しい順に並び替えます。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+---
+const sortedPosts = filteredPosts.sort((a, b) => {
+  return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+});
+---
+```
+
+<Spacer />
+
+最後に、`paginate`関数でページネーションのパスを生成します。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+---
+return paginate(sortedPosts, {
+  params: { tag },
+  pageSize: 10
+});
+---
+```
+
+`paginate()`の第一引数には記事一覧を渡し、第二引数にはページネーションの設定をオブジェクトで指定します。
+
+`params`には、`src/pages/blog/tag/[tag]/[...page].astro`のうちの`[tag]`と同じ値を指定します。
+
+`pageSize`には、1ページあたりの記事数を指定します。
+
+これで、全タグのそれぞれの一覧ページと、ページネーションのパスが生成されました。
+
+### 3. ページごとの記事一覧を表示
+
+ここからは、タグ別の記事一覧ページの中身を作成していきます。
+
+まずは全体のコードの紹介から。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro showLineNumbers {37-55}
+---
+// Astroのコンテンツコレクションを使用している場合は、getCollectionをインポート
+import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Pagination from '@components/Pagination.astro';
+
+export async function getStaticPaths({paginate}) {
+  // タグの一覧を取得
+  const allTags = ['tag1', 'tag2', 'tag3'];
+
+  // 記事のコレクションを取得(isDraftがfalseの記事のみ)
+  const allPosts = await getCollection('blog', ({data}) => {
+    return data.isDraft === false;
+  });
+
+  return allTags.flatMap((tag) => {
+    // タグに属する記事をフィルタリング
+    const filteredPosts = allPosts.filter((post) => post.data.tags.includes(tag));
+
+    // 記事を新しい順に並び替え
+    const sortedPosts = filteredPosts.sort((a, b) => {
+      return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+    });
+
+    // ページネーションのパスを生成 + 1Pごとの記事数を指定
+    return paginate(sortedPosts, {
+      params: { tag },
+      pageSize: 10
+    });
+  })
+}
+
+const { page } = Astro.props;
+const params = Astro.params;
+---
+
+<Layout>
+  <h1>{params.tag}の記事一覧</h1>
+  <ul>
+    {
+      page.data.map((post) => {
+        return (
+          <li>
+            <a href={`/blog/${post.slug}`}>
+              <h2>{post.data.title}</h2>
+              <p>{post.data.description}</p>
+            </a>
+          </li>
+        )
+      })
+    }
+  </ul>
+
+  <Pagination page={page} baseUrl=`/blog/tag/${params.tag}` />
+</Layout>
+```
+
+`params.tag`には、現在表示中のタグのスラッグ名が入ります。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+<h1>{params.tag}の記事一覧</h1>
+```
+
+現在のページが`/blog/tag/astro/`の場合は、「astroの記事一覧」という文字列になります。
+
+<Spacer />
+
+次に記事の一覧を表示する部分です。
+
+記事のデータは`page.data`に配列として格納されているので、`map`メソッドを使用して一覧を表示します。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+<ul>
+  {
+    page.data.map((post) => {
+      return (
+        <li>
+          <a href={`/blog/${post.slug}`}>
+            <h2>{post.data.title}</h2>
+            <p>{post.data.description}</p>
+          </a>
+        </li>
+      )
+    })
+  }
+</ul>
+```
+
+ブログカードに表示する内容やレイアウトは、各自のデザインに合わせて変更してください。
+
+`console.log(page.data)`で中身を確認しながら調整すると良いでしょう。
+
+これで、ページごとの記事一覧を表示することができました！
+
+<Spacer />
+
+次に、`<Pagination />`コンポーネントを設置します。
+
+<CodeHead lang="astro" name="/src/pages/blog/tag/[tag]/[...page].astro" />
+
+```astro
+---
+import Pagination from '@components/Pagination.astro';
+
+const { page } = Astro.props;
+---
+
+<Pagination page={page} baseUrl=`/blog/tag/${params.tag}` />
+```
+
+ページネーションコンポーネントは次で作成しますが、`page`プロパティと`baseUrl`を渡すようにしてください。
+
+<AdUnit />
+
+## ページネーションコンポーネントを作成
+
+最後に、ページネーションのコンポーネントを作成します。
+
+以下にスタイル付きのコード全体を用意しましたので、そのままコピペして使用してください。
+
+<CodeHead lang="astro" name="/src/components/Pagination.astro" />
+
+```astro {showLineNumbers}
+---
+// paginate()関数で取得したpageプロパティ
+const {page, baseUrl} = Astro.props;
+
+// ページネーションの総ページ数
+const totalPages = page.lastPage;
+
+// ページ番号の配列 [1, 2, 3]のような形式で生成
+const pageNumbers = Array.from({length: totalPages}, (_, i) => {
+  return i + 1;
+});
+
+// ページ番号からページURLを生成
+const getPageUrl = (pageNumber) => {
+  return pageNumber === 1 ? page.url.first : `${baseUrl}/${pageNumber}`;
+}
+---
+
+<nav class="pagination" aria-label="ページネーション">
+
+  <ul class="list">
+    <!-- 最初のページ -->
+    <li class="item">
+      {
+        page.url.first ? (
+          <a class="link" href={page.url.first}>&lt;&lt;</a>
+        ) : (
+          <span class="link">&lt;&lt;</span>
+        )
+      }
+    </li>
+
+    <!-- 前のページ -->
+    <li class="item">
+      {
+        page.url.prev ? (
+          <a class="link" href={page.url.prev}>&lt;</a>
+        ) : (
+          <span class="link">&lt;</span>
+        )
+      }
+    </li>
+
+    <!-- ○番目のページ -->
+    {
+      pageNumbers.map((pageNumber) => {
+        return (
+          <li class="item">
+            {
+              page.currentPage === pageNumber ? (
+                <span class="link current" aria-current="page">{pageNumber}</span>
+              ) : (
+                <a class="link" href={getPageUrl(pageNumber)}>{pageNumber}</a>
+              )
+            }
+          </li>
+        );
+      })
+    }
+
+    <!-- 次のページ -->
+    <li class="item">
+      {
+        page.url.next ? (
+          <a class="link" href={page.url.next}>&gt;</a>
+        ) : (
+          <span class="link">&gt;</span>
+        )
+      }
+    </li>
+
+    <!-- 最後のページ -->
+    <li class="item">
+      {
+        page.url.last ? (
+          <a class="link" href={page.url.last}>&gt;&gt;</a>
+        ) : (
+          <span class="link">&gt;&gt;</span>
+        )
+      }
+    </li>
+  </ul>
+</nav>
+
+<style>
+  .pagination {
+    width: 100%;
+
+    .list {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .link {
+      width: 4rem;
+      height: 4rem;
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.current {
+        background-color: #333;
+        color: #fff;
+      }
+    }
+  }
+</style>
+```
+
+こちらのコンポーネントに関しては、「<OuterLink href='https://webtech-media.jp/article/astro-pagination'>Astroのサイトにページネーションを実装する方法【コピペ用コード付き】</OuterLink>」の記事と全く同じなので、そちらを参照してください。
+
+これで、タグ別記事一覧ページにもページネーションが実装されました！
+
+<AdUnit />
+
+## 【まとめ】Astroサイトのカテゴリーやタグ一覧にページネーションを実装する方法
+
+今回は、Astroサイトのカテゴリーやタグ一覧ページにページネーションを実装する方法を解説しました。
+
+公式ドキュメントでは、以下のページの「ネストされたページネーション」という箇所で簡単に説明されています。
+
+https://docs.astro.build/ja/guides/routing/#%E3%83%8D%E3%82%B9%E3%83%88%E3%81%95%E3%82%8C%E3%81%9F%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%8D%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3
+
+公式の情報と合わせて、今回の記事を参考にしていただければと思います。
+
+また、今回使用したページネーションコンポーネントに関する詳しい解説は、ぜひ以下の記事を参考にしてみてください。
+
+https://webtech-media.jp/article/astro-pagination
+
+なかなか複雑な内容なので、もし分からない点があればコメント欄からお気軽にご質問ください！

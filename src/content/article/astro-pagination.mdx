@@ -282,11 +282,19 @@ const { page } = Astro.props;
   <!-- 記事一覧を表示 -->
   <ul></ul>
 
-  <Pagination page={page} />
+  <Pagination page={page} baseUrl="/blog" />
 </Layout>
 ```
 
 ページネーション作成に必要なデータは`page`プロパティに格納されているので、次で作成する`<Pagination />`コンポーネントに`page`を渡します。
+
+#### 追記: `baseUrl`の設定
+
+また、`baseUrl`はページネーションのベースとなるURLを指定します。
+
+こうすることで、サイト内に複数のページネーションを設置する際にも、同じコンポーネントを使用できるようになります。
+
+<AdUnit />
 
 ## ページネーションコンポーネントを作成
 
@@ -307,7 +315,7 @@ const { page } = Astro.props;
 ```astro {showLineNumbers}
 ---
 // paginate()関数で取得したpageプロパティ
-const {page} = Astro.props;
+const {page, baseUrl} = Astro.props;
 
 // ページネーションの総ページ数
 const totalPages = page.lastPage;
@@ -319,7 +327,7 @@ const pageNumbers = Array.from({length: totalPages}, (_, i) => {
 
 // ページ番号からページURLを生成
 const getPageUrl = (pageNumber) => {
-  return pageNumber === 1 ? page.url.first : `/blog/${pageNumber}`;
+  return pageNumber === 1 ? page.url.first : `${baseUrl}/${pageNumber}`;
 }
 ---
 
@@ -537,13 +545,11 @@ const pageNumbers = Array.from({length: totalPages}, (_, i) => {
 ```astro {showLineNumbers}
 ---
 const getPageUrl = (pageNumber) => {
-  return pageNumber === 1 ? page.url.first : `/blog/${pageNumber}`;
+  return pageNumber === 1 ? page.url.first : `${baseUrl}/${pageNumber}`;
 }
 ```
 
-`pageNumber`が`1`の場合は`page.url.first`を返し、それ以外は`/blog/数字`の形式でURLを生成します。
-
-`blog`の部分は自身のページのパスに合わせて変更してください。
+`pageNumber`が`1`の場合は`page.url.first`を返し、それ以外は`/${baseUrl}/数字`の形式でURLを生成します。
 
 これでフロントマター内のコードは完成です！
 
@@ -626,6 +632,8 @@ const getPageUrl = (pageNumber) => {
 また、現在表示中のページ番号には`aria-current="page"`を設定します。これでスクリーンリーダーに「現在のページ」であることを伝えることができます。
 
 これでページネーションのコンポーネントが完成しました！
+
+<AdUnit />
 
 ## 【まとめ】Astroのサイトにページネーションを実装する方法
 
