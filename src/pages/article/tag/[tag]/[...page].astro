@@ -1,35 +1,44 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '@layouts/Layout.astro';
-import Container from '@components/common/Container.astro';
-import ArticleList from '@components/article/ArticleList.astro';
-import Breadcrumb from '@components/common/Breadcrumb.astro';
-import {tagPaths, getTagListBySlugs, getTagDataBySlug, allTagSlugs} from '@utils/article-tags';
-import { getSortedPosts } from '@utils/article';
-import ArticleArchiveSidebar from '@components/article/ArticleArchiveSidebar.astro';
-import Pagination from '@components/article/Pagination.astro';
-import { TAG_SINGLE_METADATA, getPaginatedTagArticlesMetadata } from '@data/metadata';
+import { getCollection } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/common/Container.astro";
+import ArticleList from "@components/article/ArticleList.astro";
+import Breadcrumb from "@components/common/Breadcrumb.astro";
+import {
+	tagPaths,
+	getTagListBySlugs,
+	getTagDataBySlug,
+	allTagSlugs,
+} from "@utils/article-tags";
+import { getSortedPosts } from "@utils/article";
+import ArticleArchiveSidebar from "@components/article/ArticleArchiveSidebar.astro";
+import Pagination from "@components/article/Pagination.astro";
+import {
+	TAG_SINGLE_METADATA,
+	getPaginatedTagArticlesMetadata,
+} from "@data/metadata";
 
-export async function getStaticPaths({paginate}) {
-  const allTags = allTagSlugs;
+export async function getStaticPaths({ paginate }) {
+	const allTags = allTagSlugs;
 
-  const allPosts = await getCollection('article', ({data}) => {
-    return data.isDraft === false;
-  });
+	const allPosts = await getCollection("article", ({ data }) => {
+		return data.isDraft === false;
+	});
 
-  return allTags.flatMap((tag) => {
-    const filteredPosts = allPosts.filter((post) => post.data.tags.includes(tag));
-    const sortedPosts = getSortedPosts(filteredPosts);
+	return allTags.flatMap((tag) => {
+		const filteredPosts = allPosts.filter((post) =>
+			post.data.tags.includes(tag),
+		);
+		const sortedPosts = getSortedPosts(filteredPosts);
 
-    return paginate(sortedPosts, {params: {tag}, pageSize: 10});
-  })
+		return paginate(sortedPosts, { params: { tag }, pageSize: 10 });
+	});
 }
 
 const { page } = Astro.props;
 const params = Astro.params;
 
 console.log(params);
-
 
 const currentPage = page.currentPage;
 const lastPage = page.lastPage;
@@ -38,158 +47,172 @@ const tagLabel = getTagDataBySlug(params.tag).label;
 const tagSlug = getTagDataBySlug(params.tag).slug;
 ---
 
-<Layout title={getPaginatedTagArticlesMetadata(tagLabel, currentPage).title} description={getPaginatedTagArticlesMetadata(tagLabel, currentPage).description}>
+<Layout
+	title={getPaginatedTagArticlesMetadata(tagLabel, currentPage).title}
+	description={getPaginatedTagArticlesMetadata(tagLabel, currentPage)
+		.description}
+>
 	<div class="page">
 		<div class="hero">
 			<h1>
-			 <span class="en">TAGGED ARTICLES</span>
-			 <span class="jp">タグ:{tagLabel}</span>
-		 </h1>
-	 </div>
-	 <div class="body">
-		 <Container>
-			 {
-       currentPage === 1 ? (
-          <Breadcrumb data={[
-            { label: 'ホーム', href: '/' },
-            { label: '記事一覧', href: '/article' },
-            { label: `タグ:${tagLabel}の記事一覧` },
-          ]} />
-        ) : (
-          <Breadcrumb data={[
-            { label: 'ホーム', href: '/' },
-            { label: '記事一覧', href: '/article' },
-            { label: `タグ:${tagLabel}の記事一覧`, href: `/article/tag/${tagSlug}` },
-            { label: `${currentPage}ページ目` },
-          ]} />
-        )
-       }
-       <div class="page-count">
-        <p>{currentPage}/{lastPage}ページ目</p>
-      </div>
-			 <div class="wrap">
-				 <main class="main">
-					 <ArticleList articles={page.data} />
+				<span class="en">TAGGED ARTICLES</span>
+				<span class="jp">タグ:{tagLabel}</span>
+			</h1>
+		</div>
+		<div class="body">
+			<Container>
+				{
+					currentPage === 1 ? (
+						<Breadcrumb
+							data={[
+								{ label: "ホーム", href: "/" },
+								{ label: "記事一覧", href: "/article" },
+								{ label: `タグ:${tagLabel}の記事一覧` },
+							]}
+						/>
+					) : (
+						<Breadcrumb
+							data={[
+								{ label: "ホーム", href: "/" },
+								{ label: "記事一覧", href: "/article" },
+								{
+									label: `タグ:${tagLabel}の記事一覧`,
+									href: `/article/tag/${tagSlug}`,
+								},
+								{ label: `${currentPage}ページ目` },
+							]}
+						/>
+					)
+				}
+				<div class="page-count">
+					<p>{currentPage}/{lastPage}ページ目</p>
+				</div>
+				<div class="wrap">
+					<main class="main">
+						<ArticleList articles={page.data} />
 
-           <div class="pagination">
-            <Pagination page={page} baseUrl=`/article/tag/${params.tag}` />
-          </div>
-				 </main>
-				 <ArticleArchiveSidebar />
-			 </div>
-		 </Container>
-	 </div>
+						<div class="pagination">
+							<Pagination page={page} baseUrl=`/article/tag/${params.tag}` />
+						</div>
+					</main>
+					<ArticleArchiveSidebar />
+				</div>
+			</Container>
+		</div>
 	</div>
 </Layout>
 
 <style lang="scss">
-.hero {
-  position: relative;
-  padding: 16rem 4rem;
-  overflow: hidden;
-  background-color: #f1f6ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+	.hero {
+		position: relative;
+		padding: 16rem 4rem;
+		overflow: hidden;
+		background-color: #f1f6ff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
 
-  @include mixin.sp {
-    padding: 6.4rem 1.6rem;
-  }
+		@include mixin.sp {
+			padding: 6.4rem 1.6rem;
+		}
 
-  h1 {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+		h1 {
+			display: flex;
+			align-items: center;
+			flex-direction: column;
 
-    span {
+			span {
+				&.en {
+					font-family: var.$font-en;
+					font-size: 1.6rem;
+					letter-spacing: 0.08em;
+					color: var.$c-main-v;
+					font-weight: 500;
 
-      &.en {
-        font-family: var.$font-en;
-        font-size: 1.6rem;
-        letter-spacing: .08em;
-        color: var.$c-main-v;
-        font-weight: 500;
+					@include mixin.sp {
+						font-size: 1.4rem;
+					}
+				}
 
-        @include mixin.sp {
-          font-size: 1.4rem;
-        }
-      }
+				&.jp {
+					font-size: 3.6rem;
+					font-weight: bold;
+					margin-top: 0.4rem;
 
-      &.jp {
-        font-size: 3.6rem;
-        font-weight: bold;
-        margin-top: .4rem;
+					@include mixin.sp {
+						font-size: 2.4rem;
+						margin-top: 0;
+					}
+				}
 
-        @include mixin.sp {
-          font-size: 2.4rem;
-          margin-top: 0;
-        }
-      }
+				&.tag {
+					font-size: 1.6rem;
+					font-weight: bold;
+					margin-top: 1.6rem;
+				}
+			}
+		}
+	}
 
-      &.tag {
-        font-size: 1.6rem;
-        font-weight: bold;
-        margin-top: 1.6rem;
-      }
-    }
-  }
-}
+	.page {
+		padding: 8rem 0 0;
 
-.page {
-  padding: 8rem 0 0;
+		@include mixin.sp {
+			padding: 5.6rem 0 0;
+		}
+	}
 
-  @include mixin.sp {
-    padding: 5.6rem 0 0;
-  }
-}
+	.body {
+		padding-top: 6.4rem;
+		padding-bottom: 12rem;
+		border-top: 0.1rem solid var.$c-gray-l;
+		background-image: linear-gradient(
+			to bottom,
+			var.$c-white 0,
+			var.$c-gray-l 100%
+		);
 
-.body {
-  padding-top: 6.4rem;
-  padding-bottom: 12rem;
-  border-top: .1rem solid var.$c-gray-l;
-  background-image: linear-gradient(to bottom, var.$c-white 0, var.$c-gray-l 100%);
+		@include mixin.sp {
+			padding-bottom: 6.4rem;
+		}
+	}
 
-  @include mixin.sp {
-    padding-bottom: 6.4rem;
-  }
-}
+	.page-count {
+		font-size: 1.4rem;
+		margin-top: 2.4rem;
 
-.page-count {
-  font-size: 1.4rem;
-  margin-top: 2.4rem;
+		@include mixin.sp {
+			font-size: 1.2rem;
+			margin-top: 1.6rem;
+		}
+	}
 
-  @include mixin.sp {
-    font-size: 1.2rem;
-    margin-top: 1.6rem;
-  }
-}
+	.wrap {
+		display: flex;
+		justify-content: space-between;
+		gap: 4rem;
+		margin-top: 2.4rem;
 
-.wrap {
-  display: flex;
-  justify-content: space-between;
-  gap: 4rem;
-  margin-top: 2.4rem;
+		@include mixin.tab {
+			flex-wrap: wrap;
+		}
+	}
 
-  @include mixin.tab {
-    flex-wrap: wrap;
-  }
-}
+	.main {
+		flex-grow: 1;
+		max-width: 84rem;
 
-.main {
-  flex-grow: 1;
-  max-width: 84rem;
+		@include mixin.tab {
+			max-width: 100%;
+		}
+	}
 
-  @include mixin.tab {
-    max-width: 100%;
-  }
-}
+	.pagination {
+		margin-top: 6.4rem;
 
-.pagination {
-  margin-top: 6.4rem;
-
-  @include mixin.tab {
-    margin-top: 3.2rem;
-  }
-}
+		@include mixin.tab {
+			margin-top: 3.2rem;
+		}
+	}
 </style>

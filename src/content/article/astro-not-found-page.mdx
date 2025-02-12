@@ -1,0 +1,150 @@
+---
+isDraft: false
+title: "Astroのサイトにカスタム404ページを作成する方法"
+description: "Astroのサイトに、カスタムの404ページを作成する方法を紹介します。"
+tags: ["astro"]
+publishedAt: 2025-02-12T12:00:00Z
+thumbnail: "./images/astro-not-found-page/thumb.png"
+---
+
+import imgDefault from "@article/images/astro-not-found-page/default-not-found.png";
+import imgNotFound from "@article/images/astro-not-found-page/not-found.png";
+
+Astroのサイト上で存在しないURLを指定した場合、以下のようなデフォルトの404ページが表示されます。
+
+<Img
+  src={imgDefault}
+  alt="Astroのデフォルト404ページ"
+  type={["border", "shadow"]}
+/>
+
+このままだとユーザーにとってわかりにくいため、自作の404ページを作成して表示する方法を紹介します！
+
+<ArticleToc />
+
+<AdUnit />
+
+## カスタム404ページを作成する方法
+
+自作の404ページを追加するには、`src/pages`ディレクトリに`404.astro`、または`404.md`を作成するだけです。
+
+### `src/pages`に404ページを作成する
+
+Astroでは、全てのページは`src/pages`ディレクトリに配置されます。
+
+404ページも同様で、`src/pages`ディレクトリに`404.astro`、または`404.md`を作成することで、自作の404ページを表示することができます。
+
+### 404ページの中身を作成する
+
+作成した404ページの中身は、通常のページと同様に記述します。
+
+以下は、404ページの例です。
+
+<CodeHead lang="astro" name="src/pages/404.astro" />
+
+```astro
+---
+import Layout from "@layouts/Layout.astro";
+---
+
+<Layout>
+  <div class="container">
+    <h1>404 Not Found</h1>
+    <p>お探しのページが見つかりませんでした。</p>
+
+    <p>
+      申し訳ございません。お客様がアクセスしようとしたページが見つかりませんでした。
+      <br />
+      ページが移動または削除されたか、URLの入力間違いの可能性があります。
+      <br />
+      正しいURLをご入力いただくか、メニューからご覧になりたい情報をお探しください。
+    </p>
+
+    <a href="/">トップページへ戻る</a>
+  </div>
+</Layout>
+```
+
+これで、存在しないURLにアクセスすると、自作の404ページが表示されるようになります。
+
+当サイトでは、以下のように設定しています。
+
+<Img
+  src={imgNotFound}
+  alt="WebTech Mediaの404ページ"
+  type={["border", "shadow"]}
+/>
+
+### マークダウンで404ページを作成する場合
+
+Astroでは、`src/pages`は以下の`md`（`mdx`）ファイルはページとして認識されます。
+
+以下は`404.md`で404ページを作成する場合の例です。
+
+<CodeHead lang="md" name="src/pages/404.md" />
+
+```mdx
+---
+layout: ../layouts/MarkdownLayout.astro
+title: 404 Not Found
+---
+
+お探しのページが見つかりませんでした。
+
+申し訳ございません。お客様がアクセスしようとしたページが見つかりませんでした。  
+ページが移動または削除されたか、URLの入力間違いの可能性があります。  
+正しいURLをご入力いただくか、メニューからご覧になりたい情報をお探しください。
+
+[トップページへ戻る](/)
+```
+
+マークダウンのフロントマターには、`layout`を指定できますので、Layoutを作成した上でパスを指定してください。
+
+以下は`MarkdownLayout.astro`の例です。
+
+<CodeHead lang="astro" name="src/layouts/MarkdownLayout.astro" />
+
+```astro
+---
+const { frontmatter } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- 省略 -->
+  </head>
+  <body>
+    <h1>{frontmatter.title}</h1>
+    <slot />
+  </body>
+```
+
+`md`のフロントマター内の情報は、`Astro.props.frontmatter`で取得することができます。
+
+<CodeHead lang="astro" name="src/layouts/MarkdownLayout.astro" />
+
+```jsx
+---
+const { frontmatter } = Astro.props;
+---
+
+<h1>{frontmatter.title}</h1>
+```
+
+マークダウンのコンテンツ部分は、`<slot />`の部分に表示されます。
+
+この方法で`md`ファイルでも404ページを作成することができます。
+
+<AdUnit />
+
+## 【まとめ】Astroのサイトにカスタム404ページを作成する方法
+
+今回は、Astroのサイトにカスタムの404ページを作成する方法を紹介しました。
+
+- `src/pages`ディレクトリに`404.astro`、または`404.md`を作成する
+- 通常のページと同様に404ページの中身を作成する
+
+これで、Astroのサイト上で存在しないURLにアクセスした際に、自作の404ページが表示されるようになります。
+
+404ページはつい忘れがちですが、デフォルト表示のものだとデザインの統一性が損なわれ、ユーザーも困惑してしまうので、忘れずに設定しておきましょう。
