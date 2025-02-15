@@ -1,19 +1,21 @@
 ---
-import { getCollection } from 'astro:content';
-import TagCloud from "@components/common/TagCloud.astro"
-import { getTagsWithArticles } from '@utils/article-tags';
-import Ranking from './sidebar-widgets/Ranking.astro';
+import { getCollection } from "astro:content";
+import TagCloud from "@components/common/TagCloud.astro";
+import { getTagsWithArticles } from "@utils/article-tags";
+import Ranking from "./sidebar-widgets/Ranking.astro";
 import { FaCrown } from "react-icons/fa";
 import { FaTags } from "react-icons/fa";
 import { IoIosPricetags } from "react-icons/io";
-import Toc from './sidebar-widgets/Toc.astro';
+import Toc from "./sidebar-widgets/Toc.astro";
 import { MdOutlineToc } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
-import CodeHive from './sidebar-widgets/CodeHive.astro';
+import CodeHive from "./sidebar-widgets/CodeHive.astro";
 import { FaLaptopCode } from "react-icons/fa";
+import MontlyArchive from "./sidebar-widgets/MontlyArchive.astro";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
-const articleEntries = await getCollection('article', ({data}) => {
-	return data.isDraft === false;
+const articleEntries = await getCollection("article", ({ data }) => {
+  return data.isDraft === false;
 });
 const tagsWithArticles = getTagsWithArticles(articleEntries);
 ---
@@ -23,6 +25,12 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
     <p class="sidebar__block-title"><IoIosPricetags />タグ一覧</p>
     <div class="tags">
       <TagCloud tags={tagsWithArticles} />
+    </div>
+  </div>
+  <div class="sidebar__block">
+    <p class="sidebar__block-title"><FaRegCalendarAlt />月別記事一覧</p>
+    <div class="monthly">
+      <MontlyArchive />
     </div>
   </div>
   <div class="sidebar__block">
@@ -72,7 +80,7 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
       z-index: var.$z-sidebar-sticky;
 
       @include mixin.tab {
-        margin-top: 0!important;
+        margin-top: 0 !important;
         height: 100%;
         overflow: auto;
         background-color: var.$c-white;
@@ -85,14 +93,14 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
         height: 100%;
         transform: translateX(calc(100% + 6rem));
         // border: .1rem solid var.$c-gray-l;
-        box-shadow: 0 0 1.6rem rgba(var.$c-text, .1);
-        transition: all .6s;
+        box-shadow: 0 0 1.6rem rgba(var.$c-text, 0.1);
+        transition: all 0.6s;
       }
     }
 
     &__block {
       background-color: var.$c-white;
-      border: .1rem solid var.$c-gray-l;
+      border: 0.1rem solid var.$c-gray-l;
       padding: 1.6rem 2.4rem 2.4rem;
 
       &.-toc {
@@ -105,23 +113,22 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
       font-size: 1.6rem;
       font-weight: bold;
       padding-bottom: 1.2rem;
-      border-bottom: .1rem solid var.$c-gray-l;
+      border-bottom: 0.1rem solid var.$c-gray-l;
       display: flex;
       align-items: center;
 
       svg {
-        margin-right: .2rem;
+        margin-right: 0.2rem;
       }
 
       &.-toc {
-
         @include mixin.tab {
           font-size: 1.4rem;
         }
 
         svg {
           font-size: 1.8rem;
-          transform: translateY(.1rem);
+          transform: translateY(0.1rem);
         }
       }
     }
@@ -129,5 +136,9 @@ const tagsWithArticles = getTagsWithArticles(articleEntries);
 
   .tags {
     margin-top: 2.4rem;
+  }
+
+  .monthly {
+    margin-top: 0.8rem;
   }
 </style>
