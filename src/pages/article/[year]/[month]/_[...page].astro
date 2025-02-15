@@ -4,34 +4,47 @@ import Layout from "@layouts/Layout.astro";
 import Container from "@components/common/Container.astro";
 import ArticleList from "@components/article/ArticleList.astro";
 import Breadcrumb from "@components/common/Breadcrumb.astro";
-import {
-  tagPaths,
-  getTagListBySlugs,
-  getTagDataBySlug,
-  allTagSlugs,
-} from "@utils/article-tags";
 import { getSortedPosts } from "@utils/article";
 import ArticleArchiveSidebar from "@components/article/ArticleArchiveSidebar.astro";
 import Pagination from "@components/article/Pagination.astro";
-import {
-  TAG_SINGLE_METADATA,
-  getPaginatedTagArticlesMetadata,
-} from "@data/metadata";
+import { getPaginatedMonthlyArticlesMetadata } from "@data/metadata";
 
 export async function getStaticPaths({ paginate }) {
-  const allTags = allTagSlugs;
-
   const allPosts = await getCollection("article", ({ data }) => {
     return data.isDraft === false;
   });
 
-  return allTags.flatMap((tag) => {
-    const filteredPosts = allPosts.filter((post) =>
-      post.data.tags.includes(tag),
-    );
+  // 1. 各記事の `publishedAt` から "YYYY-M" 形式の文字列を作成
+  const yearMonthStrings = allPosts.map((post) => {
+    const date = new Date(post.data.publishedAt);
+    return `${date.getFullYear()}-${date.getMonth() + 1}`;
+  });
+
+  // 2. `Set` を使って重複を削除（ユニークな年月だけ取得）
+  const uniqueYearMonthStrings = Array.from(new Set(yearMonthStrings));
+
+  // 3. 文字列を `{ year, month }` のオブジェクトに変換
+  const archiveMonths = uniqueYearMonthStrings.map((str) => {
+    const [year, month] = str.split("-").map(Number);
+    return { year, month };
+  });
+
+  return archiveMonths.flatMap(({ year, month }) => {
+    // 記事をフィルタリング
+    const filteredPosts = allPosts.filter((post) => {
+      const date = new Date(post.data.publishedAt);
+      return date.getFullYear() === year && date.getMonth() + 1 === month;
+    });
+
     const sortedPosts = getSortedPosts(filteredPosts);
 
-    return paginate(sortedPosts, { params: { tag }, pageSize: 10 });
+    return paginate(sortedPosts, {
+      params: {
+        year: String(year), // .toString() より String() のほうが短くてシンプル
+        month: month.toString().padStart(2, "0"),
+      },
+      pageSize: 10,
+    });
   });
 }
 
@@ -40,21 +53,26 @@ const params = Astro.params;
 
 const currentPage = page.currentPage;
 const lastPage = page.lastPage;
-
-const tagLabel = getTagDataBySlug(params.tag).label;
-const tagSlug = getTagDataBySlug(params.tag).slug;
 ---
 
 <Layout
-  title={getPaginatedTagArticlesMetadata(tagLabel, currentPage).title}
-  description={getPaginatedTagArticlesMetadata(tagLabel, currentPage)
-    .description}
+  title={getPaginatedMonthlyArticlesMetadata(
+    params.year,
+    Number(params.month),
+    currentPage,
+  ).title}
+  description={getPaginatedMonthlyArticlesMetadata(
+    params.year,
+    Number(params.month),
+    currentPage,
+  ).description}
 >
   <div class="page">
     <div class="hero">
       <h1>
-        <span class="en">TAGGED ARTICLES</span>
-        <span class="jp">タグ:{tagLabel}</span>
+        <span class="en">ARTICLES BY MONTH</span>
+        <span class="jp">{params.year}年{Number(params.month)}月の記事一覧</span
+        >
       </h1>
     </div>
     <div class="body">
@@ -65,7 +83,9 @@ const tagSlug = getTagDataBySlug(params.tag).slug;
               data={[
                 { label: "ホーム", href: "/" },
                 { label: "記事一覧", href: "/article" },
-                { label: `タグ:${tagLabel}の記事一覧` },
+                {
+                  label: `${params.year}年${Number(params.month)}月の記事一覧`,
+                },
               ]}
             />
           ) : (
@@ -74,8 +94,8 @@ const tagSlug = getTagDataBySlug(params.tag).slug;
                 { label: "ホーム", href: "/" },
                 { label: "記事一覧", href: "/article" },
                 {
-                  label: `タグ:${tagLabel}の記事一覧`,
-                  href: `/article/tag/${tagSlug}`,
+                  label: `${params.year}年${Number(params.month)}月の記事一覧`,
+                  href: `/article/${params.year}/${params.month}`,
                 },
                 { label: `${currentPage}ページ目` },
               ]}
@@ -90,7 +110,10 @@ const tagSlug = getTagDataBySlug(params.tag).slug;
             <ArticleList articles={page.data} />
 
             <div class="pagination">
-              <Pagination page={page} baseUrl=`/article/tag/${params.tag}` />
+              <Pagination
+                page={page}
+                baseUrl=`/article/${params.year}/${params.month}`
+              />
             </div>
           </main>
           <ArticleArchiveSidebar />

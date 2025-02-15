@@ -1,0 +1,82 @@
+---
+import { getSortedPosts } from "@utils/article";
+import { getCollection } from "astro:content";
+
+const allArticles = await getCollection("article", ({ data }) => {
+  return data.isDraft === false;
+});
+
+const sortedArticles = getSortedPosts(allArticles);
+
+const yearMonthStrings = sortedArticles.map((article) => {
+  const date = new Date(article.data.publishedAt);
+  return `${date.getFullYear()}-${date.getMonth() + 1}`;
+});
+
+const uniqueYearMonthStrings = Array.from(new Set(yearMonthStrings));
+
+const articleCounts = yearMonthStrings.reduce((acc, key) => {
+  acc[key] = (acc[key] || 0) + 1;
+  return acc;
+}, {});
+
+const archiveMonths = uniqueYearMonthStrings.map((str) => {
+  const [year, month] = str.split("-").map(Number);
+  return {
+    year,
+    month,
+    count: articleCounts[str],
+  };
+});
+---
+
+<ul class="list">
+  {
+    archiveMonths.map((month) => {
+      return (
+        <li class="item">
+          <a
+            class="link"
+            href={`/article/${month.year}/${month.month.toString().padStart(2, "0")}`}
+          >
+            <span>
+              {month.year}年{month.month}月
+            </span>
+            <span class="count">{month.count}</span>
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style lang="scss">
+  .list {
+  }
+
+  .item {
+    border-bottom: 0.1rem solid #efeff5;
+  }
+
+  .link {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.4rem;
+    font-weight: 500;
+    padding: 0.8rem 0;
+
+    .count {
+      width: 3rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      line-height: 1;
+      border: 0.1rem solid #efeff5;
+      background-color: #f9f9fc;
+      letter-spacing: 0;
+    }
+  }
+</style>

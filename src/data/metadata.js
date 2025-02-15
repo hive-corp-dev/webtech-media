@@ -26,6 +26,13 @@ export const getPaginatedTagArticlesMetadata = (tagLabel, page) => {
   };
 };
 
+export const getPaginatedMonthlyArticlesMetadata = (year, month, page) => {
+  return {
+    title: `${year}年${month}月${page !== 1 ? " - " + page + "ページ目" : ""} | 記事一覧 | ${SITE_NAME}`,
+    description: `${year}年${month}月に投稿された記事一覧です。${page !== 1 ? "（" + page + "ページ目）" : ""}`,
+  };
+};
+
 export const ARTICLE_SINGLE_METADATA = {
   title: `${SITE_NAME}`,
 };

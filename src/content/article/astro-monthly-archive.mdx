@@ -1,0 +1,443 @@
+---
+isDraft: false
+title: "Astroのサイトに月別アーカイブページを作成する方法"
+description: "Astroのサイトに、月別アーカイブページを作成する方法を紹介します。"
+tags: ["astro"]
+publishedAt: 2025-02-13T01:00:00Z
+thumbnail: "./images/astro-monthly-archive/thumb.png"
+---
+
+ブログサイトでは、過去の記事を整理してアクセスしやすくするために「月別アーカイブページ」を作成することがあります。
+
+本記事では、Astroの動的ルーティングを利用して、`/blog/2025/01/`のような月別アーカイブページを作成する方法を解説します！
+
+もしAstroサイトに月別の記事一覧ページを作成したい場合は、ぜひ参考にしてみてください。
+
+<ArticleToc />
+
+<AdUnit />
+
+## 検証環境
+
+当記事で紹介する方法は、以下のバージョンで動作確認を行っています。
+
+<Versions versions={[{ key: "astro", version: "5.1.3" }]} />
+
+また、記事のフォーマットはMDXを使用していますが、ヘッドレスCMSから記事を取得する場合も同様に実装可能です。
+
+<InfoBox type="success">
+  バージョンの違いによっては、この記事の通りに動作しない可能性がありますので、ご理解いただけますと幸いです。
+</InfoBox>
+
+## 当ブログのコンテンツコレクションの設定について
+
+本題に入る前に、当ブログではAstroの<OuterLink href='https://docs.astro.build/ja/guides/content-collections/'>コンテンツコレクション</OuterLink>で記事を管理しています。
+
+コレクションスキーマは、以下の通りです。
+
+<CodeHead lang="typescript" name="src/content/config.ts" />
+
+```ts
+import { z, defineCollection } from "astro:content";
+
+const articleCollection = defineCollection({
+  type: "content",
+  schema: ({ image }) =>
+    z.object({
+      isDraft: z.boolean(),
+      title: z.string(),
+      description: z.string(),
+      tags: z.array(
+        z.enum([
+          // 省略
+        ]),
+      ),
+      publishedAt: z.date(),
+      revisedAt: z.date().optional(),
+      thumbnail: image(),
+    }),
+});
+
+export const collections = {
+  article: articleCollection,
+};
+```
+
+人によってプロパティの設定は異なるかもしれませんが、当記事ではこちらのスキーマを使用している前提で進めます。
+
+<InfoBox type="success">
+  コンテンツコレクションの設定が異なっている場合や、他の方法で記事を管理している場合でも、基本的な考え方は変わりません。必要に応じて変更しつつ実装してみてください。
+</InfoBox>
+
+## 月別アーカイブページを作成する方法
+
+月別アーカイブページを作成するには、以下の手順を実施します。
+
+1. 任意のディレクトリに`index.astro`を作成する
+2. `getStaticPaths`で月別のパスを生成する
+3. 月別の記事一覧ページの中身を作成する
+
+### 1. 任意のディレクトリにindex.astroを作成する
+
+まずは、月別の記事一覧ページのベースとなる`index.astro`を作成します。
+
+`/blog/2025/01/`のようなURLにしたいので、`src/pages/blog/[year]/[month]/`ディレクトリに作成してください。
+
+`[year]`と`[month]`は、動的ルーティングを利用して月別の記事一覧を表示するためのパラメータです。
+
+### 2. getStaticPathsで月別のパスを生成する
+
+次に、`getStaticPaths`を利用して月別のパスを生成します。
+
+まずはコードの全体像から。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog", ({ data }) => {
+    return data.isDraft === false;
+  });
+
+  // 各記事のpublishedAtから"YYYY-M"形式の文字列を作成
+  const yearMonthStrings = allPosts.map((post) => {
+    const date = new Date(post.data.publishedAt);
+    return `${date.getFullYear()}-${date.getMonth() + 1}`;
+  });
+
+  // Setを使って重複を削除（ユニークな年月だけ取得）
+  const uniqueYearMonthStrings = Array.from(new Set(yearMonthStrings));
+
+  // 文字列を{ year, month }のオブジェクトに変換
+  const archiveMonths = uniqueYearMonthStrings.map((str) => {
+    const [year, month] = str.split("-").map(Number);
+    return { year, month };
+  });
+
+  return archiveMonths.flatMap(({ year, month }) => {
+    // 記事をフィルタリング
+    const filteredPosts = allPosts.filter((post) => {
+      const date = new Date(post.data.publishedAt);
+      return date.getFullYear() === year && date.getMonth() + 1 === month;
+    });
+
+    // 記事を日付順にソート
+    const sortedPosts = filteredPosts.sort((a, b) => {
+      return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+    });
+
+    return {
+      params: {
+        year: year.toString(),
+        // 月が1桁の場合は0埋めする（任意）
+        month: month.toString().padStart(2, "0"),
+      },
+      props: {
+        // 月別の記事データを渡す
+        sortedPosts,
+      },
+    };
+  });
+}
+
+const { sortedPosts } = Astro.props;
+const params = Astro.params;
+---
+```
+
+ここでは、
+
+1. 全記事データを取得
+2. 各記事の`publishedAt`から`"YYYY-M"`形式の文字列を作成
+3. 重複を削除してユニークな年月を取得
+4. 文字列を`{ year, month }`のオブジェクトに変換
+5. 月別のパスを生成
+
+少しずつ分解して解説していきます。
+
+#### 2-1. 全記事データを取得する
+
+まずは、全記事のデータを取得します。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog", ({ data }) => {
+    return data.isDraft === false;
+  });
+}
+---
+```
+
+コンテンツコレクションでは`getCollection`を使用することで、全記事を取得できます。
+
+ここでは、`isDraft`が`false`の記事のみを取得するようにフィルタリングしています。
+
+#### 2-2. 各記事のpublishedAtから"YYYY-M"形式の文字列を作成
+
+続いては、全記事の`publishedAt`を抽出し、`"YYYY-M"`形式の文字列を作成します。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+const yearMonthStrings = allPosts.map((post) => {
+  const date = new Date(post.data.publishedAt);
+  return `${date.getFullYear()}-${date.getMonth() + 1}`;
+});
+---
+```
+
+これを`console.log`すると、以下のような結果になります。
+
+<CodeHead lang="sh" />
+
+```sh
+[
+  '2025-1',  '2025-1',  '2024-12',
+  '2025-1',  '2025-1',  '2025-1',
+  '2025-1',  '2025-1',  '2025-1',
+  '2025-2',  '2024-12', '2025-2',
+  '2024-12', '2025-1',  '2025-1',
+  '2025-1',  '2025-2',  '2025-1',
+  '2025-1',  '2025-2',  '2024-12',
+  '2024-12', '2024-12', '2024-12',
+  '2025-2',  '2025-2'
+]
+```
+
+このままでは重複してしまっていますが、必要なのはユニークな年月のみなので、次で重複を削除します。
+
+#### 2-3. 重複を削除してユニークな年月を取得
+
+`Set`に上記の配列を渡すと、重複を削除した値のコレクションが返されます。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+const uniqueYearMonthStrings = Array.from(new Set(yearMonthStrings));
+---
+```
+
+ただし、`Set`はコレクションという扱いなので、`Array.from`で配列に変換しておきます。
+
+これで重複が削除されたユニークな年月の配列が取得できました。
+
+<CodeHead lang="sh" />
+
+```sh
+['2024-12', '2025-1', '2025-2']
+```
+
+#### 2-4. 文字列を`{ year, month }`のオブジェクトに変換
+
+2-3でユニークな年月の文字列を取得できたので、これを`{ year, month }`のオブジェクトに変換します。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+const archiveMonths = uniqueYearMonthStrings.map((str) => {
+  const [year, month] = str.split("-").map(Number);
+  return { year, month };
+});
+---
+```
+
+これで、以下のようなオブジェクトが取得できます。
+
+<CodeHead lang="sh" />
+
+```sh showLineNumbers
+[
+  { year: 2024, month: 12 },
+  { year: 2025, month: 1 },
+  { year: 2025, month: 2 }
+]
+```
+
+#### 2-5. 月別のパスを生成
+
+最後に、月別のパスを生成します。
+
+また、パスの生成に合わせて、各月の記事をフィルタリングして日付順にソートしています。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+return archiveMonths.flatMap(({ year, month }) => {
+  const filteredPosts = allPosts.filter((post) => {
+    const date = new Date(post.data.publishedAt);
+    return date.getFullYear() === year && date.getMonth() + 1 === month;
+  });
+
+  const sortedPosts = filteredPosts.sort((a, b) => {
+    return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+  });
+
+  return {
+    params: {
+      year: year.toString(),
+      month: month.toString().padStart(2, "0"),
+    },
+    props: {
+      sortedPosts,
+    },
+  };
+});
+---
+```
+
+まずは全ての記事から、指定された`year`と`month`の記事のみをフィルタリングします。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+const filteredPosts = allPosts.filter((post) => {
+  const date = new Date(post.data.publishedAt);
+  return date.getFullYear() === year && date.getMonth() + 1 === month;
+});
+---
+```
+
+次に、フィルタリングした記事を`publishedAt`の降順でソートします。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+const sortedPosts = filteredPosts.sort((a, b) => {
+  return new Date(b.data.publishedAt) - new Date(a.data.publishedAt);
+});
+---
+```
+
+最後に、`return`で`params`と`props`を返します。
+
+`params`には、`year`と`month`を指定し、`props`には月別の記事データを渡します。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro
+---
+return {
+  params: {
+    year: year.toString(),
+    month: month.toString().padStart(2, "0"),
+  },
+  props: {
+    sortedPosts,
+  },
+};
+---
+```
+
+`month`の部分は、`padStart`で2桁になるように0埋めしています。
+
+ここは好みの問題かもしれませんが、こうすることで1桁の月なら`01`, `02`, `03`となり、2桁の月は`10`, `11`, `12`のようにそのまま表示されるようになります。
+
+`props`には、`year`と`month`に対応する記事のデータが入ります。
+
+これらの値は、以下のようにして取得することができます。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro
+---
+const { sortedPosts } = Astro.props;
+const params = Astro.params;
+---
+```
+
+これでフロントマターのコードは完成です。
+
+次でこれらの情報を使って、月別記事一覧ページの中身を作っていきます。
+
+<AdUnit />
+
+### 3. 月別の記事一覧ページの中身を作成する
+
+月別記事一覧ページはまだ空なので、ページの中身を作成していきましょう。
+
+まずは、`index.astro`の中身を以下のようにします。
+
+<CodeHead lang="astro" name="src/pages/blog/[year]/[month]/index.astro" />
+
+```astro showLineNumbers
+---
+// フロントマターは上で説明済みなので省略
+
+const { sortedPosts } = Astro.props;
+const params = Astro.params;
+---
+
+<Layout>
+  <h1>{params.year}年{params.month}月の記事一覧</h1>
+
+  <ul>
+    {
+      sortedPosts.map((post) => {
+        return (
+          <li>
+            <a href={`/blog/${post.slug}`}>
+              <h2>{post.data.title}</h2>
+              <p>{post.data.description}</p>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</Layout>
+```
+
+`params`には、`year`と`month`が入っているので、これを使ってページのタイトルを設定しています。
+
+<CodeHead lang="astro" />
+
+```jsx
+<h1>
+  {params.year}年{params.month}月の記事一覧
+</h1>
+```
+
+次に、`sortedPosts`には月別の記事データが入っているので、これを使って記事一覧を表示しています。
+
+<CodeHead lang="astro" />
+
+```jsx
+<ul>
+  {sortedPosts.map((post) => {
+    return (
+      <li>
+        <a href={`/blog/${post.slug}`}>
+          <h2>{post.data.title}</h2>
+          <p>{post.data.description}</p>
+        </a>
+      </li>
+    );
+  })}
+</ul>
+```
+
+この部分は各自のコンテンツコレクションの設定や、どこから記事データを取得するかによって変わる部分なので、適宜変更してください。
+
+これで、月別の記事一覧ページが完成しました！
+
+<AdUnit />
+
+## 【まとめ】Astroのサイトに月別アーカイブページを作成する方法
+
+本記事では、Astroの動的ルーティングを利用して、月別アーカイブページを作成する方法を解説しました。
+
+Astroのサイトに月別記事一覧を作成する場合は、ぜひ参考にしてみてください！
